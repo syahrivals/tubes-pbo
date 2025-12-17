@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="layout :: layout(~{::section})">
+<section>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+            <h5 class="mb-0">✏️ Edit Nilai</h5>
+            <p class="text-muted small mb-0">Ubah nilai mahasiswa</p>
+        </div>
+        <a class="btn btn-outline-secondary btn-sm" href="/nilai">← Kembali</a>
+    </div>
+
+    <div th:if="${success}" class="alert alert-success alert-dismissible fade show">
+        <span th:text="${success}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    <div th:if="${error}" class="alert alert-danger alert-dismissible fade show">
+        <span th:text="${error}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
+    <div class="card shadow-soft">
+        <div class="card-body">
+            <form method="post" th:action="@{/nilai/{id}/edit(id=${nilai.id})}" class="row g-3">
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">Mahasiswa</label>
+                    <select class="form-select" name="nim" required>
+                        <option th:each="m : ${mahasiswaList}" 
+                                th:value="${m.nim}" 
+                                th:selected="${nilai.nim == m.nim}"
+                                th:text="${m.nim + ' - ' + m.nama}">
+                            NIM - Nama
+                        </option>
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-semibold">Mata Kuliah</label>
+                    <select class="form-select" name="mataKuliah" required>
+                        <option th:each="mk : ${mataKuliahList}" 
+                                th:value="${mk.nama}" 
+                                th:selected="${nilai.mataKuliah == mk.nama}"
+                                th:text="${mk.kode + ' - ' + mk.nama}">
+                            Kode - Nama
+                        </option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold" for="tugas">Tugas *</label>
+                    <input class="form-control" id="tugas" name="tugas" type="number" 
+                           step="0.01" min="0" max="100" 
+                           th:value="${nilai.tugas}"
+                           placeholder="0-100" required>
+                    <div class="form-text">Nilai antara 0-100</div>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold" for="uts">UTS *</label>
+                    <input class="form-control" id="uts" name="uts" type="number" 
+                           step="0.01" min="0" max="100" 
+                           th:value="${nilai.uts}"
+                           placeholder="0-100" required>
+                    <div class="form-text">Nilai antara 0-100</div>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold" for="uas">UAS *</label>
+                    <input class="form-control" id="uas" name="uas" type="number" 
+                           step="0.01" min="0" max="100" 
+                           th:value="${nilai.uas}"
+                           placeholder="0-100" required>
+                    <div class="form-text">Nilai antara 0-100</div>
+                </div>
+                <div class="col-12">
+                    <div class="alert alert-info">
+                        <strong>Info:</strong> Rata-rata akan otomatis dihitung: (Tugas + UTS + UAS) / 3
+                    </div>
+                </div>
+                <div class="col-12 d-flex gap-2">
+                    <button type="submit" class="btn btn-success">💾 Simpan Perubahan</button>
+                    <a href="/nilai" class="btn btn-outline-secondary">Batal</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+</html>
+

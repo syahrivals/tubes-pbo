@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="layout :: layout(~{::section})">
+<section>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+            <h5 class="mb-0">📚 Katalog Mata Kuliah</h5>
+            <p class="text-muted small mb-0">Pilih mata kuliah yang ingin Anda ambil</p>
+        </div>
+        <a href="/student/enrollments" class="btn btn-outline-primary btn-sm">📝 MK Saya</a>
+    </div>
+
+    <div th:if="${success}" class="alert alert-success alert-dismissible fade show">
+        <span th:text="${success}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    <div th:if="${error}" class="alert alert-danger alert-dismissible fade show">
+        <span th:text="${error}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
+    <div class="row g-3">
+        <div class="col-md-6 col-lg-4" th:each="course : ${courses}">
+            <div class="card shadow-soft h-100">
+                <div class="card-body d-flex flex-column">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <span class="badge bg-primary" th:text="${course.kode}">Kode</span>
+                        <span class="badge bg-info" th:text="${course.sks} + ' SKS'">3 SKS</span>
+                    </div>
+                    <h6 class="mb-2" th:text="${course.nama}">Nama Mata Kuliah</h6>
+                    <p class="small text-muted mb-3">
+                        <strong>👨‍🏫 Dosen:</strong> <span th:text="${course.namaDosen}">Nama Dosen</span>
+                    </p>
+                    
+                    <div class="mt-auto">
+                        <form method="post" action="/student/enroll" 
+                              th:if="${!enrolledIds.contains(course.id)}">
+                            <input type="hidden" name="courseId" th:value="${course.id}">
+                            <button type="submit" class="btn btn-success w-100">
+                                ✅ Daftar Mata Kuliah
+                            </button>
+                        </form>
+                        <div th:if="${enrolledIds.contains(course.id)}" 
+                             class="alert alert-success mb-0 text-center py-2">
+                            ✅ Sudah Terdaftar
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-12" th:if="${#lists.isEmpty(courses)}">
+            <div class="alert alert-light text-center">
+                Belum ada mata kuliah tersedia.
+            </div>
+        </div>
+    </div>
+</section>
+</html>
+

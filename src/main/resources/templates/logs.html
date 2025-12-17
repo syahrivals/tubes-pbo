@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="layout :: layout(~{::section})">
+<section>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+            <h5 class="mb-0">📋 Activity Log</h5>
+            <p class="text-muted small mb-0">Riwayat aktivitas sistem</p>
+        </div>
+        <a href="/" class="btn btn-outline-secondary btn-sm">← Dashboard</a>
+    </div>
+
+    <div class="card shadow-soft">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-light">
+                    <tr>
+                        <th width="15%">Waktu</th>
+                        <th width="10%">Role</th>
+                        <th width="15%">Username</th>
+                        <th width="10%">Action</th>
+                        <th width="15%">Entity</th>
+                        <th width="35%">Deskripsi</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="log : ${logs}">
+                        <td class="small" th:text="${#temporals.format(log.timestamp, 'dd MMM yyyy HH:mm:ss')}">Date</td>
+                        <td>
+                            <span class="badge" 
+                                  th:classappend="${log.userRole == 'DOSEN' ? 'bg-primary' : 'bg-success'}"
+                                  th:text="${log.userRole}">Role</span>
+                        </td>
+                        <td><code th:text="${log.username}">username</code></td>
+                        <td>
+                            <span class="badge" 
+                                  th:classappend="${log.action == 'CREATE' ? 'bg-success' : (log.action == 'UPDATE' ? 'bg-warning' : (log.action == 'DELETE' ? 'bg-danger' : 'bg-info'))}"
+                                  th:text="${log.action}">Action</span>
+                        </td>
+                        <td><span class="badge bg-secondary" th:text="${log.entityType}">Entity</span></td>
+                        <td class="small" th:text="${log.description}">Description</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <div th:if="${#lists.isEmpty(logs)}" class="alert alert-light text-center">
+                Belum ada aktivitas yang tercatat.
+            </div>
+        </div>
+    </div>
+</section>
+</html>
+

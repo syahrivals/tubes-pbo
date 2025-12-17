@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="layout :: layout(~{::section})">
+<section>
+    <div class="card shadow-soft">
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div>
+                    <h5 class="card-title mb-0">Nilai</h5>
+                    <p class="text-muted small mb-0">Kelola nilai per mahasiswa</p>
+                </div>
+                <a class="btn btn-outline-secondary btn-sm" href="/">Dashboard</a>
+            </div>
+
+            <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+                <span th:text="${success}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                <span th:text="${error}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            <form method="post" action="/nilai" class="row g-2 mb-3 p-3 bg-light rounded">
+                <div class="col-md-3">
+                    <label class="form-label fw-semibold" for="nimNilai">Mahasiswa *</label>
+                    <select class="form-select" id="nimNilai" name="nim" required>
+                        <option value="">-- Pilih Mahasiswa --</option>
+                        <option th:each="m : ${mahasiswaList}" 
+                                th:value="${m.nim}" 
+                                th:text="${m.nim + ' - ' + m.nama}">
+                            NIM - Nama
+                        </option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label fw-semibold" for="mataKuliah">Mata Kuliah *</label>
+                    <select class="form-select" id="mataKuliah" name="mataKuliah" required disabled>
+                        <option value="">-- Pilih Mahasiswa Dulu --</option>
+                    </select>
+                    <div class="form-text" id="mataKuliahHelp">
+                        Pilih mahasiswa terlebih dahulu
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label fw-semibold" for="tugas">Tugas *</label>
+                    <input class="form-control" id="tugas" name="tugas" type="number" 
+                           step="0.01" min="0" max="100" placeholder="0-100" required>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label fw-semibold" for="uts">UTS *</label>
+                    <input class="form-control" id="uts" name="uts" type="number" 
+                           step="0.01" min="0" max="100" placeholder="0-100" required>
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label fw-semibold" for="uas">UAS *</label>
+                    <input class="form-control" id="uas" name="uas" type="number" 
+                           step="0.01" min="0" max="100" placeholder="0-100" required>
+                </div>
+                <div class="col-12 d-grid mt-3">
+                    <button type="submit" class="btn btn-success">
+                        ➕ Tambah Nilai
+                    </button>
+                </div>
+            </form>
+            <div class="row g-3" th:if="${#lists.isEmpty(mahasiswaList)}">
+                <div class="col-12">
+                    <div class="alert alert-light border text-center text-muted mb-0">Belum ada data</div>
+                </div>
+            </div>
+
+            <div class="row g-3" th:each="m : ${mahasiswaList}">
+                <div class="col-12">
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <div>
+                                    <h6 class="mb-0" th:text="${m.nama}"></h6>
+                                    <span class="text-muted small" th:text="${m.nim}"></span>
+                                </div>
+                                <a class="btn btn-outline-secondary btn-xs" th:href="@{'/report/' + ${m.nim}}">Report</a>
+                            </div>
+
+                            <div th:if="${#lists.isEmpty(nilaiMap[m.nim])}" class="text-muted small">
+                                Belum ada nilai.
+                            </div>
+
+                            <div class="row g-2" th:each="n : ${nilaiMap[m.nim]}">
+                                <div class="col-md-6 col-lg-4">
+                                    <div class="border rounded p-3 h-100 d-flex flex-column">
+                                        <div class="d-flex justify-content-between align-items-center mb-2">
+                                            <span class="fw-semibold" th:text="${n.mataKuliah}"></span>
+                                            <span class="badge bg-primary-subtle text-primary" th:text="${n.grade}"></span>
+                                        </div>
+                                        <div class="small text-muted mb-2">
+                                            Tugas: <span th:text="${n.tugas}"></span> |
+                                            UTS: <span th:text="${n.uts}"></span> |
+                                            UAS: <span th:text="${n.uas}"></span>
+                                        </div>
+                                        <div class="d-flex justify-content-between align-items-center mt-auto">
+                                            <span class="fw-semibold">Rata: <span th:text="${#numbers.formatDecimal(n.hitungRataRata(),1,2)}"></span></span>
+                                            <div class="d-flex gap-2">
+                                                <a class="btn btn-primary btn-xs" th:href="@{'/nilai/' + ${n.id} + '/edit'}">✏️ Edit</a>
+                                                <form th:action="@{'/nilai/' + ${n.id} + '/delete'}" method="post" class="m-0"
+                                                      onsubmit="return confirm('Yakin hapus nilai ini?')">
+                                                    <button class="btn btn-danger btn-xs" type="submit">🗑️ Hapus</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const nimSelect = document.getElementById('nimNilai');
+            const mataKuliahSelect = document.getElementById('mataKuliah');
+            const mataKuliahHelp = document.getElementById('mataKuliahHelp');
+
+            nimSelect.addEventListener('change', function() {
+                const selectedNim = this.value;
+                
+                // Reset dropdown mata kuliah
+                mataKuliahSelect.innerHTML = '<option value="">-- Memuat... --</option>';
+                mataKuliahSelect.disabled = true;
+                mataKuliahHelp.textContent = 'Memuat mata kuliah...';
+
+                if (!selectedNim) {
+                    mataKuliahSelect.innerHTML = '<option value="">-- Pilih Mahasiswa Dulu --</option>';
+                    mataKuliahSelect.disabled = true;
+                    mataKuliahHelp.textContent = 'Pilih mahasiswa terlebih dahulu';
+                    return;
+                }
+
+                // Fetch enrollment data
+                fetch('/api/enrollments/' + selectedNim)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        mataKuliahSelect.innerHTML = '<option value="">-- Pilih Mata Kuliah --</option>';
+                        
+                        if (data.success && data.courses && data.courses.length > 0) {
+                            data.courses.forEach(course => {
+                                const option = document.createElement('option');
+                                option.value = course.nama;
+                                option.textContent = course.kode + ' - ' + course.nama;
+                                mataKuliahSelect.appendChild(option);
+                            });
+                            mataKuliahSelect.disabled = false;
+                            mataKuliahHelp.textContent = data.courses.length + ' mata kuliah tersedia';
+                        } else {
+                            mataKuliahSelect.innerHTML = '<option value="">-- Tidak ada mata kuliah --</option>';
+                            mataKuliahSelect.disabled = true;
+                            mataKuliahHelp.textContent = 'Mahasiswa ini belum enroll mata kuliah. Enroll dulu di menu "MK Saya"';
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        mataKuliahSelect.innerHTML = '<option value="">-- Error memuat data --</option>';
+                        mataKuliahSelect.disabled = true;
+                        mataKuliahHelp.textContent = 'Terjadi kesalahan saat memuat data';
+                    });
+            });
+        });
+    </script>
+</section>
+</html>
+

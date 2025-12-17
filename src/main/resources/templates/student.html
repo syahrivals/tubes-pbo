@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="layout :: layout(~{::section})">
+<section>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+            <h5 class="mb-0">Halo, <span th:text="${nama}">Mahasiswa</span> 👋</h5>
+            <p class="text-muted small mb-0">NIM: <span th:text="${nim}"></span> | Username: <span th:text="${username}"></span></p>
+        </div>
+        <div>
+            <a class="btn btn-outline-primary btn-sm me-2" href="/student/profile">⚙️ Profile</a>
+            <a class="btn btn-outline-secondary btn-sm" href="/logout">Logout</a>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row g-3 mb-3">
+        <div class="col-md-3">
+            <div class="card shadow-soft border-0 h-100">
+                <div class="card-body text-center">
+                    <div class="text-primary mb-2" style="font-size: 2rem;">📚</div>
+                    <h3 class="mb-0" th:text="${totalMataKuliah}">0</h3>
+                    <p class="text-muted small mb-0">Mata Kuliah</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card shadow-soft border-0 h-100" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                <div class="card-body text-center">
+                    <div class="mb-2" style="font-size: 2rem;">📊</div>
+                    <h3 class="mb-0" th:text="${#numbers.formatDecimal(rata,1,2)}">0</h3>
+                    <p class="mb-0 small">Rata-rata Keseluruhan</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card shadow-soft border-0 h-100" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white;">
+                <div class="card-body text-center">
+                    <div class="mb-2" style="font-size: 2rem;">⬆️</div>
+                    <h3 class="mb-0" th:text="${#numbers.formatDecimal(highest,1,2)}">0</h3>
+                    <p class="mb-0 small">Nilai Tertinggi</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card shadow-soft border-0 h-100" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); color: white;">
+                <div class="card-body text-center">
+                    <div class="mb-2" style="font-size: 2rem;">⬇️</div>
+                    <h3 class="mb-0" th:text="${#numbers.formatDecimal(lowest,1,2)}">0</h3>
+                    <p class="mb-0 small">Nilai Terendah</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Grade Distribution -->
+    <div class="card shadow-soft mb-3" th:if="${!#lists.isEmpty(nilaiList)}">
+        <div class="card-body">
+            <h6 class="card-title mb-3">Distribusi Grade</h6>
+            <div class="row g-2">
+                <div class="col" th:each="grade : ${'A,B,C,D,E'.split(',')}">
+                    <div class="text-center p-2 border rounded">
+                        <div class="fw-bold" th:text="${grade}">A</div>
+                        <div class="text-muted" th:text="${gradeDistribution.get(grade) != null ? gradeDistribution.get(grade) : 0}">0</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Nilai List -->
+    <div class="card shadow-soft">
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div>
+                    <h6 class="card-title mb-0">Nilai Per Mata Kuliah</h6>
+                    <p class="text-muted small mb-0">Detail nilai tugas, UTS, dan UAS</p>
+                </div>
+                <a href="/student/export-pdf" class="btn btn-success btn-sm">📄 Export PDF</a>
+            </div>
+
+            <div th:if="${#lists.isEmpty(nilaiList)}" class="alert alert-light border text-center text-muted mb-0">
+                Belum ada nilai.
+            </div>
+
+            <div class="row g-3">
+                <div class="col-md-6 col-lg-4" th:each="n : ${nilaiList}">
+                    <div class="card border h-100" style="transition: transform 0.2s;">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h6 class="mb-0" th:text="${n.mataKuliah}">Mata Kuliah</h6>
+                                <span class="badge" 
+                                      th:classappend="${n.grade == 'A' ? 'bg-success' : (n.grade == 'B' ? 'bg-primary' : (n.grade == 'C' ? 'bg-info' : (n.grade == 'D' ? 'bg-warning' : 'bg-danger')))}"
+                                      th:text="${n.grade}">A</span>
+                            </div>
+                            <div class="row g-2 mb-3">
+                                <div class="col-4">
+                                    <div class="text-center p-2 bg-light rounded">
+                                        <div class="small text-muted">Tugas</div>
+                                        <div class="fw-bold" th:text="${n.tugas}">0</div>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="text-center p-2 bg-light rounded">
+                                        <div class="small text-muted">UTS</div>
+                                        <div class="fw-bold" th:text="${n.uts}">0</div>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="text-center p-2 bg-light rounded">
+                                        <div class="small text-muted">UAS</div>
+                                        <div class="fw-bold" th:text="${n.uas}">0</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="text-center p-2 bg-primary bg-opacity-10 rounded">
+                                <div class="small text-muted">Rata-rata</div>
+                                <div class="fw-bold fs-5" th:text="${#numbers.formatDecimal(n.hitungRataRata(),1,2)}">0</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+    </style>
+</section>
+</html>
+

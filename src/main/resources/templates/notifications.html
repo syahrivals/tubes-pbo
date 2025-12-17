@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="layout :: layout(~{::section})">
+<section>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+            <h5 class="mb-0">🔔 Notifikasi</h5>
+            <p class="text-muted small mb-0">Pemberitahuan dan update terbaru</p>
+        </div>
+        <div>
+            <form method="post" action="/notifications/read-all" class="d-inline">
+                <button type="submit" class="btn btn-sm btn-outline-primary me-2">✓ Tandai Semua Dibaca</button>
+            </form>
+            <a href="/" class="btn btn-outline-secondary btn-sm">← Kembali</a>
+        </div>
+    </div>
+
+    <div class="row g-3">
+        <div class="col-12" th:each="notif : ${notifications}">
+            <div class="card shadow-soft" th:classappend="${!notif.dibaca ? 'border-primary' : ''}">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div class="flex-grow-1">
+                            <div class="d-flex align-items-center gap-2 mb-2">
+                                <span class="badge"
+                                      th:classappend="${notif.tipe == 'SUCCESS' ? 'bg-success' : (notif.tipe == 'WARNING' ? 'bg-warning' : (notif.tipe == 'ERROR' ? 'bg-danger' : 'bg-info'))}"
+                                      th:text="${notif.tipe}">INFO</span>
+                                <span th:if="${!notif.dibaca}" class="badge bg-primary">Baru</span>
+                                <span class="text-muted small"
+                                      th:text="${#temporals.format(notif.createdAt, 'dd MMM yyyy HH:mm')}">Date</span>
+                            </div>
+                            <p class="mb-0" th:text="${notif.pesan}">Pesan notifikasi</p>
+                        </div>
+                        <form th:if="${!notif.dibaca}"
+                              th:action="@{/notifications/{id}/read(id=${notif.id})}"
+                              method="post" class="ms-2">
+                            <button type="submit" class="btn btn-sm btn-outline-secondary">✓</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12" th:if="${#lists.isEmpty(notifications)}">
+            <div class="alert alert-light text-center">
+                Tidak ada notifikasi.
+            </div>
+        </div>
+    </div>
+</section>
+</html>

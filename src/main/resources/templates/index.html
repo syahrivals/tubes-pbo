@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="layout :: layout(~{::section})">
+<section>
+    <div class="row g-3">
+        <div class="col-md-4">
+            <div class="card shadow-soft h-100">
+                <div class="card-body text-center">
+                    <div class="mb-3" style="font-size: 3rem;">👥</div>
+                    <h5 class="card-title">Total Mahasiswa</h5>
+                    <h2 class="text-primary mb-0" th:text="${totalMahasiswa}">0</h2>
+                    <a href="/mahasiswa" class="btn btn-outline-primary btn-sm mt-3">Lihat Semua</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card shadow-soft h-100">
+                <div class="card-body text-center">
+                    <div class="mb-3" style="font-size: 3rem;">📚</div>
+                    <h5 class="card-title">Total Mata Kuliah</h5>
+                    <h2 class="text-success mb-0" th:text="${totalMataKuliah}">0</h2>
+                    <a href="/courses" class="btn btn-outline-success btn-sm mt-3">Kelola MK</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card shadow-soft h-100">
+                <div class="card-body text-center">
+                    <div class="mb-3" style="font-size: 3rem;">📝</div>
+                    <h5 class="card-title">Total Nilai</h5>
+                    <h2 class="text-info mb-0" th:text="${totalNilai}">0</h2>
+                    <a href="/nilai" class="btn btn-outline-info btn-sm mt-3">Kelola Nilai</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card shadow-soft h-100">
+                <div class="card-body text-center">
+                    <div class="mb-3" style="font-size: 3rem;">🔔</div>
+                    <h5 class="card-title">Notifikasi</h5>
+                    <h2 class="text-warning mb-0" th:text="${unreadNotifications}">0</h2>
+                    <a href="/notifications" class="btn btn-outline-warning btn-sm mt-3">Lihat Notifikasi</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Analytics Charts -->
+    <div class="row g-3 mt-3">
+        <div class="col-md-6">
+            <div class="card shadow-soft">
+                <div class="card-body">
+                    <h6 class="card-title mb-3">📊 Distribusi Grade</h6>
+                    <div style="height: 250px; position: relative;">
+                        <canvas id="gradeChart" style="max-height: 100%;"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card shadow-soft">
+                <div class="card-body">
+                    <h6 class="card-title mb-3">📈 Statistik Nilai</h6>
+                    <div style="height: 250px; position: relative;">
+                        <canvas id="statisticsChart" style="max-height: 100%;"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <div>
+                <h5 class="mb-0">Data Nilai Terbaru</h5>
+                <p class="text-muted small mb-0">Klik Report untuk unduh ringkasan per mahasiswa.</p>
+            </div>
+            <a class="btn btn-primary btn-sm" href="/mahasiswa">Kelola Mahasiswa</a>
+        </div>
+
+        <div class="row g-3" th:if="${#lists.isEmpty(mahasiswaList)}">
+            <div class="col-12">
+                <div class="alert alert-light border text-center text-muted mb-0">Belum ada data</div>
+            </div>
+        </div>
+
+        <div class="row g-3" th:each="m : ${mahasiswaList}">
+            <div class="col-12">
+                <div class="card shadow-soft">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <div>
+                                <h6 class="mb-0" th:text="${m.nama}"></h6>
+                                <span class="text-muted small" th:text="${m.nim}"></span>
+                            </div>
+                            <div class="d-flex gap-2">
+                                <a class="btn btn-outline-secondary btn-xs" th:href="@{'/report/' + ${m.nim}}">Report</a>
+                            </div>
+                        </div>
+
+                        <div th:if="${#lists.isEmpty(nilaiMap[m.nim])}" class="text-muted small">
+                            Belum ada nilai.
+                        </div>
+
+                        <div class="row g-2" th:each="n : ${nilaiMap[m.nim]}">
+                            <div class="col-md-6 col-lg-4">
+                                <div class="border rounded p-3 h-100 d-flex flex-column">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <span class="fw-semibold" th:text="${n.mataKuliah}"></span>
+                                        <span class="badge bg-primary-subtle text-primary" th:text="${n.grade}"></span>
+                                    </div>
+                                    <div class="small text-muted mb-2">
+                                        Tugas: <span th:text="${n.tugas}"></span> |
+                                        UTS: <span th:text="${n.uts}"></span> |
+                                        UAS: <span th:text="${n.uas}"></span>
+                                    </div>
+                                    <div class="d-flex justify-content-between align-items-center mt-auto">
+                                        <span class="fw-semibold">Rata: <span th:text="${#numbers.formatDecimal(n.hitungRataRata(),1,2)}"></span></span>
+                                        <div class="d-flex gap-2">
+                                            <form th:action="@{'/nilai/' + ${n.id} + '/delete'}" method="post" class="m-0">
+                                                <button class="btn btn-danger btn-xs" type="submit">Hapus</button>
+                                            </form>
+                                            <a class="btn btn-outline-secondary btn-xs" th:href="@{'/report/' + ${m.nim}}">Report</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script th:inline="javascript">
+        // Prepare data for charts
+        const gradeData = /*[[${gradeDistribution}]]*/ {};
+        const statisticsData = {
+            totalMahasiswa: /*[[${totalMahasiswa}]]*/ 0,
+            totalMataKuliah: /*[[${totalMataKuliah}]]*/ 0,
+            totalNilai: /*[[${totalNilai}]]*/ 0
+        };
+
+        // Grade Distribution Chart
+        const gradeCtx = document.getElementById('gradeChart');
+        if (gradeCtx) {
+            new Chart(gradeCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['A', 'B', 'C', 'D', 'E'],
+                    datasets: [{
+                        data: [
+                            gradeData['A'] || 0,
+                            gradeData['B'] || 0,
+                            gradeData['C'] || 0,
+                            gradeData['D'] || 0,
+                            gradeData['E'] || 0
+                        ],
+                        backgroundColor: [
+                            '#28a745',
+                            '#007bff',
+                            '#17a2b8',
+                            '#ffc107',
+                            '#dc3545'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 20,
+                                usePointStyle: true
+                            }
+                        }
+                    },
+                    layout: {
+                        padding: {
+                            top: 20,
+                            bottom: 20
+                        }
+                    }
+                }
+            });
+        }
+
+        // Statistics Chart
+        const statCtx = document.getElementById('statisticsChart');
+        if (statCtx) {
+            new Chart(statCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Mahasiswa', 'Mata Kuliah', 'Nilai'],
+                    datasets: [{
+                        label: 'Total',
+                        data: [
+                            statisticsData.totalMahasiswa,
+                            statisticsData.totalMataKuliah,
+                            statisticsData.totalNilai
+                        ],
+                        backgroundColor: ['#007bff', '#28a745', '#17a2b8']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                display: true,
+                                color: 'rgba(0,0,0,0.05)'
+                            },
+                            ticks: {
+                                precision: 0
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    layout: {
+                        padding: {
+                            top: 20,
+                            bottom: 20
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+</section>
+</html>
+

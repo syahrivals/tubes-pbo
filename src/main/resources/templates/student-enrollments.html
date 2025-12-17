@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="layout :: layout(~{::section})">
+<section>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+            <h5 class="mb-0">📝 Mata Kuliah Saya</h5>
+            <p class="text-muted small mb-0">Total SKS yang diambil: <strong th:text="${totalSks}">0</strong></p>
+        </div>
+        <a href="/student/courses" class="btn btn-primary btn-sm">➕ Tambah Mata Kuliah</a>
+    </div>
+
+    <div th:if="${success}" class="alert alert-success alert-dismissible fade show">
+        <span th:text="${success}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    <div th:if="${error}" class="alert alert-danger alert-dismissible fade show">
+        <span th:text="${error}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
+    <div class="row g-3">
+        <div class="col-md-6 col-lg-4" th:each="e : ${enrollments}">
+            <div class="card shadow-soft h-100">
+                <div class="card-body d-flex flex-column">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <span class="badge bg-primary" th:text="${e.kodeMataKuliah}">Kode</span>
+                        <span class="badge" 
+                              th:classappend="${e.status == 'ENROLLED' ? 'bg-success' : (e.status == 'COMPLETED' ? 'bg-info' : 'bg-secondary')}"
+                              th:text="${e.status}">Status</span>
+                    </div>
+                    <h6 class="mb-2" th:text="${e.namaMataKuliah}">Nama Mata Kuliah</h6>
+                    <p class="small text-muted mb-3">
+                        <strong>SKS:</strong> <span th:text="${e.sks}">3</span><br>
+                        <strong>Terdaftar:</strong> <span th:text="${#temporals.format(e.enrolledAt, 'dd MMM yyyy')}">Date</span>
+                    </p>
+                    
+                    <div class="mt-auto">
+                        <form th:action="@{/student/enrollments/{id}/drop(id=${e.id})}" 
+                              method="post" th:if="${e.status == 'ENROLLED'}"
+                              onsubmit="return confirm('Yakin drop mata kuliah ini?')">
+                            <button type="submit" class="btn btn-outline-danger btn-sm w-100">
+                                🗑️ Drop Mata Kuliah
+                            </button>
+                        </form>
+                        <div th:if="${e.status == 'DROPPED'}" class="small text-muted text-center">
+                            Mata kuliah sudah di-drop
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-12" th:if="${#lists.isEmpty(enrollments)}">
+            <div class="alert alert-light text-center">
+                Belum ada mata kuliah yang diambil.<br>
+                <a href="/student/courses" class="btn btn-primary btn-sm mt-2">📚 Lihat Katalog</a>
+            </div>
+        </div>
+    </div>
+</section>
+</html>
+

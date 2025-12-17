@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="layout :: layout(~{::section})">
+<section>
+    <div class="card shadow-soft">
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div>
+                    <h5 class="card-title mb-0">Permintaan Enrollment</h5>
+                    <p class="text-muted small mb-0">Kelola permintaan pendaftaran mata kuliah dari mahasiswa</p>
+                </div>
+                <a class="btn btn-outline-secondary btn-sm" href="/">Dashboard</a>
+            </div>
+
+            <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
+                <span th:text="${success}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                <span th:text="${error}"></span>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+
+            <div th:if="${#lists.isEmpty(pendingEnrollments)}" class="alert alert-light border text-center text-muted mb-0">
+                Tidak ada permintaan enrollment pending
+            </div>
+
+            <div class="row g-3" th:each="enrollment : ${pendingEnrollments}">
+                <div class="col-12">
+                    <div class="card border-warning">
+                        <div class="card-body">
+                            <div class="row align-items-center">
+                                <div class="col-md-8">
+                                    <h6 class="mb-1">
+                                        <span th:text="${enrollment.namaMahasiswa}"></span>
+                                        <small class="text-muted">(NIM: <span th:text="${enrollment.nim}"></span>)</small>
+                                    </h6>
+                                    <p class="mb-1">
+                                        Mata Kuliah: <strong th:text="${enrollment.namaMataKuliah}"></strong>
+                                        <span class="badge bg-secondary" th:text="${enrollment.kodeMataKuliah}"></span>
+                                        <span class="badge bg-info" th:text="${enrollment.sks + ' SKS'}"></span>
+                                    </p>
+                                    <small class="text-muted">
+                                        Requested: <span th:text="${#temporals.format(enrollment.enrolledAt, 'dd MMM yyyy HH:mm')}"></span>
+                                    </small>
+                                </div>
+                                <div class="col-md-4 text-end">
+                                    <form th:action="@{'/enrollments/' + ${enrollment.id} + '/approve'}" method="post" class="d-inline">
+                                        <button type="submit" class="btn btn-success btn-sm me-2">
+                                            ✅ Setujui
+                                        </button>
+                                    </form>
+                                    <form th:action="@{'/enrollments/' + ${enrollment.id} + '/reject'}" method="post" class="d-inline"
+                                          onsubmit="return confirm('Yakin tolak permintaan ini?')">
+                                        <button type="submit" class="btn btn-danger btn-sm">
+                                            ❌ Tolak
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+</html>

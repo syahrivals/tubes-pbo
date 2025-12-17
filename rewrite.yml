@@ -1,0 +1,7 @@
+---
+type: specs.openrewrite.org/v1beta/recipe
+name: com.example.UpgradeRecipes
+displayName: Upgrade recipes
+recipeList:
+  - org.openrewrite.java.spring.security6.UpgradeSpringSecurity_6_0
+  - org.openrewrite.java.migrate.UpgradeToJava21

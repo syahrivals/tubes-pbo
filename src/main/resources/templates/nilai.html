@@ -1,114 +1,181 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" th:replace="layout :: layout(~{::section})">
+<html xmlns:th="http://www.thymeleaf.org" th:replace="layout :: layout(~{::section})" lang="id">
 <section>
-    <div class="card shadow-soft">
-        <div class="card-body">
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <div>
-                    <h5 class="card-title mb-0">Nilai</h5>
-                    <p class="text-muted small mb-0">Kelola nilai per mahasiswa</p>
-                </div>
-                <a class="btn btn-outline-secondary btn-sm" href="/">Dashboard</a>
+    <!-- Page Header -->
+    <div class="page-header animate-fade-in mb-4">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <h4 class="page-title mb-1">
+                    <i class="bi bi-clipboard-data-fill text-primary me-2"></i>
+                    Kelola Nilai Mahasiswa
+                </h4>
+                <p class="text-muted mb-0">Input dan kelola nilai per mahasiswa berdasarkan mata kuliah yang dienroll
+                </p>
             </div>
+            <div class="col-lg-4 text-lg-end mt-3 mt-lg-0">
+                <a class="btn btn-outline-secondary" href="/">
+                    <i class="bi bi-arrow-left me-1"></i>Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
 
-            <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
-                <span th:text="${success}"></span>
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-            <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
-                <span th:text="${error}"></span>
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-            <form method="post" action="/nilai" class="row g-2 mb-3 p-3 bg-light rounded">
+    <!-- Alerts -->
+    <div th:if="${success}" class="alert alert-success alert-dismissible fade show animate-fade-in mb-4">
+        <i class="bi bi-check-circle-fill me-2"></i>
+        <span th:text="${success}">Success</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    <div th:if="${error}" class="alert alert-danger alert-dismissible fade show animate-fade-in mb-4">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+        <span th:text="${error}">Error</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
+    <!-- Add Grade Form -->
+    <div class="card animate-fade-in mb-4">
+        <div class="card-body">
+            <h5 class="card-title mb-4">
+                <i class="bi bi-plus-circle text-success me-2"></i>
+                Tambah Nilai Baru
+            </h5>
+            <form method="post" action="/nilai" class="row g-3">
                 <div class="col-md-3">
-                    <label class="form-label fw-semibold" for="nimNilai">Mahasiswa *</label>
+                    <label class="form-label fw-semibold">
+                        <i class="bi bi-person me-1"></i>Mahasiswa *
+                    </label>
                     <select class="form-select" id="nimNilai" name="nim" required>
                         <option value="">-- Pilih Mahasiswa --</option>
-                        <option th:each="m : ${mahasiswaList}" 
-                                th:value="${m.nim}" 
-                                th:text="${m.nim + ' - ' + m.nama}">
+                        <option th:each="m : ${mahasiswaList}" th:value="${m.nim}" th:text="${m.nim + ' - ' + m.nama}">
                             NIM - Nama
                         </option>
                     </select>
                 </div>
                 <div class="col-md-3">
-                    <label class="form-label fw-semibold" for="mataKuliah">Mata Kuliah *</label>
+                    <label class="form-label fw-semibold">
+                        <i class="bi bi-book me-1"></i>Mata Kuliah *
+                    </label>
                     <select class="form-select" id="mataKuliah" name="mataKuliah" required disabled>
                         <option value="">-- Pilih Mahasiswa Dulu --</option>
                     </select>
                     <div class="form-text" id="mataKuliahHelp">
-                        Pilih mahasiswa terlebih dahulu
+                        <i class="bi bi-info-circle me-1"></i>Pilih mahasiswa terlebih dahulu
                     </div>
                 </div>
                 <div class="col-md-2">
-                    <label class="form-label fw-semibold" for="tugas">Tugas *</label>
-                    <input class="form-control" id="tugas" name="tugas" type="number" 
-                           step="0.01" min="0" max="100" placeholder="0-100" required>
+                    <label class="form-label fw-semibold">
+                        <i class="bi bi-clipboard-check me-1"></i>Tugas *
+                    </label>
+                    <input class="form-control" id="tugas" name="tugas" type="number" step="0.01" min="0" max="100"
+                        placeholder="0-100" required>
                 </div>
                 <div class="col-md-2">
-                    <label class="form-label fw-semibold" for="uts">UTS *</label>
-                    <input class="form-control" id="uts" name="uts" type="number" 
-                           step="0.01" min="0" max="100" placeholder="0-100" required>
+                    <label class="form-label fw-semibold">
+                        <i class="bi bi-file-text me-1"></i>UTS *
+                    </label>
+                    <input class="form-control" id="uts" name="uts" type="number" step="0.01" min="0" max="100"
+                        placeholder="0-100" required>
                 </div>
                 <div class="col-md-2">
-                    <label class="form-label fw-semibold" for="uas">UAS *</label>
-                    <input class="form-control" id="uas" name="uas" type="number" 
-                           step="0.01" min="0" max="100" placeholder="0-100" required>
+                    <label class="form-label fw-semibold">
+                        <i class="bi bi-file-earmark-text me-1"></i>UAS *
+                    </label>
+                    <input class="form-control" id="uas" name="uas" type="number" step="0.01" min="0" max="100"
+                        placeholder="0-100" required>
                 </div>
-                <div class="col-12 d-grid mt-3">
-                    <button type="submit" class="btn btn-success">
-                        ➕ Tambah Nilai
+                <div class="col-12">
+                    <button type="submit" class="btn btn-success w-100">
+                        <i class="bi bi-plus-lg me-2"></i>Tambah Nilai
                     </button>
                 </div>
             </form>
-            <div class="row g-3" th:if="${#lists.isEmpty(mahasiswaList)}">
-                <div class="col-12">
-                    <div class="alert alert-light border text-center text-muted mb-0">Belum ada data</div>
-                </div>
+        </div>
+    </div>
+
+    <!-- Grades List by Student -->
+    <div class="card animate-fade-in">
+        <div class="card-body">
+            <h5 class="card-title mb-4">
+                <i class="bi bi-list-columns text-info me-2"></i>
+                Daftar Nilai Per Mahasiswa
+            </h5>
+
+            <!-- Empty State -->
+            <div th:if="${#lists.isEmpty(mahasiswaList)}" class="empty-state">
+                <div class="empty-state-icon">📋</div>
+                <h6 class="empty-state-title">Belum Ada Data</h6>
+                <p class="empty-state-text">Tambahkan mahasiswa terlebih dahulu untuk mulai menginput nilai.</p>
+                <a href="/mahasiswa" class="btn btn-primary btn-sm mt-3">
+                    <i class="bi bi-person-plus me-1"></i>Tambah Mahasiswa
+                </a>
             </div>
 
-            <div class="row g-3" th:each="m : ${mahasiswaList}">
-                <div class="col-12">
-                    <div class="card shadow-sm">
-                        <div class="card-body">
-                            <div class="d-flex justify-content-between align-items-center mb-2">
-                                <div>
-                                    <h6 class="mb-0" th:text="${m.nama}"></h6>
-                                    <span class="text-muted small" th:text="${m.nim}"></span>
+            <!-- Student Cards -->
+            <div class="student-list" th:unless="${#lists.isEmpty(mahasiswaList)}">
+                <div class="student-nilai-card mb-4" th:each="m : ${mahasiswaList}">
+                    <div class="student-header">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="student-avatar" th:text="${m.nama.substring(0, 1).toUpperCase()}">B</div>
+                            <div>
+                                <h6 class="mb-0 fw-bold" th:text="${m.nama}">Nama</h6>
+                                <span class="text-muted small">
+                                    <i class="bi bi-hash"></i><span th:text="${m.nim}">NIM</span>
+                                </span>
+                            </div>
+                        </div>
+                        <a class="btn btn-outline-primary btn-sm" th:href="@{'/report/' + ${m.nim}}">
+                            <i class="bi bi-file-earmark-pdf me-1"></i>Report
+                        </a>
+                    </div>
+
+                    <div th:if="${#lists.isEmpty(nilaiMap[m.nim])}" class="text-center py-4">
+                        <p class="text-muted mb-0">
+                            <i class="bi bi-inbox me-2"></i>Belum ada nilai
+                        </p>
+                    </div>
+
+                    <div class="row g-3" th:unless="${#lists.isEmpty(nilaiMap[m.nim])}">
+                        <div class="col-md-6 col-lg-4" th:each="n : ${nilaiMap[m.nim]}">
+                            <div class="nilai-card">
+                                <div class="nilai-header">
+                                    <span class="subject-name" th:text="${n.mataKuliah}">MK</span>
+                                    <span class="grade-badge" th:classappend="${'grade-' + n.grade}"
+                                        th:text="${n.grade}">A</span>
                                 </div>
-                                <a class="btn btn-outline-secondary btn-xs" th:href="@{'/report/' + ${m.nim}}">Report</a>
-                            </div>
-
-                            <div th:if="${#lists.isEmpty(nilaiMap[m.nim])}" class="text-muted small">
-                                Belum ada nilai.
-                            </div>
-
-                            <div class="row g-2" th:each="n : ${nilaiMap[m.nim]}">
-                                <div class="col-md-6 col-lg-4">
-                                    <div class="border rounded p-3 h-100 d-flex flex-column">
-                                        <div class="d-flex justify-content-between align-items-center mb-2">
-                                            <span class="fw-semibold" th:text="${n.mataKuliah}"></span>
-                                            <span class="badge bg-primary-subtle text-primary" th:text="${n.grade}"></span>
-                                        </div>
-                                        <div class="small text-muted mb-2">
-                                            Tugas: <span th:text="${n.tugas}"></span> |
-                                            UTS: <span th:text="${n.uts}"></span> |
-                                            UAS: <span th:text="${n.uas}"></span>
-                                        </div>
-                                        <div class="d-flex justify-content-between align-items-center mt-auto">
-                                            <span class="fw-semibold">Rata: <span th:text="${#numbers.formatDecimal(n.hitungRataRata(),1,2)}"></span></span>
-                                            <div class="d-flex gap-2">
-                                                <a class="btn btn-primary btn-xs" th:href="@{'/nilai/' + ${n.id} + '/edit'}">✏️ Edit</a>
-                                                <form th:action="@{'/nilai/' + ${n.id} + '/delete'}" method="post" class="m-0"
-                                                      onsubmit="return confirm('Yakin hapus nilai ini?')">
-                                                    <button class="btn btn-danger btn-xs" type="submit">🗑️ Hapus</button>
-                                                </form>
-                                            </div>
-                                        </div>
+                                <div class="nilai-scores">
+                                    <div class="score-item">
+                                        <span class="label">Tugas</span>
+                                        <span class="value" th:text="${n.tugas}">0</span>
+                                    </div>
+                                    <div class="score-item">
+                                        <span class="label">UTS</span>
+                                        <span class="value" th:text="${n.uts}">0</span>
+                                    </div>
+                                    <div class="score-item">
+                                        <span class="label">UAS</span>
+                                        <span class="value" th:text="${n.uas}">0</span>
+                                    </div>
+                                </div>
+                                <div class="nilai-footer">
+                                    <div class="average">
+                                        <span class="avg-label">Rata-rata</span>
+                                        <span class="avg-value"
+                                            th:text="${#numbers.formatDecimal(n.hitungRataRata(),1,2)}">0.00</span>
+                                    </div>
+                                    <div class="actions">
+                                        <a class="btn btn-xs btn-outline-primary"
+                                            th:href="@{'/nilai/' + ${n.id} + '/edit'}">
+                                            <i class="bi bi-pencil"></i>
+                                        </a>
+                                        <form th:action="@{'/nilai/' + ${n.id} + '/delete'}" method="post"
+                                            class="d-inline" onsubmit="return confirm('Yakin hapus nilai ini?')">
+                                            <button class="btn btn-xs btn-outline-danger" type="submit">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </form>
                                     </div>
                                 </div>
                             </div>
-
                         </div>
                     </div>
                 </div>
@@ -116,38 +183,191 @@
         </div>
     </div>
 
+    <!-- Styles -->
+    <style>
+        .page-header {
+            padding: 1.5rem;
+            background: var(--surface);
+            border-radius: var(--radius-xl);
+            border: 1px solid var(--glass-border);
+        }
+
+        .page-title {
+            font-family: var(--font-display);
+            font-weight: 800;
+            color: var(--text-primary);
+        }
+
+        .student-nilai-card {
+            background: var(--surface);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-xl);
+            padding: 1.5rem;
+        }
+
+        .student-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .student-avatar {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-primary);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.25rem;
+            color: white;
+        }
+
+        .nilai-card {
+            background: rgba(99, 102, 241, 0.05);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-lg);
+            padding: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .nilai-card:hover {
+            border-color: var(--primary-500);
+            transform: translateY(-2px);
+        }
+
+        .nilai-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .subject-name {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .grade-badge {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            font-weight: 700;
+        }
+
+        .grade-badge.grade-A {
+            background: linear-gradient(135deg, #11998e, #38ef7d);
+            color: white;
+        }
+
+        .grade-badge.grade-B {
+            background: var(--gradient-primary);
+            color: white;
+        }
+
+        .grade-badge.grade-C {
+            background: linear-gradient(135deg, #00d2ff, #3a7bd5);
+            color: white;
+        }
+
+        .grade-badge.grade-D {
+            background: linear-gradient(135deg, #fa709a, #fee140);
+            color: #333;
+        }
+
+        .grade-badge.grade-E {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+        }
+
+        .nilai-scores {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .score-item {
+            text-align: center;
+            padding: 0.5rem;
+            background: var(--surface);
+            border-radius: 8px;
+        }
+
+        .score-item .label {
+            display: block;
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+
+        .score-item .value {
+            display: block;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .nilai-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 0.75rem;
+            border-top: 1px solid var(--glass-border);
+        }
+
+        .average .avg-label {
+            display: block;
+            font-size: 0.65rem;
+            color: var(--text-muted);
+        }
+
+        .average .avg-value {
+            font-weight: 800;
+            font-size: 1.1rem;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+    </style>
+
+    <!-- Script for dynamic mata kuliah dropdown -->
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const nimSelect = document.getElementById('nimNilai');
             const mataKuliahSelect = document.getElementById('mataKuliah');
             const mataKuliahHelp = document.getElementById('mataKuliahHelp');
 
-            nimSelect.addEventListener('change', function() {
+            nimSelect.addEventListener('change', function () {
                 const selectedNim = this.value;
-                
-                // Reset dropdown mata kuliah
+
                 mataKuliahSelect.innerHTML = '<option value="">-- Memuat... --</option>';
                 mataKuliahSelect.disabled = true;
-                mataKuliahHelp.textContent = 'Memuat mata kuliah...';
+                mataKuliahHelp.innerHTML = '<i class="bi bi-hourglass-split me-1"></i>Memuat mata kuliah...';
 
                 if (!selectedNim) {
                     mataKuliahSelect.innerHTML = '<option value="">-- Pilih Mahasiswa Dulu --</option>';
                     mataKuliahSelect.disabled = true;
-                    mataKuliahHelp.textContent = 'Pilih mahasiswa terlebih dahulu';
+                    mataKuliahHelp.innerHTML = '<i class="bi bi-info-circle me-1"></i>Pilih mahasiswa terlebih dahulu';
                     return;
                 }
 
-                // Fetch enrollment data
                 fetch('/api/enrollments/' + selectedNim)
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error('Network response was not ok');
-                        }
-                        return response.json();
-                    })
+                    .then(response => response.json())
                     .then(data => {
                         mataKuliahSelect.innerHTML = '<option value="">-- Pilih Mata Kuliah --</option>';
-                        
+
                         if (data.success && data.courses && data.courses.length > 0) {
                             data.courses.forEach(course => {
                                 const option = document.createElement('option');
@@ -156,22 +376,22 @@
                                 mataKuliahSelect.appendChild(option);
                             });
                             mataKuliahSelect.disabled = false;
-                            mataKuliahHelp.textContent = data.courses.length + ' mata kuliah tersedia';
+                            mataKuliahHelp.innerHTML = '<i class="bi bi-check-circle text-success me-1"></i>' + data.courses.length + ' mata kuliah tersedia';
                         } else {
                             mataKuliahSelect.innerHTML = '<option value="">-- Tidak ada mata kuliah --</option>';
                             mataKuliahSelect.disabled = true;
-                            mataKuliahHelp.textContent = 'Mahasiswa ini belum enroll mata kuliah. Enroll dulu di menu "MK Saya"';
+                            mataKuliahHelp.innerHTML = '<i class="bi bi-exclamation-circle text-warning me-1"></i>Mahasiswa ini belum enroll mata kuliah';
                         }
                     })
                     .catch(error => {
                         console.error('Error:', error);
                         mataKuliahSelect.innerHTML = '<option value="">-- Error memuat data --</option>';
                         mataKuliahSelect.disabled = true;
-                        mataKuliahHelp.textContent = 'Terjadi kesalahan saat memuat data';
+                        mataKuliahHelp.innerHTML = '<i class="bi bi-exclamation-triangle text-danger me-1"></i>Terjadi kesalahan';
                     });
             });
         });
     </script>
 </section>
-</html>
 
+</html>

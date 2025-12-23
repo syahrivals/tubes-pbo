@@ -1,17 +1,15 @@
 package com.example.tubes_pbo;
 
-import javax.servlet.http.HttpSession;
-
+import com.example.tubes_pbo.model.Mahasiswa;
+import com.example.tubes_pbo.repository.MahasiswaRepository;
+import com.example.tubes_pbo.service.PasswordService;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
-import com.example.tubes_pbo.model.Mahasiswa;
-import com.example.tubes_pbo.repository.MahasiswaRepository;
-import com.example.tubes_pbo.service.PasswordService;
 
 @Controller
 public class RegisterController {

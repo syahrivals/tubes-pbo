@@ -1,59 +1,145 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" th:replace="layout :: layout(~{::section})">
+<html xmlns:th="http://www.thymeleaf.org" th:replace="layout :: layout(~{::section})" lang="id">
 <section>
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <div>
-            <h5 class="mb-0">📚 Katalog Mata Kuliah</h5>
-            <p class="text-muted small mb-0">Pilih mata kuliah yang ingin Anda ambil</p>
+    <!-- Page Header -->
+    <div class="page-header animate-fade-in mb-4">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <h4 class="page-title mb-1">
+                    <i class="bi bi-journal-bookmark-fill text-primary me-2"></i>
+                    Katalog Mata Kuliah
+                </h4>
+                <p class="text-muted mb-0">Daftar mata kuliah yang tersedia untuk di-enroll</p>
+            </div>
+            <div class="col-lg-4 text-lg-end mt-3 mt-lg-0">
+                <a class="btn btn-outline-primary btn-sm" href="/student/enrollments">
+                    <i class="bi bi-bookmark-check me-1"></i>Lihat MK Saya
+                </a>
+            </div>
         </div>
-        <a href="/student/enrollments" class="btn btn-outline-primary btn-sm">📝 MK Saya</a>
     </div>
 
-    <div th:if="${success}" class="alert alert-success alert-dismissible fade show">
-        <span th:text="${success}"></span>
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    </div>
-    <div th:if="${error}" class="alert alert-danger alert-dismissible fade show">
-        <span th:text="${error}"></span>
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    </div>
-
-    <div class="row g-3">
-        <div class="col-md-6 col-lg-4" th:each="course : ${courses}">
-            <div class="card shadow-soft h-100">
-                <div class="card-body d-flex flex-column">
-                    <div class="d-flex justify-content-between align-items-start mb-2">
-                        <span class="badge bg-primary" th:text="${course.kode}">Kode</span>
-                        <span class="badge bg-info" th:text="${course.sks} + ' SKS'">3 SKS</span>
-                    </div>
-                    <h6 class="mb-2" th:text="${course.nama}">Nama Mata Kuliah</h6>
-                    <p class="small text-muted mb-3">
-                        <strong>👨‍🏫 Dosen:</strong> <span th:text="${course.namaDosen}">Nama Dosen</span>
-                    </p>
-                    
-                    <div class="mt-auto">
-                        <form method="post" action="/student/enroll" 
-                              th:if="${!enrolledIds.contains(course.id)}">
-                            <input type="hidden" name="courseId" th:value="${course.id}">
-                            <button type="submit" class="btn btn-success w-100">
-                                ✅ Daftar Mata Kuliah
-                            </button>
-                        </form>
-                        <div th:if="${enrolledIds.contains(course.id)}" 
-                             class="alert alert-success mb-0 text-center py-2">
-                            ✅ Sudah Terdaftar
-                        </div>
-                    </div>
+    <!-- Course Grid -->
+    <div class="row g-4">
+        <div class="col-md-6 col-lg-4 animate-fade-in" th:each="course, iterStat : ${courses}"
+            th:style="${'animation-delay: ' + (iterStat.index * 0.05) + 's'}">
+            <div class="course-card-student">
+                <div class="course-icon">
+                    <i class="bi bi-book"></i>
                 </div>
+                <div class="course-header">
+                    <span class="course-code" th:text="${course.kode}">IF101</span>
+                    <span class="course-sks" th:text="${course.sks + ' SKS'}">3 SKS</span>
+                </div>
+                <h6 class="course-name" th:text="${course.nama}">Nama MK</h6>
+                <form th:action="@{/student/courses/{id}/enroll(id=${course.id})}" method="post" class="mt-auto">
+                    <button type="submit" class="btn btn-primary btn-sm w-100">
+                        <i class="bi bi-plus-circle me-1"></i>Enroll
+                    </button>
+                </form>
             </div>
         </div>
-        
+
         <div class="col-12" th:if="${#lists.isEmpty(courses)}">
-            <div class="alert alert-light text-center">
-                Belum ada mata kuliah tersedia.
+            <div class="empty-state">
+                <div class="empty-state-icon">📚</div>
+                <h5 class="empty-state-title">Tidak Ada Mata Kuliah</h5>
+                <p class="empty-state-text">Belum ada mata kuliah yang tersedia saat ini.</p>
             </div>
         </div>
     </div>
-</section>
-</html>
 
+    <style>
+        .page-header {
+            padding: 1.5rem;
+            background: var(--surface);
+            border-radius: var(--radius-xl);
+            border: 1px solid var(--glass-border);
+        }
+
+        .page-title {
+            font-family: var(--font-display);
+            font-weight: 800;
+            color: var(--text-primary);
+        }
+
+        .course-card-student {
+            background: var(--surface);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-xl);
+            padding: 1.5rem;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .course-card-student::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--gradient-primary);
+        }
+
+        .course-card-student:hover {
+            border-color: var(--primary-500);
+            transform: translateY(-4px);
+            box-shadow: 0 12px 30px rgba(99, 102, 241, 0.15);
+        }
+
+        .course-icon {
+            width: 50px;
+            height: 50px;
+            background: var(--gradient-primary);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            color: white;
+            margin-bottom: 1rem;
+            box-shadow: 0 6px 16px rgba(99, 102, 241, 0.3);
+        }
+
+        .course-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .course-code {
+            background: rgba(99, 102, 241, 0.15);
+            color: var(--primary-400);
+            padding: 0.2rem 0.6rem;
+            border-radius: 999px;
+            font-size: 0.7rem;
+            font-weight: 700;
+        }
+
+        .course-sks {
+            background: linear-gradient(135deg, #11998e, #38ef7d);
+            color: white;
+            padding: 0.2rem 0.6rem;
+            border-radius: 999px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+
+        .course-name {
+            font-family: var(--font-display);
+            font-weight: 700;
+            color: var(--text-primary);
+            font-size: 1rem;
+            margin-bottom: 1rem;
+            flex: 1;
+        }
+    </style>
+</section>
+
+</html>

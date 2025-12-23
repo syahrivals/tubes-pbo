@@ -1,15 +1,13 @@
 package com.example.tubes_pbo;
 
-import javax.servlet.http.HttpSession;
-
+import com.example.tubes_pbo.service.AuthService;
+import com.example.tubes_pbo.service.LogService;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-
-import com.example.tubes_pbo.service.AuthService;
-import com.example.tubes_pbo.service.LogService;
 
 @Controller
 public class AuthController {

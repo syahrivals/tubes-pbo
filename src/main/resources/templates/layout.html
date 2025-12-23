@@ -1,347 +1,355 @@
 <!DOCTYPE html>
-<html>
+<html xmlns:th="http://www.thymeleaf.org" th:fragment="layout(content)" lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gradebook</title>
+    <meta name="description" content="Gradebook - Sistem Manajemen Nilai Mahasiswa yang Modern dan Canggih">
+    <meta name="theme-color" content="#6366f1">
+    <title th:text="${title} ?: 'Gradebook Pro'">Gradebook Pro</title>
+    
+    <!-- Preconnect for Performance -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    
+    <!-- Animate.css -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    
+    <!-- Custom Premium CSS -->
+    <link rel="stylesheet" th:href="@{/css/main.css}">
+    
+    <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
-    <style>
-        :root {
-            /* Default Light Theme */
-            --primary-color: #667eea;
-            --secondary-color: #764ba2;
-            --background-color: #f8f9fa;
-            --surface-color: #ffffff;
-            --text-color: #212529;
-            --text-muted: #6c757d;
-            --border-color: #dee2e6;
-            --shadow: rgba(0, 0, 0, 0.1);
-            --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            --gradient-secondary: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-        }
-
-        [data-theme="dark"] {
-            --primary-color: #4dabf7;
-            --secondary-color: #9775fa;
-            --background-color: #1a1a1a;
-            --surface-color: #2d2d2d;
-            --text-color: #ffffff;
-            --text-muted: #adb5bd;
-            --border-color: #495057;
-            --shadow: rgba(0, 0, 0, 0.3);
-            --gradient-primary: linear-gradient(135deg, #4dabf7 0%, #9775fa 100%);
-            --gradient-secondary: linear-gradient(135deg, #ffd43b 0%, #fab1a0 100%);
-        }
-
-        body {
-            background: var(--background-color);
-            color: var(--text-color);
-            min-height: 100vh;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            transition: background-color 0.3s ease, color 0.3s ease;
-        }
-
-        .card, .navbar, .btn, .form-control {
-            background: var(--surface-color) !important;
-            color: var(--text-color) !important;
-            border-color: var(--border-color) !important;
-            transition: all 0.3s ease;
-        }
-
-        .text-muted {
-            color: var(--text-muted) !important;
-        }
-
-        .navbar {
-            background: var(--surface-color) !important;
-            border-bottom: 1px solid var(--border-color) !important;
-        }
-
-        .card {
-            box-shadow: 0 0.125rem 0.25rem var(--shadow) !important;
-        }
-
-        .gradient-hero {
-            background: var(--gradient-primary);
-        }
-
-        .table {
-            background: var(--surface-color) !important;
-            color: var(--text-color) !important;
-        }
-
-        .table th, .table td {
-            border-color: var(--border-color) !important;
-        }
-        
-        .gradient-hero {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: #fff;
-            padding: 20px 0;
-            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .gradient-hero::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
-            animation: pulse 15s ease-in-out infinite;
-        }
-        
-        @keyframes pulse {
-            0%, 100% { transform: scale(1) translate(0, 0); }
-            50% { transform: scale(1.1) translate(10px, 10px); }
-        }
-        
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-        
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateX(-30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
-        }
-        
-        .animate-fade-in {
-            animation: fadeInUp 0.6s ease-out;
-        }
-        
-        .animate-slide-in {
-            animation: slideIn 0.5s ease-out;
-        }
-        
-        .card.shadow-soft { 
-            box-shadow: 0 10px 40px rgba(0,0,0,0.1); 
-            border: 0;
-            border-radius: 15px;
-            transition: all 0.3s ease;
-        }
-        
-        .card.shadow-soft:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 50px rgba(0,0,0,0.15);
-        }
-        
-        .pill { 
-            background: rgba(255,255,255,0.2); 
-            border-radius: 999px; 
-            padding: 6px 14px;
-            backdrop-filter: blur(10px);
-        }
-        
-        .table th, .table td { vertical-align: middle; line-height: 1.2; }
-        .table-sm td, .table-sm th { padding: .45rem .65rem; }
-        
-        .btn {
-            border-radius: 10px;
-            transition: all 0.3s ease;
-            font-weight: 500;
-        }
-        
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-        }
-        
-        .btn-xs { 
-            padding: .3rem .6rem; 
-            font-size: .84rem; 
-            line-height: 1.2; 
-        }
-        
-        .td-nowrap { white-space: nowrap; }
-        
-        .navbar {
-            backdrop-filter: blur(10px);
-            background-color: rgba(255, 255, 255, 0.95) !important;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-        }
-        
-        .nav-link {
-            transition: all 0.3s ease;
-            border-radius: 8px;
-            margin: 0 5px;
-        }
-        
-        .nav-link:hover {
-            background-color: rgba(102, 126, 234, 0.1);
-            transform: translateY(-2px);
-        }
-        
-        .badge {
-            border-radius: 8px;
-            padding: 8px 12px;
-            font-weight: 600;
-        }
-        
-        .alert {
-            border-radius: 12px;
-            border: none;
-            animation: slideIn 0.5s ease-out;
-        }
-        
-        .form-control, .form-select {
-            border-radius: 10px;
-            border: 2px solid #e9ecef;
-            transition: all 0.3s ease;
-        }
-        
-        .form-control:focus, .form-select:focus {
-            border-color: #667eea;
-            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
-            transform: translateY(-2px);
-        }
-        
-        main {
-            animation: fadeInUp 0.8s ease-out;
-        }
-    </style>
 </head>
 <body>
+
+<!-- Gradient Hero Header -->
 <div class="gradient-hero">
-    <div class="container d-flex justify-content-between align-items-center">
-        <div>
-            <div class="d-flex align-items-center gap-2">
-                <span class="badge bg-light text-primary">Gradebook</span>
-                <span class="pill text-white-50">PBO</span>
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <div class="d-flex align-items-center gap-3 mb-2">
+                    <div class="hero-logo d-flex align-items-center gap-2">
+                        <div class="logo-icon">
+                            <i class="bi bi-mortarboard-fill"></i>
+                        </div>
+                        <span class="badge bg-white text-primary fw-bold px-3 py-2" style="font-size: 0.9rem;">GRADEBOOK</span>
+                    </div>
+                    <span class="pill text-white-50">
+                        <i class="bi bi-lightning-charge-fill me-1"></i>PRO Edition
+                    </span>
+                </div>
+                <h1 class="h3 mt-2 mb-1 fw-bold">Sistem Manajemen Nilai Mahasiswa</h1>
+                <p class="mb-0 text-white-50 small d-flex align-items-center gap-2">
+                    <i class="bi bi-graph-up-arrow"></i>
+                    Kelola data, nilai, dan analitik akademik dengan mudah
+                </p>
             </div>
-            <h1 class="h4 mt-2 mb-0">Manajemen Nilai Mahasiswa</h1>
-            <p class="mb-0 text-white-50 small">Kelola data mahasiswa, nilai, dan laporan</p>
+            <div class="col-lg-4 text-lg-end mt-3 mt-lg-0">
+                <div class="hero-stats d-flex gap-3 justify-content-lg-end" th:if="${session.userRole}">
+                    <div class="hero-stat-item text-center">
+                        <div class="stat-icon-mini">
+                            <i class="bi bi-calendar-check"></i>
+                        </div>
+                        <div class="small text-white-50" th:text="${#temporals.format(#temporals.createNow(), 'dd MMM yyyy')}">23 Dec 2024</div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
-<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+
+<!-- Navigation Bar -->
+<nav class="navbar navbar-expand-lg">
     <div class="container">
-        <a class="navbar-brand fw-semibold text-primary" href="/">Tubes PBO</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav" aria-controls="nav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
+        <a class="navbar-brand" href="/">
+            <i class="bi bi-book-half me-2"></i>Gradebook
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" 
+                aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
+            <i class="bi bi-list text-white fs-4"></i>
         </button>
-        <div class="collapse navbar-collapse" id="nav">
+        
+        <div class="collapse navbar-collapse" id="navbarContent">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 <!-- Dosen Menu -->
-                <li class="nav-item" th:if="${session.userRole}=='DOSEN'"><a class="nav-link" th:classappend="${active}=='dashboard' ? 'active fw-bold' : ''" href="/">📊 Dashboard</a></li>
-                <li class="nav-item" th:if="${session.userRole}=='DOSEN'"><a class="nav-link" th:classappend="${active}=='courses' ? 'active fw-bold' : ''" href="/courses">📚 Mata Kuliah</a></li>
-                <li class="nav-item" th:if="${session.userRole}=='DOSEN'"><a class="nav-link" th:classappend="${active}=='mahasiswa' ? 'active fw-bold' : ''" href="/mahasiswa">👥 Mahasiswa</a></li>
-                <li class="nav-item" th:if="${session.userRole}=='DOSEN'"><a class="nav-link" th:classappend="${active}=='nilai' ? 'active fw-bold' : ''" href="/nilai">📝 Nilai</a></li>
-                <li class="nav-item" th:if="${session.userRole}=='DOSEN'"><a class="nav-link" th:classappend="${active}=='enrollments' ? 'active fw-bold' : ''" href="/enrollments">📋 Permintaan Enrollment</a></li>
                 <li class="nav-item" th:if="${session.userRole}=='DOSEN'">
-                    <a class="nav-link position-relative" th:classappend="${active}=='notifications' ? 'active fw-bold' : ''" href="/notifications">
-                        🔔 Notifikasi
-                        <span class="badge bg-danger position-absolute top-0 start-100 translate-middle" 
-                              th:if="${unreadNotifications > 0}" 
-                              th:text="${unreadNotifications}">0</span>
+                    <a class="nav-link" th:classappend="${active}=='dashboard' ? 'active' : ''" href="/">
+                        <i class="bi bi-speedometer2 me-1"></i> Dashboard
+                    </a>
+                </li>
+                <li class="nav-item" th:if="${session.userRole}=='DOSEN'">
+                    <a class="nav-link" th:classappend="${active}=='courses' ? 'active' : ''" href="/courses">
+                        <i class="bi bi-journal-bookmark me-1"></i> Mata Kuliah
+                    </a>
+                </li>
+                <li class="nav-item" th:if="${session.userRole}=='DOSEN'">
+                    <a class="nav-link" th:classappend="${active}=='enrollments' ? 'active' : ''" href="/enrollments">
+                        <i class="bi bi-person-check me-1"></i> Enrollment
+                    </a>
+                </li>
+                <li class="nav-item" th:if="${session.userRole}=='DOSEN'">
+                    <a class="nav-link" th:classappend="${active}=='mahasiswa' ? 'active' : ''" href="/mahasiswa">
+                        <i class="bi bi-people me-1"></i> Mahasiswa
+                    </a>
+                </li>
+                <li class="nav-item" th:if="${session.userRole}=='DOSEN'">
+                    <a class="nav-link" th:classappend="${active}=='nilai' ? 'active' : ''" href="/nilai">
+                        <i class="bi bi-clipboard-data me-1"></i> Nilai
                     </a>
                 </li>
                 
                 <!-- Mahasiswa Menu -->
-                <li class="nav-item" th:if="${session.userRole}=='MAHASISWA'"><a class="nav-link" th:classappend="${active}=='student' ? 'active fw-bold' : ''" href="/student">📊 Dashboard</a></li>
-                <li class="nav-item" th:if="${session.userRole}=='MAHASISWA'"><a class="nav-link" th:classappend="${active}=='browse-courses' ? 'active fw-bold' : ''" href="/student/courses">📚 Katalog MK</a></li>
-                <li class="nav-item" th:if="${session.userRole}=='MAHASISWA'"><a class="nav-link" th:classappend="${active}=='enrollments' ? 'active fw-bold' : ''" href="/student/enrollments">📝 MK Saya</a></li>
-                <li class="nav-item" th:if="${session.userRole}=='MAHASISWA'"><a class="nav-link" th:classappend="${active}=='profile' ? 'active fw-bold' : ''" href="/student/profile">⚙️ Profile</a></li>
+                <li class="nav-item" th:if="${session.userRole}=='MAHASISWA'">
+                    <a class="nav-link" th:classappend="${active}=='student' ? 'active' : ''" href="/student">
+                        <i class="bi bi-speedometer2 me-1"></i> Dashboard
+                    </a>
+                </li>
+                <li class="nav-item" th:if="${session.userRole}=='MAHASISWA'">
+                    <a class="nav-link" th:classappend="${active}=='browse-courses' ? 'active' : ''" href="/student/courses">
+                        <i class="bi bi-journal-bookmark me-1"></i> Katalog MK
+                    </a>
+                </li>
+                <li class="nav-item" th:if="${session.userRole}=='MAHASISWA'">
+                    <a class="nav-link" th:classappend="${active}=='enrollments' ? 'active' : ''" href="/student/enrollments">
+                        <i class="bi bi-bookmark-check me-1"></i> MK Saya
+                    </a>
+                </li>
+                <li class="nav-item" th:if="${session.userRole}=='MAHASISWA'">
+                    <a class="nav-link" th:classappend="${active}=='profile' ? 'active' : ''" href="/student/profile">
+                        <i class="bi bi-gear me-1"></i> Profile
+                    </a>
+                </li>
             </ul>
+            
+            <!-- Right Side Actions -->
             <div class="d-flex align-items-center gap-3">
-                <a th:if="${session.userRole}=='MAHASISWA'" 
-                   href="/student/notifications" 
-                   class="position-relative">
-                    <span th:if="${unreadNotifications != null && unreadNotifications > 0}" 
-                          class="badge bg-danger position-absolute top-0 start-100 translate-middle rounded-pill" 
+                <!-- Notifications for Mahasiswa -->
+                <a th:if="${session.userRole}=='MAHASISWA'" href="/student/notifications" 
+                   class="btn btn-ghost position-relative notification-btn">
+                    <i class="bi bi-bell fs-5"></i>
+                    <span th:if="${unreadNotifications != null && unreadNotifications > 0}"
+                          class="notification-badge animate-pulse"
                           th:text="${unreadNotifications}">0</span>
-                    <span class="btn btn-outline-info btn-sm">🔔</span>
                 </a>
-                <span class="badge bg-light text-dark" th:if="${session.userRole}" th:text="${session.displayName}">User</span>
-
-                <button id="themeToggle" class="btn btn-outline-secondary btn-sm me-2" title="Toggle Theme">
-                    🌙 Dark Mode
-                </button>
-                <a th:if="${session.userRole}=='DOSEN'" href="/logs" class="btn btn-outline-secondary btn-sm">📋 Logs</a>
-                <a th:if="${session.userRole}" class="btn btn-outline-danger btn-sm" href="/logout">🚪 Logout</a>
-                <a th:if="${session.userRole}==null" class="btn btn-primary btn-sm" href="/login">🔐 Login</a>
+                
+                <!-- Notifications for Dosen -->
+                <a th:if="${session.userRole}=='DOSEN'" href="/notifications" 
+                   class="btn btn-ghost position-relative notification-btn">
+                    <i class="bi bi-bell fs-5"></i>
+                    <span th:if="${unreadNotifications != null && unreadNotifications > 0}"
+                          class="notification-badge animate-pulse"
+                          th:text="${unreadNotifications}">0</span>
+                </a>
+                
+                <!-- User Badge -->
+                <div th:if="${session.userRole}" class="user-info d-flex align-items-center gap-2">
+                    <div class="user-avatar" th:text="${session.displayName != null ? session.displayName.substring(0, 1).toUpperCase() : 'U'}">U</div>
+                    <div class="d-none d-lg-flex flex-column">
+                        <span class="user-name" th:text="${session.displayName}">User</span>
+                        <span class="user-role" th:text="${session.userRole == 'DOSEN' ? 'Dosen' : 'Mahasiswa'}">Role</span>
+                    </div>
+                </div>
+                
+                <!-- Logs for Dosen -->
+                <a th:if="${session.userRole}=='DOSEN'" href="/logs" class="btn btn-ghost btn-sm">
+                    <i class="bi bi-journal-text me-1"></i>
+                    <span class="d-none d-lg-inline">Logs</span>
+                </a>
+                
+                <!-- Logout/Login -->
+                <a th:if="${session.userRole}" class="btn btn-outline-danger btn-sm" href="/logout">
+                    <i class="bi bi-box-arrow-right me-1"></i> Logout
+                </a>
+                <a th:if="${session.userRole}==null" class="btn btn-primary btn-sm" href="/login">
+                    <i class="bi bi-box-arrow-in-right me-1"></i> Login
+                </a>
             </div>
         </div>
     </div>
 </nav>
 
+<!-- Main Content -->
 <main class="container py-4">
     <div th:replace="${content}"></div>
 </main>
 
+<!-- Footer -->
+<footer class="footer-section" th:if="${session.userRole}">
+    <div class="container">
+        <div class="footer-content">
+            <div class="footer-brand">
+                <i class="bi bi-mortarboard-fill me-2"></i>
+                <span>Gradebook Pro</span>
+            </div>
+            <div class="footer-text">
+                © 2024 Gradebook System • Built with Spring Boot & Bootstrap 5
+            </div>
+            <div class="footer-badge">
+                <i class="bi bi-lightning-charge-fill text-warning me-1"></i>
+                Premium UI Experience
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- Additional Styles for Layout -->
+<style>
+    .logo-icon {
+        width: 42px;
+        height: 42px;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.25rem;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+    
+    .stat-icon-mini {
+        width: 36px;
+        height: 36px;
+        background: rgba(255, 255, 255, 0.15);
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 0.25rem;
+        font-size: 1rem;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    
+    .btn-ghost {
+        background: transparent;
+        border: 1px solid var(--glass-border);
+        color: var(--text-secondary);
+        padding: 0.5rem;
+        border-radius: var(--radius-md);
+        transition: var(--transition-normal);
+    }
+    
+    .btn-ghost:hover {
+        background: var(--surface-hover);
+        color: var(--text-primary);
+        border-color: var(--primary-400);
+        transform: translateY(-2px);
+    }
+    
+    .notification-btn {
+        position: relative;
+    }
+    
+    .user-info {
+        background: var(--surface);
+        padding: 0.5rem 1rem 0.5rem 0.5rem;
+        border-radius: var(--radius-full);
+        border: 1px solid var(--glass-border);
+    }
+    
+    .user-name {
+        font-weight: 600;
+        font-size: 0.875rem;
+        color: var(--text-primary);
+        line-height: 1.2;
+    }
+    
+    .user-role {
+        font-size: 0.7rem;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .footer-section {
+        background: rgba(15, 15, 35, 0.9);
+        backdrop-filter: blur(20px);
+        border-top: 1px solid var(--glass-border);
+        padding: 1.5rem 0;
+        margin-top: auto;
+    }
+    
+    .footer-content {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+    
+    .footer-brand {
+        font-family: var(--font-display);
+        font-weight: 700;
+        font-size: 1.1rem;
+        background: var(--gradient-primary);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+    
+    .footer-text {
+        color: var(--text-muted);
+        font-size: 0.875rem;
+    }
+    
+    .footer-badge {
+        background: var(--surface);
+        border: 1px solid var(--glass-border);
+        padding: 0.4rem 1rem;
+        border-radius: var(--radius-full);
+        font-size: 0.75rem;
+        color: var(--text-secondary);
+    }
+    
+    @media (max-width: 768px) {
+        .footer-content {
+            flex-direction: column;
+            text-align: center;
+        }
+        
+        .hero-stats {
+            display: none !important;
+        }
+    }
+</style>
+
+<!-- Bootstrap JS Bundle -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Page Load Animation Script -->
 <script>
-// Theme Management
-class ThemeManager {
-    constructor() {
-        this.themeToggle = document.getElementById('themeToggle');
-        this.currentTheme = localStorage.getItem('theme') || 'light';
-        this.init();
-    }
-
-    init() {
-        // Set initial theme
-        this.setTheme(this.currentTheme);
+    document.addEventListener('DOMContentLoaded', function() {
+        // Add staggered animation to cards
+        const cards = document.querySelectorAll('.card');
+        cards.forEach((card, index) => {
+            card.style.animationDelay = `${index * 0.1}s`;
+            card.classList.add('animate-fade-in');
+        });
         
-        // Add event listener
-        if (this.themeToggle) {
-            this.themeToggle.addEventListener('click', () => this.toggleTheme());
-        }
-    }
-
-    setTheme(theme) {
-        document.documentElement.setAttribute('data-theme', theme);
-        localStorage.setItem('theme', theme);
-        this.updateToggleButton(theme);
-        this.currentTheme = theme;
-    }
-
-    toggleTheme() {
-        const newTheme = this.currentTheme === 'light' ? 'dark' : 'light';
-        this.setTheme(newTheme);
+        // Add smooth scroll behavior for internal links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
         
-        // Add smooth transition effect
-        document.body.style.transition = 'background-color 0.3s ease, color 0.3s ease';
-        setTimeout(() => {
-            document.body.style.transition = '';
-        }, 300);
-    }
-
-    updateToggleButton(theme) {
-        if (this.themeToggle) {
-            if (theme === 'dark') {
-                this.themeToggle.innerHTML = '☀️ Light Mode';
-                this.themeToggle.className = 'btn btn-outline-light btn-sm me-2';
-            } else {
-                this.themeToggle.innerHTML = '🌙 Dark Mode';
-                this.themeToggle.className = 'btn btn-outline-secondary btn-sm me-2';
-            }
-        }
-    }
-}
-
-// Initialize theme manager when DOM is loaded
-document.addEventListener('DOMContentLoaded', () => {
-    new ThemeManager();
-});
+        // Initialize tooltips
+        const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+        [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
+    });
 </script>
+
 </body>
 </html>
-

@@ -19,11 +19,6 @@ public class NotifikasiService {
         notifikasiRepository.insert(notifikasi);
     }
 
-    public void createNotifikasiDosen(String kodeDosen, String pesan, String tipe) {
-        Notifikasi notifikasi = new Notifikasi(kodeDosen, pesan, tipe, true);
-        notifikasiRepository.insert(notifikasi);
-    }
-
     public void notifyNilaiBaru(String nim, String mataKuliah) {
         createNotifikasi(nim, 
             "Nilai baru untuk mata kuliah " + mataKuliah + " telah ditambahkan!", 
@@ -36,33 +31,21 @@ public class NotifikasiService {
             "SUCCESS");
     }
 
+    public void createNotifikasiDosen(String pesan, String tipe) {
+        Notifikasi notifikasi = new Notifikasi(null, pesan, tipe); // nim = null untuk dosen
+        notifikasiRepository.insert(notifikasi);
+    }
+
+    public void notifyEnrollmentPending(String kodeDosen, String namaMahasiswa, String mataKuliah) {
+        createNotifikasiDosen(
+            "Mahasiswa " + namaMahasiswa + " meminta enrollment untuk mata kuliah " + mataKuliah,
+            "INFO"
+        );
+    }
+
     public void notifyEnrollment(String nim, String mataKuliah) {
-        createNotifikasi(nim, 
-            "Anda berhasil mendaftar mata kuliah " + mataKuliah + "!", 
-            "SUCCESS");
-    }
-
-    public void notifyEnrollmentRequest(String nim, String mataKuliah) {
-        createNotifikasi(nim, 
-            "Permintaan pendaftaran mata kuliah " + mataKuliah + " telah dikirim ke dosen untuk disetujui!", 
-            "INFO");
-    }
-
-    public void notifyEnrollmentApproved(String nim, String mataKuliah) {
-        createNotifikasi(nim, 
-            "Permintaan pendaftaran mata kuliah " + mataKuliah + " telah DISETUJUI dosen!", 
-            "SUCCESS");
-    }
-
-    public void notifyEnrollmentRejected(String nim, String mataKuliah) {
-        createNotifikasi(nim, 
-            "Permintaan pendaftaran mata kuliah " + mataKuliah + " telah DITOLAK dosen!", 
-            "WARNING");
-    }
-
-    public void notifyNewEnrollmentRequest(String kodeDosen, String namaMahasiswa, String nim, String mataKuliah) {
-        createNotifikasiDosen(kodeDosen, 
-            "Mahasiswa " + namaMahasiswa + " (NIM: " + nim + ") mengajukan pendaftaran mata kuliah " + mataKuliah, 
+        createNotifikasi(nim,
+            "Anda telah mengirim permintaan enrollment untuk mata kuliah " + mataKuliah,
             "INFO");
     }
 }

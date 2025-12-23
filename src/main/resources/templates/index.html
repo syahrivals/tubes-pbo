@@ -1,244 +1,614 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" th:replace="layout :: layout(~{::section})">
+<html xmlns:th="http://www.thymeleaf.org" th:replace="layout :: layout(~{::section})" lang="id">
 <section>
-    <div class="row g-3">
-        <div class="col-md-4">
-            <div class="card shadow-soft h-100">
+    <!-- Welcome Section -->
+    <div class="welcome-section animate-fade-in mb-4">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <h2 class="welcome-title">
+                    Selamat Datang,
+                    <span class="text-gradient" th:text="${session.displayName ?: 'Dosen'}">Dosen</span> 👋
+                </h2>
+                <p class="welcome-subtitle text-muted mb-0">
+                    Dashboard analitik dan manajemen nilai mahasiswa Anda
+                </p>
+            </div>
+            <div class="col-lg-4 text-lg-end mt-3 mt-lg-0">
+                <a class="btn btn-primary" href="/nilai">
+                    <i class="bi bi-plus-circle me-2"></i>Tambah Nilai
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-4 animate-fade-in stagger-1">
+            <div class="card stat-card h-100">
                 <div class="card-body text-center">
-                    <div class="mb-3" style="font-size: 3rem;">👥</div>
-                    <h5 class="card-title">Total Mahasiswa</h5>
-                    <h2 class="text-primary mb-0" th:text="${totalMahasiswa}">0</h2>
-                    <a href="/mahasiswa" class="btn btn-outline-primary btn-sm mt-3">Lihat Semua</a>
+                    <div class="stat-icon primary mx-auto">
+                        <i class="bi bi-people-fill"></i>
+                    </div>
+                    <h2 class="stat-number" th:text="${totalMahasiswa}">0</h2>
+                    <p class="stat-label mb-3">Total Mahasiswa</p>
+                    <a href="/mahasiswa" class="btn btn-outline-primary btn-sm">
+                        <i class="bi bi-arrow-right me-1"></i>Lihat Semua
+                    </a>
                 </div>
             </div>
         </div>
-        <div class="col-md-4">
-            <div class="card shadow-soft h-100">
+        <div class="col-md-4 animate-fade-in stagger-2">
+            <div class="card stat-card h-100">
                 <div class="card-body text-center">
-                    <div class="mb-3" style="font-size: 3rem;">📚</div>
-                    <h5 class="card-title">Total Mata Kuliah</h5>
-                    <h2 class="text-success mb-0" th:text="${totalMataKuliah}">0</h2>
-                    <a href="/courses" class="btn btn-outline-success btn-sm mt-3">Kelola MK</a>
+                    <div class="stat-icon success mx-auto">
+                        <i class="bi bi-journal-bookmark-fill"></i>
+                    </div>
+                    <h2 class="stat-number" th:text="${totalMataKuliah}">0</h2>
+                    <p class="stat-label mb-3">Total Mata Kuliah</p>
+                    <a href="/courses" class="btn btn-outline-success btn-sm">
+                        <i class="bi bi-arrow-right me-1"></i>Kelola MK
+                    </a>
                 </div>
             </div>
         </div>
-        <div class="col-md-4">
-            <div class="card shadow-soft h-100">
+        <div class="col-md-4 animate-fade-in stagger-3">
+            <div class="card stat-card h-100">
                 <div class="card-body text-center">
-                    <div class="mb-3" style="font-size: 3rem;">📝</div>
-                    <h5 class="card-title">Total Nilai</h5>
-                    <h2 class="text-info mb-0" th:text="${totalNilai}">0</h2>
-                    <a href="/nilai" class="btn btn-outline-info btn-sm mt-3">Kelola Nilai</a>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="card shadow-soft h-100">
-                <div class="card-body text-center">
-                    <div class="mb-3" style="font-size: 3rem;">🔔</div>
-                    <h5 class="card-title">Notifikasi</h5>
-                    <h2 class="text-warning mb-0" th:text="${unreadNotifications}">0</h2>
-                    <a href="/notifications" class="btn btn-outline-warning btn-sm mt-3">Lihat Notifikasi</a>
+                    <div class="stat-icon cyber mx-auto">
+                        <i class="bi bi-clipboard-data-fill"></i>
+                    </div>
+                    <h2 class="stat-number" th:text="${totalNilai}">0</h2>
+                    <p class="stat-label mb-3">Total Entri Nilai</p>
+                    <a href="/nilai" class="btn btn-outline-info btn-sm">
+                        <i class="bi bi-arrow-right me-1"></i>Kelola Nilai
+                    </a>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- Analytics Charts -->
-    <div class="row g-3 mt-3">
-        <div class="col-md-6">
-            <div class="card shadow-soft">
+    <div class="row g-4 mb-4">
+        <div class="col-lg-6 animate-fade-in stagger-4">
+            <div class="card h-100">
                 <div class="card-body">
-                    <h6 class="card-title mb-3">📊 Distribusi Grade</h6>
-                    <div style="height: 250px; position: relative;">
-                        <canvas id="gradeChart" style="max-height: 100%;"></canvas>
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <div>
+                            <h5 class="card-title mb-1">
+                                <i class="bi bi-pie-chart-fill text-primary me-2"></i>
+                                Distribusi Grade
+                            </h5>
+                            <p class="text-muted small mb-0">Persentase grade seluruh mahasiswa</p>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="gradeChart" style="max-height: 280px;"></canvas>
+                    </div>
+                    <!-- Grade Legend -->
+                    <div class="grade-legend mt-4">
+                        <div class="row g-2 text-center">
+                            <div class="col">
+                                <span class="grade-indicator grade-A">A</span>
+                                <span class="grade-count" id="gradeA">0</span>
+                            </div>
+                            <div class="col">
+                                <span class="grade-indicator grade-B">B</span>
+                                <span class="grade-count" id="gradeB">0</span>
+                            </div>
+                            <div class="col">
+                                <span class="grade-indicator grade-C">C</span>
+                                <span class="grade-count" id="gradeC">0</span>
+                            </div>
+                            <div class="col">
+                                <span class="grade-indicator grade-D">D</span>
+                                <span class="grade-count" id="gradeD">0</span>
+                            </div>
+                            <div class="col">
+                                <span class="grade-indicator grade-E">E</span>
+                                <span class="grade-count" id="gradeE">0</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="col-md-6">
-            <div class="card shadow-soft">
+        <div class="col-lg-6 animate-fade-in stagger-5">
+            <div class="card h-100">
                 <div class="card-body">
-                    <h6 class="card-title mb-3">📈 Statistik Nilai</h6>
-                    <div style="height: 250px; position: relative;">
-                        <canvas id="statisticsChart" style="max-height: 100%;"></canvas>
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <div>
+                            <h5 class="card-title mb-1">
+                                <i class="bi bi-bar-chart-fill text-success me-2"></i>
+                                Statistik Overview
+                            </h5>
+                            <p class="text-muted small mb-0">Perbandingan data sistem</p>
+                        </div>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="statisticsChart" style="max-height: 280px;"></canvas>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="mt-4">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <div>
-                <h5 class="mb-0">Data Nilai Terbaru</h5>
-                <p class="text-muted small mb-0">Klik Report untuk unduh ringkasan per mahasiswa.</p>
+    <!-- Recent Grades Section -->
+    <div class="card animate-fade-in">
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h5 class="card-title mb-1">
+                        <i class="bi bi-clock-history text-warning me-2"></i>
+                        Data Nilai Mahasiswa
+                    </h5>
+                    <p class="text-muted small mb-0">Daftar nilai terbaru dan laporan per mahasiswa</p>
+                </div>
+                <a class="btn btn-primary btn-sm" href="/mahasiswa">
+                    <i class="bi bi-people me-1"></i>Kelola Mahasiswa
+                </a>
             </div>
-            <a class="btn btn-primary btn-sm" href="/mahasiswa">Kelola Mahasiswa</a>
-        </div>
 
-        <div class="row g-3" th:if="${#lists.isEmpty(mahasiswaList)}">
-            <div class="col-12">
-                <div class="alert alert-light border text-center text-muted mb-0">Belum ada data</div>
+            <!-- Empty State -->
+            <div th:if="${#lists.isEmpty(mahasiswaList)}" class="empty-state">
+                <div class="empty-state-icon">📚</div>
+                <h6 class="empty-state-title">Belum Ada Data</h6>
+                <p class="empty-state-text">
+                    Mulai dengan menambahkan mahasiswa dan nilai pertama Anda.
+                </p>
+                <a href="/mahasiswa" class="btn btn-primary btn-sm mt-3">
+                    <i class="bi bi-plus me-1"></i>Tambah Mahasiswa
+                </a>
             </div>
-        </div>
 
-        <div class="row g-3" th:each="m : ${mahasiswaList}">
-            <div class="col-12">
-                <div class="card shadow-soft">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center mb-2">
-                            <div>
-                                <h6 class="mb-0" th:text="${m.nama}"></h6>
-                                <span class="text-muted small" th:text="${m.nim}"></span>
-                            </div>
-                            <div class="d-flex gap-2">
-                                <a class="btn btn-outline-secondary btn-xs" th:href="@{'/report/' + ${m.nim}}">Report</a>
-                            </div>
-                        </div>
-
-                        <div th:if="${#lists.isEmpty(nilaiMap[m.nim])}" class="text-muted small">
-                            Belum ada nilai.
-                        </div>
-
-                        <div class="row g-2" th:each="n : ${nilaiMap[m.nim]}">
-                            <div class="col-md-6 col-lg-4">
-                                <div class="border rounded p-3 h-100 d-flex flex-column">
-                                    <div class="d-flex justify-content-between align-items-center mb-2">
-                                        <span class="fw-semibold" th:text="${n.mataKuliah}"></span>
-                                        <span class="badge bg-primary-subtle text-primary" th:text="${n.grade}"></span>
+            <!-- Student List with Grades -->
+            <div class="student-grades-list" th:unless="${#lists.isEmpty(mahasiswaList)}">
+                <div class="student-card mb-3" th:each="m, iterStat : ${mahasiswaList}">
+                    <div class="card">
+                        <div class="card-body">
+                            <!-- Student Header -->
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="student-avatar" th:text="${m.nama.substring(0, 1).toUpperCase()}">B
                                     </div>
-                                    <div class="small text-muted mb-2">
-                                        Tugas: <span th:text="${n.tugas}"></span> |
-                                        UTS: <span th:text="${n.uts}"></span> |
-                                        UAS: <span th:text="${n.uas}"></span>
+                                    <div>
+                                        <h6 class="mb-0 fw-bold" th:text="${m.nama}">Nama Mahasiswa</h6>
+                                        <span class="text-muted small">
+                                            <i class="bi bi-hash me-1"></i>
+                                            <span th:text="${m.nim}">NIM</span>
+                                        </span>
                                     </div>
-                                    <div class="d-flex justify-content-between align-items-center mt-auto">
-                                        <span class="fw-semibold">Rata: <span th:text="${#numbers.formatDecimal(n.hitungRataRata(),1,2)}"></span></span>
-                                        <div class="d-flex gap-2">
-                                            <form th:action="@{'/nilai/' + ${n.id} + '/delete'}" method="post" class="m-0">
-                                                <button class="btn btn-danger btn-xs" type="submit">Hapus</button>
-                                            </form>
-                                            <a class="btn btn-outline-secondary btn-xs" th:href="@{'/report/' + ${m.nim}}">Report</a>
+                                </div>
+                                <div class="d-flex gap-2">
+                                    <a class="btn btn-outline-primary btn-sm" th:href="@{'/report/' + ${m.nim}}">
+                                        <i class="bi bi-file-earmark-pdf me-1"></i>Report
+                                    </a>
+                                </div>
+                            </div>
+
+                            <!-- No Grades Message -->
+                            <div th:if="${#lists.isEmpty(nilaiMap[m.nim])}" class="text-center py-3">
+                                <p class="text-muted mb-0">
+                                    <i class="bi bi-inbox me-2"></i>Belum ada nilai untuk mahasiswa ini
+                                </p>
+                            </div>
+
+                            <!-- Grades Grid -->
+                            <div class="row g-3" th:unless="${#lists.isEmpty(nilaiMap[m.nim])}">
+                                <div class="col-md-6 col-lg-4" th:each="n : ${nilaiMap[m.nim]}">
+                                    <div class="grade-card">
+                                        <div class="grade-card-header">
+                                            <span class="subject-name" th:text="${n.mataKuliah}">Mata Kuliah</span>
+                                            <span class="grade-badge" th:classappend="${'grade-' + n.grade}"
+                                                th:text="${n.grade}">A</span>
+                                        </div>
+                                        <div class="score-grid">
+                                            <div class="score-item">
+                                                <span class="score-label">Tugas</span>
+                                                <span class="score-value" th:text="${n.tugas}">85</span>
+                                            </div>
+                                            <div class="score-item">
+                                                <span class="score-label">UTS</span>
+                                                <span class="score-value" th:text="${n.uts}">80</span>
+                                            </div>
+                                            <div class="score-item">
+                                                <span class="score-label">UAS</span>
+                                                <span class="score-value" th:text="${n.uas}">90</span>
+                                            </div>
+                                        </div>
+                                        <div class="grade-card-footer">
+                                            <div class="average-section">
+                                                <span class="average-label">Rata-rata</span>
+                                                <span class="average-value"
+                                                    th:text="${#numbers.formatDecimal(n.hitungRataRata(),1,2)}">85.00</span>
+                                            </div>
+                                            <div class="action-btns">
+                                                <a class="btn btn-xs btn-outline-secondary"
+                                                    th:href="@{'/nilai/' + ${n.id} + '/edit'}">
+                                                    <i class="bi bi-pencil"></i>
+                                                </a>
+                                                <form th:action="@{'/nilai/' + ${n.id} + '/delete'}" method="post"
+                                                    class="d-inline"
+                                                    onsubmit="return confirm('Yakin hapus nilai ini?')">
+                                                    <button class="btn btn-xs btn-outline-danger" type="submit">
+                                                        <i class="bi bi-trash"></i>
+                                                    </button>
+                                                </form>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <script th:inline="javascript">
-        // Prepare data for charts
-        const gradeData = /*[[${gradeDistribution}]]*/ {};
-        const statisticsData = {
-            totalMahasiswa: /*[[${totalMahasiswa}]]*/ 0,
-            totalMataKuliah: /*[[${totalMataKuliah}]]*/ 0,
-            totalNilai: /*[[${totalNilai}]]*/ 0
-        };
-
-        // Grade Distribution Chart
-        const gradeCtx = document.getElementById('gradeChart');
-        if (gradeCtx) {
-            new Chart(gradeCtx, {
-                type: 'doughnut',
-                data: {
-                    labels: ['A', 'B', 'C', 'D', 'E'],
-                    datasets: [{
-                        data: [
-                            gradeData['A'] || 0,
-                            gradeData['B'] || 0,
-                            gradeData['C'] || 0,
-                            gradeData['D'] || 0,
-                            gradeData['E'] || 0
-                        ],
-                        backgroundColor: [
-                            '#28a745',
-                            '#007bff',
-                            '#17a2b8',
-                            '#ffc107',
-                            '#dc3545'
-                        ]
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'bottom',
-                            labels: {
-                                padding: 20,
-                                usePointStyle: true
-                            }
-                        }
-                    },
-                    layout: {
-                        padding: {
-                            top: 20,
-                            bottom: 20
-                        }
-                    }
-                }
-            });
+    <!-- Custom Styles for Dashboard -->
+    <style>
+        .welcome-section {
+            padding: 1.5rem;
+            background: var(--surface);
+            border-radius: var(--radius-xl);
+            border: 1px solid var(--glass-border);
         }
 
-        // Statistics Chart
-        const statCtx = document.getElementById('statisticsChart');
-        if (statCtx) {
-            new Chart(statCtx, {
-                type: 'bar',
-                data: {
-                    labels: ['Mahasiswa', 'Mata Kuliah', 'Nilai'],
-                    datasets: [{
-                        label: 'Total',
-                        data: [
-                            statisticsData.totalMahasiswa,
-                            statisticsData.totalMataKuliah,
-                            statisticsData.totalNilai
-                        ],
-                        backgroundColor: ['#007bff', '#28a745', '#17a2b8']
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            grid: {
-                                display: true,
-                                color: 'rgba(0,0,0,0.05)'
+        .welcome-title {
+            font-family: var(--font-display);
+            font-weight: 800;
+            font-size: 1.75rem;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .welcome-subtitle {
+            font-size: 1rem;
+        }
+
+        .chart-container {
+            position: relative;
+        }
+
+        .grade-legend {
+            padding-top: 1rem;
+            border-top: 1px solid var(--glass-border);
+        }
+
+        .grade-indicator {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 0.8rem;
+            margin-right: 0.25rem;
+        }
+
+        .grade-indicator.grade-A {
+            background: linear-gradient(135deg, #11998e, #38ef7d);
+            color: white;
+        }
+
+        .grade-indicator.grade-B {
+            background: var(--gradient-primary);
+            color: white;
+        }
+
+        .grade-indicator.grade-C {
+            background: linear-gradient(135deg, #00d2ff, #3a7bd5);
+            color: white;
+        }
+
+        .grade-indicator.grade-D {
+            background: linear-gradient(135deg, #fa709a, #fee140);
+            color: #333;
+        }
+
+        .grade-indicator.grade-E {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+        }
+
+        .grade-count {
+            font-weight: 600;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+        }
+
+        .student-avatar {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-primary);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.25rem;
+            color: white;
+        }
+
+        .grade-card {
+            background: var(--surface);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-lg);
+            padding: 1rem;
+            height: 100%;
+            transition: all 0.3s ease;
+        }
+
+        .grade-card:hover {
+            border-color: var(--primary-500);
+            transform: translateY(-2px);
+        }
+
+        .grade-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .subject-name {
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 0.95rem;
+        }
+
+        .grade-badge {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+
+        .grade-badge.grade-A {
+            background: linear-gradient(135deg, #11998e, #38ef7d);
+            color: white;
+        }
+
+        .grade-badge.grade-B {
+            background: var(--gradient-primary);
+            color: white;
+        }
+
+        .grade-badge.grade-C {
+            background: linear-gradient(135deg, #00d2ff, #3a7bd5);
+            color: white;
+        }
+
+        .grade-badge.grade-D {
+            background: linear-gradient(135deg, #fa709a, #fee140);
+            color: #333;
+        }
+
+        .grade-badge.grade-E {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+        }
+
+        .score-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .score-item {
+            text-align: center;
+            padding: 0.5rem;
+            background: rgba(99, 102, 241, 0.1);
+            border-radius: 8px;
+        }
+
+        .score-label {
+            display: block;
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .score-value {
+            display: block;
+            font-weight: 700;
+            font-size: 1rem;
+            color: var(--text-primary);
+        }
+
+        .grade-card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 0.75rem;
+            border-top: 1px solid var(--glass-border);
+        }
+
+        .average-section {
+            text-align: left;
+        }
+
+        .average-label {
+            display: block;
+            font-size: 0.7rem;
+            color: var(--text-muted);
+        }
+
+        .average-value {
+            font-weight: 700;
+            font-size: 1.1rem;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .action-btns {
+            display: flex;
+            gap: 0.5rem;
+        }
+    </style>
+
+    <!-- Chart Scripts -->
+    <script th:inline="javascript">
+        document.addEventListener('DOMContentLoaded', function () {
+            // Chart.js default dark theme configuration
+            Chart.defaults.color = 'rgba(255, 255, 255, 0.7)';
+            Chart.defaults.borderColor = 'rgba(255, 255, 255, 0.1)';
+
+            // Data from Thymeleaf
+            const gradeData = /*[[${gradeDistribution}]]*/ {};
+            const statisticsData = {
+                totalMahasiswa: /*[[${totalMahasiswa}]]*/ 0,
+                totalMataKuliah: /*[[${totalMataKuliah}]]*/ 0,
+                totalNilai: /*[[${totalNilai}]]*/ 0
+            };
+
+            // Update grade counts in legend
+            document.getElementById('gradeA').textContent = gradeData['A'] || 0;
+            document.getElementById('gradeB').textContent = gradeData['B'] || 0;
+            document.getElementById('gradeC').textContent = gradeData['C'] || 0;
+            document.getElementById('gradeD').textContent = gradeData['D'] || 0;
+            document.getElementById('gradeE').textContent = gradeData['E'] || 0;
+
+            // Grade Distribution Doughnut Chart
+            const gradeCtx = document.getElementById('gradeChart');
+            if (gradeCtx) {
+                new Chart(gradeCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Grade A', 'Grade B', 'Grade C', 'Grade D', 'Grade E'],
+                        datasets: [{
+                            data: [
+                                gradeData['A'] || 0,
+                                gradeData['B'] || 0,
+                                gradeData['C'] || 0,
+                                gradeData['D'] || 0,
+                                gradeData['E'] || 0
+                            ],
+                            backgroundColor: [
+                                'rgba(16, 185, 129, 0.8)',
+                                'rgba(99, 102, 241, 0.8)',
+                                'rgba(6, 182, 212, 0.8)',
+                                'rgba(245, 158, 11, 0.8)',
+                                'rgba(239, 68, 68, 0.8)'
+                            ],
+                            borderColor: [
+                                'rgb(16, 185, 129)',
+                                'rgb(99, 102, 241)',
+                                'rgb(6, 182, 212)',
+                                'rgb(245, 158, 11)',
+                                'rgb(239, 68, 68)'
+                            ],
+                            borderWidth: 2,
+                            hoverOffset: 10
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        cutout: '65%',
+                        plugins: {
+                            legend: {
+                                display: false
                             },
-                            ticks: {
-                                precision: 0
+                            tooltip: {
+                                backgroundColor: 'rgba(15, 15, 35, 0.9)',
+                                titleFont: { size: 14, weight: 'bold' },
+                                bodyFont: { size: 13 },
+                                padding: 12,
+                                cornerRadius: 10,
+                                displayColors: true,
+                                boxPadding: 6
                             }
                         },
-                        x: {
-                            grid: {
-                                display: false
-                            }
-                        }
-                    },
-                    plugins: {
-                        legend: {
-                            display: false
-                        }
-                    },
-                    layout: {
-                        padding: {
-                            top: 20,
-                            bottom: 20
+                        animation: {
+                            animateRotate: true,
+                            animateScale: true
                         }
                     }
-                }
-            });
-        }
+                });
+            }
+
+            // Statistics Bar Chart
+            const statCtx = document.getElementById('statisticsChart');
+            if (statCtx) {
+                new Chart(statCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Mahasiswa', 'Mata Kuliah', 'Entri Nilai'],
+                        datasets: [{
+                            label: 'Total',
+                            data: [
+                                statisticsData.totalMahasiswa,
+                                statisticsData.totalMataKuliah,
+                                statisticsData.totalNilai
+                            ],
+                            backgroundColor: [
+                                'rgba(99, 102, 241, 0.7)',
+                                'rgba(16, 185, 129, 0.7)',
+                                'rgba(6, 182, 212, 0.7)'
+                            ],
+                            borderColor: [
+                                'rgb(99, 102, 241)',
+                                'rgb(16, 185, 129)',
+                                'rgb(6, 182, 212)'
+                            ],
+                            borderWidth: 2,
+                            borderRadius: 10,
+                            borderSkipped: false
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                grid: {
+                                    color: 'rgba(255, 255, 255, 0.05)'
+                                },
+                                ticks: {
+                                    precision: 0,
+                                    font: { size: 11 }
+                                }
+                            },
+                            x: {
+                                grid: {
+                                    display: false
+                                },
+                                ticks: {
+                                    font: { size: 11 }
+                                }
+                            }
+                        },
+                        plugins: {
+                            legend: {
+                                display: false
+                            },
+                            tooltip: {
+                                backgroundColor: 'rgba(15, 15, 35, 0.9)',
+                                titleFont: { size: 14, weight: 'bold' },
+                                bodyFont: { size: 13 },
+                                padding: 12,
+                                cornerRadius: 10
+                            }
+                        },
+                        animation: {
+                            duration: 1000,
+                            easing: 'easeOutQuart'
+                        }
+                    }
+                });
+            }
+        });
     </script>
 </section>
-</html>
 
+</html>

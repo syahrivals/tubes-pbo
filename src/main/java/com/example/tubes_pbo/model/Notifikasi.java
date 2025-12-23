@@ -5,7 +5,6 @@ import java.time.LocalDateTime;
 public class Notifikasi {
     private Long id;
     private String nim;
-    private String kodeDosen;
     private String pesan;
     private String tipe; // INFO, SUCCESS, WARNING, ERROR
     private boolean dibaca;
@@ -16,14 +15,6 @@ public class Notifikasi {
 
     public Notifikasi(String nim, String pesan, String tipe) {
         this.nim = nim;
-        this.pesan = pesan;
-        this.tipe = tipe;
-        this.dibaca = false;
-        this.createdAt = LocalDateTime.now();
-    }
-
-    public Notifikasi(String kodeDosen, String pesan, String tipe, boolean isDosen) {
-        this.kodeDosen = kodeDosen;
         this.pesan = pesan;
         this.tipe = tipe;
         this.dibaca = false;
@@ -44,14 +35,6 @@ public class Notifikasi {
 
     public void setNim(String nim) {
         this.nim = nim;
-    }
-
-    public String getKodeDosen() {
-        return kodeDosen;
-    }
-
-    public void setKodeDosen(String kodeDosen) {
-        this.kodeDosen = kodeDosen;
     }
 
     public String getPesan() {

@@ -1,54 +1,86 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" th:replace="layout :: layout(~{::section})">
+<html xmlns:th="http://www.thymeleaf.org" th:replace="layout :: layout(~{::section})" lang="id">
 <section>
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <div>
-            <h5 class="mb-0">📋 Activity Log</h5>
-            <p class="text-muted small mb-0">Riwayat aktivitas sistem</p>
+    <!-- Page Header -->
+    <div class="page-header animate-fade-in mb-4">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <h4 class="page-title mb-1">
+                    <i class="bi bi-journal-text text-info me-2"></i>
+                    Activity Logs
+                </h4>
+                <p class="text-muted mb-0">Riwayat aktivitas sistem</p>
+            </div>
+            <div class="col-lg-4 text-lg-end mt-3 mt-lg-0">
+                <a class="btn btn-outline-secondary btn-sm" href="/">
+                    <i class="bi bi-arrow-left me-1"></i>Dashboard
+                </a>
+            </div>
         </div>
-        <a href="/" class="btn btn-outline-secondary btn-sm">← Dashboard</a>
     </div>
 
-    <div class="card shadow-soft">
+    <!-- Logs -->
+    <div class="card animate-fade-in">
         <div class="card-body">
-            <div class="table-responsive">
-                <table class="table table-hover">
-                    <thead class="table-light">
-                    <tr>
-                        <th width="15%">Waktu</th>
-                        <th width="10%">Role</th>
-                        <th width="15%">Username</th>
-                        <th width="10%">Action</th>
-                        <th width="15%">Entity</th>
-                        <th width="35%">Deskripsi</th>
-                    </tr>
+            <div th:if="${logs == null || #lists.isEmpty(logs)}" class="empty-state">
+                <div class="empty-state-icon">📋</div>
+                <h5 class="empty-state-title">Tidak Ada Log</h5>
+                <p class="empty-state-text">Belum ada aktivitas yang tercatat.</p>
+            </div>
+
+            <div class="table-responsive" th:if="${logs != null && !#lists.isEmpty(logs)}">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th><i class="bi bi-clock me-1"></i>Waktu</th>
+                            <th><i class="bi bi-person me-1"></i>User</th>
+                            <th><i class="bi bi-activity me-1"></i>Aksi</th>
+                            <th><i class="bi bi-chat-text me-1"></i>Detail</th>
+                        </tr>
                     </thead>
                     <tbody>
-                    <tr th:each="log : ${logs}">
-                        <td class="small" th:text="${#temporals.format(log.timestamp, 'dd MMM yyyy HH:mm:ss')}">Date</td>
-                        <td>
-                            <span class="badge" 
-                                  th:classappend="${log.userRole == 'DOSEN' ? 'bg-primary' : 'bg-success'}"
-                                  th:text="${log.userRole}">Role</span>
-                        </td>
-                        <td><code th:text="${log.username}">username</code></td>
-                        <td>
-                            <span class="badge" 
-                                  th:classappend="${log.action == 'CREATE' ? 'bg-success' : (log.action == 'UPDATE' ? 'bg-warning' : (log.action == 'DELETE' ? 'bg-danger' : 'bg-info'))}"
-                                  th:text="${log.action}">Action</span>
-                        </td>
-                        <td><span class="badge bg-secondary" th:text="${log.entityType}">Entity</span></td>
-                        <td class="small" th:text="${log.description}">Description</td>
-                    </tr>
+                        <tr th:each="log : ${logs}">
+                            <td>
+                                <span class="text-muted small"
+                                    th:text="${log.timestamp != null ? #temporals.format(log.timestamp, 'dd MMM yyyy HH:mm:ss') : '-'}">Time</span>
+                            </td>
+                            <td>
+                                <span class="badge bg-primary-subtle text-primary"
+                                    th:text="${log.username ?: 'System'}">User</span>
+                            </td>
+                            <td>
+                                <span class="badge"
+                                    th:classappend="${log.action == 'CREATE' ? 'bg-success' : (log.action == 'UPDATE' ? 'bg-info' : (log.action == 'DELETE' ? 'bg-danger' : 'bg-secondary'))}"
+                                    th:text="${log.action}">Action</span>
+                            </td>
+                            <td>
+                                <span class="text-muted" th:text="${log.description}">Details</span>
+                            </td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
-            
-            <div th:if="${#lists.isEmpty(logs)}" class="alert alert-light text-center">
-                Belum ada aktivitas yang tercatat.
-            </div>
         </div>
     </div>
-</section>
-</html>
 
+    <style>
+        .page-header {
+            padding: 1.5rem;
+            background: var(--surface);
+            border-radius: var(--radius-xl);
+            border: 1px solid var(--glass-border);
+        }
+
+        .page-title {
+            font-family: var(--font-display);
+            font-weight: 800;
+            color: var(--text-primary);
+        }
+
+        .bg-primary-subtle {
+            background: rgba(99, 102, 241, 0.2) !important;
+        }
+    </style>
+</section>
+
+</html>

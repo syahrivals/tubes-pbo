@@ -1,5 +1,13 @@
 package com.example.tubes_pbo.service;
 
+import com.example.tubes_pbo.model.Mahasiswa;
+import com.example.tubes_pbo.model.Nilai;
+import com.example.tubes_pbo.report.ReportServiceInterface;
+import com.example.tubes_pbo.repository.MahasiswaRepository;
+import com.example.tubes_pbo.repository.NilaiRepository;
+import jakarta.annotation.PostConstruct;
+import org.springframework.stereotype.Service;
+
 import java.io.File;
 import java.util.Collection;
 import java.util.HashMap;
@@ -7,16 +15,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
-import javax.annotation.PostConstruct;
-
-import org.springframework.stereotype.Service;
-
-import com.example.tubes_pbo.model.Mahasiswa;
-import com.example.tubes_pbo.model.Nilai;
-import com.example.tubes_pbo.report.ReportServiceInterface;
-import com.example.tubes_pbo.repository.MahasiswaRepository;
-import com.example.tubes_pbo.repository.NilaiRepository;
 
 @Service
 public class GradebookService {
@@ -27,9 +25,9 @@ public class GradebookService {
     private final PasswordService passwordService;
 
     public GradebookService(MahasiswaRepository mahasiswaRepository,
-                            NilaiRepository nilaiRepository,
-                            ReportServiceInterface reportService,
-                            PasswordService passwordService) {
+            NilaiRepository nilaiRepository,
+            ReportServiceInterface reportService,
+            PasswordService passwordService) {
         this.mahasiswaRepository = mahasiswaRepository;
         this.nilaiRepository = nilaiRepository;
         this.reportService = reportService;
@@ -78,6 +76,10 @@ public class GradebookService {
         return nilaiRepository.count();
     }
 
+    public boolean existsNilai(String nim, String mataKuliah) {
+        return nilaiRepository.existsByNimAndMataKuliah(nim, mataKuliah);
+    }
+
     public Nilai addNilai(String nim, Nilai nilai) {
         return nilaiRepository.insert(nim, nilai);
     }
@@ -119,4 +121,3 @@ public class GradebookService {
         return mahasiswaRepository.update(nim, nama, username);
     }
 }
-

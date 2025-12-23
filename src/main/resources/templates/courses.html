@@ -1,84 +1,225 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" th:replace="layout :: layout(~{::section})">
+<html xmlns:th="http://www.thymeleaf.org" th:replace="layout :: layout(~{::section})" lang="id">
 <section>
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <div>
-            <h5 class="mb-0">📚 Kelola Mata Kuliah</h5>
-            <p class="text-muted small mb-0">Daftar mata kuliah yang Anda ampu</p>
+    <!-- Page Header -->
+    <div class="page-header animate-fade-in mb-4">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <h4 class="page-title mb-1">
+                    <i class="bi bi-journal-bookmark-fill text-primary me-2"></i>
+                    Kelola Mata Kuliah
+                </h4>
+                <p class="text-muted mb-0">Daftar mata kuliah yang Anda ampu</p>
+            </div>
+            <div class="col-lg-4 text-lg-end mt-3 mt-lg-0">
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addModal">
+                    <i class="bi bi-plus-circle me-2"></i>Tambah Mata Kuliah
+                </button>
+            </div>
         </div>
-        <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addModal">
-            ➕ Tambah Mata Kuliah
-        </button>
     </div>
 
-    <div th:if="${success}" class="alert alert-success alert-dismissible fade show">
-        <span th:text="${success}"></span>
+    <!-- Alerts -->
+    <div th:if="${success}" class="alert alert-success alert-dismissible fade show animate-fade-in mb-4">
+        <i class="bi bi-check-circle-fill me-2"></i>
+        <span th:text="${success}">Success message</span>
         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     </div>
-    <div th:if="${error}" class="alert alert-danger alert-dismissible fade show">
-        <span th:text="${error}"></span>
+    <div th:if="${error}" class="alert alert-danger alert-dismissible fade show animate-fade-in mb-4">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+        <span th:text="${error}">Error message</span>
         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     </div>
 
-    <div class="row g-3">
-        <div class="col-md-6 col-lg-4" th:each="course : ${courses}">
-            <div class="card h-100 shadow-soft">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-start mb-2">
-                        <div>
-                            <span class="badge bg-primary mb-2" th:text="${course.kode}">Kode</span>
-                            <h6 class="mb-0" th:text="${course.nama}">Nama MK</h6>
-                        </div>
-                        <span class="badge bg-success" th:text="${course.sks} + ' SKS'">3 SKS</span>
+    <!-- Courses Grid -->
+    <div class="row g-4">
+        <div class="col-md-6 col-lg-4 animate-fade-in" th:each="course, iterStat : ${courses}"
+            th:style="${'animation-delay: ' + (iterStat.index * 0.1) + 's'}">
+            <div class="course-card-v2">
+                <div class="course-icon">
+                    <i class="bi bi-book"></i>
+                </div>
+                <div class="course-content">
+                    <div class="course-header">
+                        <span class="course-code" th:text="${course.kode}">IF101</span>
+                        <span class="course-sks" th:text="${course.sks + ' SKS'}">3 SKS</span>
                     </div>
-                    <div class="mt-3">
-                        <form th:action="@{/courses/{id}/delete(id=${course.id})}" method="post" 
-                              onsubmit="return confirm('Yakin hapus mata kuliah ini?')">
-                            <button type="submit" class="btn btn-sm btn-outline-danger w-100">🗑️ Hapus Mata Kuliah</button>
-                        </form>
-                    </div>
+                    <h5 class="course-name" th:text="${course.nama}">Nama Mata Kuliah</h5>
+                </div>
+                <div class="course-actions">
+                    <form th:action="@{/courses/{id}/delete(id=${course.id})}" method="post"
+                        onsubmit="return confirm('Yakin hapus mata kuliah ini? Semua enrollment terkait juga akan dihapus.')">
+                        <button type="submit" class="btn btn-outline-danger btn-sm w-100">
+                            <i class="bi bi-trash me-1"></i>Hapus
+                        </button>
+                    </form>
                 </div>
             </div>
         </div>
-        
+
+        <!-- Empty State -->
         <div class="col-12" th:if="${#lists.isEmpty(courses)}">
-            <div class="alert alert-light text-center">
-                Belum ada mata kuliah. Klik tombol "Tambah Mata Kuliah" untuk mulai.
+            <div class="empty-state">
+                <div class="empty-state-icon">📚</div>
+                <h5 class="empty-state-title">Belum Ada Mata Kuliah</h5>
+                <p class="empty-state-text">
+                    Klik tombol "Tambah Mata Kuliah" untuk mulai menambahkan mata kuliah yang Anda ampu.
+                </p>
             </div>
         </div>
     </div>
 
     <!-- Add Modal -->
     <div class="modal fade" id="addModal" tabindex="-1">
-        <div class="modal-dialog">
+        <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Tambah Mata Kuliah</h5>
+                    <h5 class="modal-title">
+                        <i class="bi bi-plus-circle text-primary me-2"></i>
+                        Tambah Mata Kuliah
+                    </h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <form method="post" action="/courses">
                     <div class="modal-body">
                         <div class="mb-3">
-                            <label class="form-label">Kode</label>
+                            <label class="form-label">
+                                <i class="bi bi-hash me-1"></i>Kode Mata Kuliah
+                            </label>
                             <input name="kode" class="form-control" placeholder="Contoh: IF101" required>
+                            <div class="form-text">Kode unik untuk identifikasi mata kuliah</div>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label">Nama Mata Kuliah</label>
-                            <input name="nama" class="form-control" placeholder="Contoh: Pemrograman Berorientasi Objek" required>
+                            <label class="form-label">
+                                <i class="bi bi-book me-1"></i>Nama Mata Kuliah
+                            </label>
+                            <input name="nama" class="form-control" placeholder="Contoh: Pemrograman Berorientasi Objek"
+                                required>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label">SKS</label>
+                            <label class="form-label">
+                                <i class="bi bi-123 me-1"></i>Jumlah SKS
+                            </label>
                             <input name="sks" type="number" class="form-control" value="3" min="1" max="6" required>
+                            <div class="form-text">Minimal 1 SKS, maksimal 6 SKS</div>
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                        <button type="submit" class="btn btn-primary">Simpan</button>
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                            <i class="bi bi-x me-1"></i>Batal
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-lg me-1"></i>Simpan
+                        </button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
-</section>
-</html>
 
+    <!-- Custom Styles -->
+    <style>
+        .page-header {
+            padding: 1.5rem;
+            background: var(--surface);
+            border-radius: var(--radius-xl);
+            border: 1px solid var(--glass-border);
+        }
+
+        .page-title {
+            font-family: var(--font-display);
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: 0;
+        }
+
+        .course-card-v2 {
+            background: var(--surface);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-xl);
+            padding: 1.5rem;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .course-card-v2::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--gradient-primary);
+        }
+
+        .course-card-v2:hover {
+            border-color: var(--primary-500);
+            transform: translateY(-4px);
+            box-shadow: 0 12px 30px rgba(99, 102, 241, 0.15);
+        }
+
+        .course-icon {
+            width: 56px;
+            height: 56px;
+            background: var(--gradient-primary);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+            margin-bottom: 1.25rem;
+            box-shadow: 0 8px 20px rgba(99, 102, 241, 0.3);
+        }
+
+        .course-content {
+            flex: 1;
+        }
+
+        .course-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .course-code {
+            background: rgba(99, 102, 241, 0.15);
+            color: var(--primary-400);
+            padding: 0.25rem 0.75rem;
+            border-radius: var(--radius-full);
+            font-size: 0.75rem;
+            font-weight: 700;
+            font-family: var(--font-mono);
+        }
+
+        .course-sks {
+            background: linear-gradient(135deg, #11998e, #38ef7d);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: var(--radius-full);
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .course-name {
+            font-family: var(--font-display);
+            font-weight: 700;
+            color: var(--text-primary);
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            line-height: 1.3;
+        }
+
+        .course-actions {
+            padding-top: 1rem;
+            border-top: 1px solid var(--glass-border);
+        }
+    </style>
+</section>
+
+</html>

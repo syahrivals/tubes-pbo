@@ -1,18 +1,17 @@
 package com.example.tubes_pbo.repository;
 
-import java.sql.PreparedStatement;
-import java.sql.Statement;
-import java.sql.Timestamp;
-import java.util.List;
-import java.util.Optional;
-
+import com.example.tubes_pbo.model.Enrollment;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
-import com.example.tubes_pbo.model.Enrollment;
+import java.sql.PreparedStatement;
+import java.sql.Statement;
+import java.sql.Timestamp;
+import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class EnrollmentRepository {
@@ -37,7 +36,7 @@ public class EnrollmentRepository {
             e.setNamaMataKuliah(rs.getString("nama_mata_kuliah"));
             e.setSks(rs.getInt("sks"));
         } catch (Exception ex) {
-            // Ignore if joined columns don't exist in result set
+            // ignore if columns don't exist
         }
         return e;
     };
@@ -57,14 +56,15 @@ public class EnrollmentRepository {
         return jdbcTemplate.query(sql, mapper, nim);
     }
 
-    public List<Enrollment> findAll() {
+    public List<Enrollment> findByMataKuliahId(Long mataKuliahId) {
         String sql = "SELECT e.*, m.nama as nama_mahasiswa, " +
                     "mk.kode as kode_mata_kuliah, mk.nama as nama_mata_kuliah, mk.sks " +
                     "FROM enrollment e " +
                     "LEFT JOIN mahasiswa m ON e.nim = m.nim " +
                     "LEFT JOIN mata_kuliah mk ON e.mata_kuliah_id = mk.id " +
+                    "WHERE e.mata_kuliah_id = ? " +
                     "ORDER BY e.enrolled_at DESC";
-        return jdbcTemplate.query(sql, mapper);
+        return jdbcTemplate.query(sql, mapper, mataKuliahId);
     }
 
     public Optional<Enrollment> findById(Long id) {
@@ -107,18 +107,7 @@ public class EnrollmentRepository {
         return rows > 0;
     }
 
-    public boolean update(Enrollment enrollment) {
-        String sql = "UPDATE enrollment SET nim = ?, mata_kuliah_id = ?, status = ?, enrolled_at = ? WHERE id = ?";
-        int rows = jdbcTemplate.update(sql, 
-            enrollment.getNim(), 
-            enrollment.getMataKuliahId(), 
-            enrollment.getStatus(), 
-            Timestamp.valueOf(enrollment.getEnrolledAt()),
-            enrollment.getId());
-        return rows > 0;
-    }
-
-    public boolean delete(Long id) {
+    public boolean deleteById(Long id) {
         String sql = "DELETE FROM enrollment WHERE id = ?";
         int rows = jdbcTemplate.update(sql, id);
         return rows > 0;
@@ -134,9 +123,14 @@ public class EnrollmentRepository {
         return c == null ? 0 : c;
     }
 
-    public long countByMataKuliahId(Long mataKuliahId) {
-        Long c = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM enrollment WHERE mata_kuliah_id = ?", Long.class, mataKuliahId);
-        return c == null ? 0 : c;
+    public List<Enrollment> findPendingByKodeDosen(String kodeDosen) {
+        String sql = "SELECT e.*, m.nama as nama_mahasiswa, " +
+                    "mk.kode as kode_mata_kuliah, mk.nama as nama_mata_kuliah, mk.sks " +
+                    "FROM enrollment e " +
+                    "LEFT JOIN mahasiswa m ON e.nim = m.nim " +
+                    "LEFT JOIN mata_kuliah mk ON e.mata_kuliah_id = mk.id " +
+                    "WHERE mk.kode_dosen = ? AND e.status = 'PENDING' " +
+                    "ORDER BY e.enrolled_at DESC";
+        return jdbcTemplate.query(sql, mapper, kodeDosen);
     }
 }
-

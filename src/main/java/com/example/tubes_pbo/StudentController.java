@@ -4,8 +4,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import javax.servlet.http.HttpSession;
-
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -27,6 +25,8 @@ import com.example.tubes_pbo.repository.NotifikasiRepository;
 import com.example.tubes_pbo.service.GradebookService;
 import com.example.tubes_pbo.service.NotifikasiService;
 import com.example.tubes_pbo.service.PdfExportService;
+
+import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class StudentController {
@@ -55,66 +55,42 @@ public class StudentController {
     @GetMapping("/student")
     public String studentDashboard(Model model, HttpSession session) {
         if (!isMahasiswa(session)) return "redirect:/login";
-        try {
-            String nim = (String) session.getAttribute("refId");
-            List<Nilai> nilai = gradebookService.getNilai(nim);
-            double rata = nilai.stream().mapToDouble(Nilai::hitungRataRata).average().orElse(0);
-            
-            // Calculate statistics
-            Map<String, Long> gradeDistribution = nilai.stream()
-                .collect(Collectors.groupingBy(Nilai::getGrade, Collectors.counting()));
-            
-            double highest = nilai.stream().mapToDouble(Nilai::hitungRataRata).max().orElse(0);
-            double lowest = nilai.stream().mapToDouble(Nilai::hitungRataRata).min().orElse(0);
-            
-            // Get unread notifications count
-            long unreadCount = notifikasiRepository.countUnreadByNim(nim);
-            
-            model.addAttribute("nama", session.getAttribute("displayName"));
-            model.addAttribute("nim", nim);
-            model.addAttribute("username", session.getAttribute("username"));
-            model.addAttribute("nilaiList", nilai);
-            model.addAttribute("rata", rata);
-            model.addAttribute("totalMataKuliah", nilai.size());
-            model.addAttribute("gradeDistribution", gradeDistribution);
-            model.addAttribute("highest", highest);
-            model.addAttribute("lowest", lowest);
-            model.addAttribute("unreadNotifications", unreadCount);
-            model.addAttribute("active", "student");
-            return "student";
-        } catch (Exception e) {
-            model.addAttribute("error", "Gagal memuat dashboard: " + e.getMessage());
-            model.addAttribute("nama", session.getAttribute("displayName"));
-            model.addAttribute("nim", session.getAttribute("refId"));
-            model.addAttribute("username", session.getAttribute("username"));
-            model.addAttribute("nilaiList", java.util.Collections.emptyList());
-            model.addAttribute("rata", 0.0);
-            model.addAttribute("totalMataKuliah", 0);
-            model.addAttribute("gradeDistribution", java.util.Collections.emptyMap());
-            model.addAttribute("highest", 0.0);
-            model.addAttribute("lowest", 0.0);
-            model.addAttribute("unreadNotifications", 0);
-            model.addAttribute("active", "student");
-            return "student";
-        }
+        String nim = (String) session.getAttribute("refId");
+        List<Nilai> nilai = gradebookService.getNilai(nim);
+        double rata = nilai.stream().mapToDouble(Nilai::hitungRataRata).average().orElse(0);
+        
+        // Calculate statistics
+        Map<String, Long> gradeDistribution = nilai.stream()
+            .collect(Collectors.groupingBy(Nilai::getGrade, Collectors.counting()));
+        
+        double highest = nilai.stream().mapToDouble(Nilai::hitungRataRata).max().orElse(0);
+        double lowest = nilai.stream().mapToDouble(Nilai::hitungRataRata).min().orElse(0);
+        
+        // Get unread notifications count
+        long unreadCount = notifikasiRepository.countUnreadByNim(nim);
+        
+        model.addAttribute("nama", session.getAttribute("displayName"));
+        model.addAttribute("nim", nim);
+        model.addAttribute("username", session.getAttribute("username"));
+        model.addAttribute("nilaiList", nilai);
+        model.addAttribute("rata", rata);
+        model.addAttribute("totalMataKuliah", nilai.size());
+        model.addAttribute("gradeDistribution", gradeDistribution);
+        model.addAttribute("highest", highest);
+        model.addAttribute("lowest", lowest);
+        model.addAttribute("unreadNotifications", unreadCount);
+        model.addAttribute("active", "student");
+        return "student";
     }
 
     @GetMapping("/student/notifications")
     public String notificationsPage(Model model, HttpSession session) {
         if (!isMahasiswa(session)) return "redirect:/login";
-        try {
-            String nim = (String) session.getAttribute("refId");
-            model.addAttribute("notifications", notifikasiRepository.findByNim(nim));
-            model.addAttribute("unreadNotifications", notifikasiRepository.countUnreadByNim(nim));
-            model.addAttribute("active", "notifications");
-            return "student-notifications";
-        } catch (Exception e) {
-            model.addAttribute("error", "Gagal memuat notifikasi: " + e.getMessage());
-            model.addAttribute("notifications", java.util.Collections.emptyList());
-            model.addAttribute("unreadNotifications", 0);
-            model.addAttribute("active", "notifications");
-            return "student-notifications";
-        }
+        String nim = (String) session.getAttribute("refId");
+        model.addAttribute("notifications", notifikasiRepository.findByNim(nim));
+        model.addAttribute("unreadNotifications", notifikasiRepository.countUnreadByNim(nim));
+        model.addAttribute("active", "notifications");
+        return "student-notifications";
     }
 
     @PostMapping("/student/notifications/{id}/read")
@@ -135,21 +111,13 @@ public class StudentController {
     @GetMapping("/student/profile")
     public String studentProfile(Model model, HttpSession session) {
         if (!isMahasiswa(session)) return "redirect:/login";
-        try {
-            String nim = (String) session.getAttribute("refId");
-            Mahasiswa mahasiswa = gradebookService.findMahasiswa(nim).orElse(null);
-            
-            model.addAttribute("mahasiswa", mahasiswa);
-            model.addAttribute("unreadNotifications", notifikasiRepository.countUnreadByNim(nim));
-            model.addAttribute("active", "profile");
-            return "student-profile";
-        } catch (Exception e) {
-            model.addAttribute("error", "Gagal memuat profile: " + e.getMessage());
-            model.addAttribute("mahasiswa", null);
-            model.addAttribute("unreadNotifications", 0);
-            model.addAttribute("active", "profile");
-            return "student-profile";
-        }
+        String nim = (String) session.getAttribute("refId");
+        Mahasiswa mahasiswa = gradebookService.findMahasiswa(nim).orElse(null);
+        
+        model.addAttribute("mahasiswa", mahasiswa);
+        model.addAttribute("unreadNotifications", notifikasiRepository.countUnreadByNim(nim));
+        model.addAttribute("active", "profile");
+        return "student-profile";
     }
 
     @PostMapping("/student/change-password")
@@ -244,29 +212,21 @@ public class StudentController {
     @GetMapping("/student/courses")
     public String browseCourses(Model model, HttpSession session) {
         if (!isMahasiswa(session)) return "redirect:/login";
-        try {
-            String nim = (String) session.getAttribute("refId");
-            List<MataKuliah> allCourses = mataKuliahRepository.findAll();
-            List<Enrollment> myEnrollments = enrollmentRepository.findByNim(nim);
-            
-            // Mark which courses are already enrolled
-            List<Long> enrolledIds = myEnrollments.stream()
-                .map(Enrollment::getMataKuliahId)
-                .collect(Collectors.toList());
-            
-            model.addAttribute("courses", allCourses);
-            model.addAttribute("enrolledIds", enrolledIds);
-            model.addAttribute("unreadNotifications", notifikasiRepository.countUnreadByNim(nim));
-            model.addAttribute("active", "browse-courses");
-            return "student-browse-courses";
-        } catch (Exception e) {
-            model.addAttribute("error", "Gagal memuat courses: " + e.getMessage());
-            model.addAttribute("courses", java.util.Collections.emptyList());
-            model.addAttribute("enrolledIds", java.util.Collections.emptyList());
-            model.addAttribute("unreadNotifications", 0);
-            model.addAttribute("active", "browse-courses");
-            return "student-browse-courses";
-        }
+        
+        String nim = (String) session.getAttribute("refId");
+        List<MataKuliah> allCourses = mataKuliahRepository.findAll();
+        List<Enrollment> myEnrollments = enrollmentRepository.findByNim(nim);
+        
+        // Mark which courses are already enrolled
+        List<Long> enrolledIds = myEnrollments.stream()
+            .map(Enrollment::getMataKuliahId)
+            .collect(Collectors.toList());
+        
+        model.addAttribute("courses", allCourses);
+        model.addAttribute("enrolledIds", enrolledIds);
+        model.addAttribute("unreadNotifications", notifikasiRepository.countUnreadByNim(nim));
+        model.addAttribute("active", "browse-courses");
+        return "student-browse-courses";
     }
 
     @PostMapping("/student/enroll")
@@ -287,18 +247,14 @@ public class StudentController {
             Enrollment enrollment = new Enrollment(nim, courseId, "PENDING");
             enrollmentRepository.insert(enrollment);
             mataKuliahRepository.findById(courseId).ifPresent(mk -> {
-                notifikasiService.notifyEnrollmentRequest(nim, mk.getNama());
-                // Notify dosen about new enrollment request
-                notifikasiService.notifyNewEnrollmentRequest(
-                    mk.getKodeDosen(), 
-                    (String) session.getAttribute("displayName"), 
-                    nim, 
-                    mk.getNama()
-                );
+                notifikasiService.notifyEnrollment(nim, mk.getNama());
+                // Notify dosen about pending enrollment
+                String namaMahasiswa = gradebookService.findMahasiswa(nim).map(Mahasiswa::getNama).orElse(nim);
+                notifikasiService.notifyEnrollmentPending(mk.getKodeDosen(), namaMahasiswa, mk.getNama());
             });
-            redirectAttributes.addFlashAttribute("success", "Permintaan pendaftaran mata kuliah telah dikirim ke dosen!");
+            redirectAttributes.addFlashAttribute("success", "Permintaan pendaftaran mata kuliah dikirim!");
         } catch (Exception e) {
-            redirectAttributes.addFlashAttribute("error", "Gagal mengirim permintaan: " + e.getMessage());
+            redirectAttributes.addFlashAttribute("error", "Gagal mendaftar: " + e.getMessage());
         }
         
         return "redirect:/student/enrollments";
@@ -307,31 +263,20 @@ public class StudentController {
     @GetMapping("/student/enrollments")
     public String myEnrollments(Model model, HttpSession session) {
         if (!isMahasiswa(session)) return "redirect:/login";
-        try {
-            String nim = (String) session.getAttribute("refId");
-            List<Enrollment> enrollments = enrollmentRepository.findByNim(nim)
-                .stream()
-                .filter(e -> "ENROLLED".equals(e.getStatus()) || "COMPLETED".equals(e.getStatus()))
-                .collect(java.util.stream.Collectors.toList());
-            
-            int totalSks = enrollments.stream()
-                .filter(e -> "ENROLLED".equals(e.getStatus()))
-                .mapToInt(Enrollment::getSks)
-                .sum();
-            
-            model.addAttribute("enrollments", enrollments);
-            model.addAttribute("totalSks", totalSks);
-            model.addAttribute("unreadNotifications", notifikasiRepository.countUnreadByNim(nim));
-            model.addAttribute("active", "enrollments");
-            return "student-enrollments";
-        } catch (Exception e) {
-            model.addAttribute("error", "Gagal memuat enrollments: " + e.getMessage());
-            model.addAttribute("enrollments", java.util.Collections.emptyList());
-            model.addAttribute("totalSks", 0);
-            model.addAttribute("unreadNotifications", 0);
-            model.addAttribute("active", "enrollments");
-            return "student-enrollments";
-        }
+        
+        String nim = (String) session.getAttribute("refId");
+        List<Enrollment> enrollments = enrollmentRepository.findByNim(nim);
+        
+        int totalSks = enrollments.stream()
+            .filter(e -> "ENROLLED".equals(e.getStatus()) || "APPROVED".equals(e.getStatus()))
+            .mapToInt(Enrollment::getSks)
+            .sum();
+        
+        model.addAttribute("enrollments", enrollments);
+        model.addAttribute("totalSks", totalSks);
+        model.addAttribute("unreadNotifications", notifikasiRepository.countUnreadByNim(nim));
+        model.addAttribute("active", "enrollments");
+        return "student-enrollments";
     }
 
     @PostMapping("/student/enrollments/{id}/drop")

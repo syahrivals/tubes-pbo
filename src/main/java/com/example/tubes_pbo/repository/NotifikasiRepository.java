@@ -22,7 +22,6 @@ public class NotifikasiRepository {
         Notifikasi n = new Notifikasi();
         n.setId(rs.getLong("id"));
         n.setNim(rs.getString("nim"));
-        n.setKodeDosen(rs.getString("kode_dosen"));
         n.setPesan(rs.getString("pesan"));
         n.setTipe(rs.getString("tipe"));
         n.setDibaca(rs.getBoolean("dibaca"));
@@ -46,24 +45,23 @@ public class NotifikasiRepository {
 
     public long countUnreadByNim(String nim) {
         Long count = jdbcTemplate.queryForObject(
-                "SELECT COUNT(*) FROM notifikasi WHERE nim = ? AND dibaca = 0",
+                "SELECT COUNT(*) FROM notifikasi WHERE nim = ? AND dibaca = false",
                 Long.class, nim
         );
         return count != null ? count : 0;
     }
 
     public Notifikasi insert(Notifikasi notifikasi) {
-        String sql = "INSERT INTO notifikasi(nim, kode_dosen, pesan, tipe, dibaca, created_at) VALUES(?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO notifikasi(nim, pesan, tipe, dibaca, created_at) VALUES(?, ?, ?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
         
         jdbcTemplate.update(connection -> {
             PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
             ps.setString(1, notifikasi.getNim());
-            ps.setString(2, notifikasi.getKodeDosen());
-            ps.setString(3, notifikasi.getPesan());
-            ps.setString(4, notifikasi.getTipe());
-            ps.setBoolean(5, notifikasi.isDibaca());
-            ps.setTimestamp(6, Timestamp.valueOf(notifikasi.getCreatedAt()));
+            ps.setString(2, notifikasi.getPesan());
+            ps.setString(3, notifikasi.getTipe());
+            ps.setBoolean(4, notifikasi.isDibaca());
+            ps.setTimestamp(5, Timestamp.valueOf(notifikasi.getCreatedAt()));
             return ps;
         }, keyHolder);
         
@@ -72,30 +70,26 @@ public class NotifikasiRepository {
     }
 
     public boolean markAsRead(Long id) {
-        return jdbcTemplate.update("UPDATE notifikasi SET dibaca = 1 WHERE id = ?", id) > 0;
+        return jdbcTemplate.update("UPDATE notifikasi SET dibaca = true WHERE id = ?", id) > 0;
     }
 
-    public boolean markAllAsRead(String nim) {
-        return jdbcTemplate.update("UPDATE notifikasi SET dibaca = 1 WHERE nim = ?", nim) > 0;
-    }
-
-    public List<Notifikasi> findByKodeDosen(String kodeDosen) {
+    public List<Notifikasi> findByDosen() {
         return jdbcTemplate.query(
-                "SELECT * FROM notifikasi WHERE kode_dosen = ? ORDER BY created_at DESC LIMIT 20",
-                mapper, kodeDosen
+                "SELECT * FROM notifikasi WHERE nim IS NULL OR nim = '' ORDER BY created_at DESC LIMIT 20",
+                mapper
         );
     }
 
-    public long countUnreadByKodeDosen(String kodeDosen) {
+    public long countUnreadByDosen() {
         Long count = jdbcTemplate.queryForObject(
-                "SELECT COUNT(*) FROM notifikasi WHERE kode_dosen = ? AND dibaca = 0",
-                Long.class, kodeDosen
+                "SELECT COUNT(*) FROM notifikasi WHERE (nim IS NULL OR nim = '') AND dibaca = false",
+                Long.class
         );
         return count != null ? count : 0;
     }
 
-    public boolean markAllAsReadByKodeDosen(String kodeDosen) {
-        return jdbcTemplate.update("UPDATE notifikasi SET dibaca = 1 WHERE kode_dosen = ?", kodeDosen) > 0;
+    public boolean markAllAsRead(String nim) {
+        return jdbcTemplate.update("UPDATE notifikasi SET dibaca = true WHERE nim = ?", nim) > 0;
     }
 }
 

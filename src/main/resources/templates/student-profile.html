@@ -1,102 +1,274 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" th:replace="layout :: layout(~{::section})">
+<html xmlns:th="http://www.thymeleaf.org" th:replace="layout :: layout(~{::section})" lang="id">
 <section>
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <div>
-            <h5 class="mb-0">Profile Saya</h5>
-            <p class="text-muted small mb-0">Kelola akun dan password Anda</p>
+    <!-- Page Header -->
+    <div class="page-header animate-fade-in mb-4">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <h4 class="page-title mb-1">
+                    <i class="bi bi-gear-fill text-primary me-2"></i>
+                    Pengaturan Profil
+                </h4>
+                <p class="text-muted mb-0">Kelola informasi akun dan keamanan Anda</p>
+            </div>
+            <div class="col-lg-4 text-lg-end mt-3 mt-lg-0">
+                <a class="btn btn-outline-secondary" href="/student">
+                    <i class="bi bi-arrow-left me-1"></i>Dashboard
+                </a>
+            </div>
         </div>
-        <a class="btn btn-outline-secondary btn-sm" href="/student">← Kembali</a>
     </div>
 
-    <!-- Success/Error Messages -->
-    <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
-        <span th:text="${success}"></span>
+    <!-- Alerts -->
+    <div th:if="${successPwd}" class="alert alert-success alert-dismissible fade show animate-fade-in mb-4">
+        <i class="bi bi-check-circle-fill me-2"></i>
+        <span th:text="${successPwd}">Success</span>
         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     </div>
-    <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
-        <span th:text="${error}"></span>
+    <div th:if="${errorPwd}" class="alert alert-danger alert-dismissible fade show animate-fade-in mb-4">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+        <span th:text="${errorPwd}">Error</span>
         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     </div>
 
-    <div class="row">
-        <!-- Profile Information -->
-        <div class="col-md-6 mb-3">
-            <div class="card shadow-soft">
-                <div class="card-body">
-                    <h6 class="card-title mb-3">Informasi Profil</h6>
-                    <form method="post" action="/student/profile/update">
-                        <div class="mb-3">
-                            <label class="form-label">NIM</label>
-                            <input type="text" class="form-control" th:value="${mahasiswa?.nim}" disabled>
-                            <div class="form-text">NIM tidak dapat diubah</div>
+    <div class="row g-4">
+        <!-- Profile Card -->
+        <div class="col-lg-4 animate-fade-in">
+            <div class="card profile-card h-100">
+                <div class="card-body text-center">
+                    <div class="profile-avatar mx-auto mb-4">
+                        <span th:text="${nama != null ? nama.substring(0, 1).toUpperCase() : 'M'}">M</span>
+                    </div>
+                    <h4 class="profile-name" th:text="${nama}">Nama Mahasiswa</h4>
+                    <p class="profile-role">
+                        <i class="bi bi-mortarboard-fill me-1"></i>Mahasiswa
+                    </p>
+
+                    <div class="profile-info mt-4">
+                        <div class="info-item">
+                            <i class="bi bi-hash"></i>
+                            <div class="info-content">
+                                <span class="label">NIM</span>
+                                <span class="value" th:text="${nim}">-</span>
+                            </div>
                         </div>
-                        <div class="mb-3">
-                            <label class="form-label" for="nama">Nama Lengkap *</label>
-                            <input type="text" class="form-control" id="nama" name="nama" 
-                                   th:value="${mahasiswa?.nama}" required>
+                        <div class="info-item">
+                            <i class="bi bi-person"></i>
+                            <div class="info-content">
+                                <span class="label">Username</span>
+                                <span class="value" th:text="${username}">-</span>
+                            </div>
                         </div>
-                        <div class="mb-3">
-                            <label class="form-label" for="username">Username *</label>
-                            <input type="text" class="form-control" id="username" name="username" 
-                                   th:value="${mahasiswa?.username}" required>
-                            <div class="form-text">Username untuk login</div>
-                        </div>
-                        <button type="submit" class="btn btn-primary w-100">💾 Simpan Perubahan</button>
-                    </form>
+                    </div>
+
+                    <hr class="my-4" style="border-color: var(--glass-border);">
+
+                    <a href="/student/export-pdf" class="btn btn-success btn-sm w-100">
+                        <i class="bi bi-file-earmark-pdf me-2"></i>Export Transkrip PDF
+                    </a>
                 </div>
             </div>
         </div>
 
-        <!-- Change Password Form -->
-        <div class="col-md-6 mb-3">
-            <div class="card shadow-soft">
+        <!-- Settings Card -->
+        <div class="col-lg-8 animate-fade-in">
+            <div class="card h-100">
                 <div class="card-body">
-                    <h6 class="card-title mb-3">Ubah Password</h6>
+                    <h5 class="card-title mb-4">
+                        <i class="bi bi-shield-lock text-warning me-2"></i>
+                        Ubah Password
+                    </h5>
+                    <p class="text-muted mb-4">
+                        Pastikan password baru Anda kuat dan mudah diingat. Password minimal 4 karakter.
+                    </p>
+
                     <form method="post" action="/student/change-password">
-                        <div class="mb-3">
-                            <label for="oldPassword" class="form-label">Password Lama</label>
-                            <input type="password" class="form-control" id="oldPassword" name="oldPassword" required>
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <label class="form-label">
+                                    <i class="bi bi-key me-1"></i>Password Lama
+                                </label>
+                                <div class="input-group-icon">
+                                    <i class="bi bi-lock input-icon"></i>
+                                    <input type="password" name="oldPassword" class="form-control" required
+                                        placeholder="Masukkan password saat ini">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">
+                                    <i class="bi bi-lock-fill me-1"></i>Password Baru
+                                </label>
+                                <div class="input-group-icon">
+                                    <i class="bi bi-shield-lock input-icon"></i>
+                                    <input type="password" name="newPassword" class="form-control" required
+                                        placeholder="Password baru" minlength="4" id="newPassword">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">
+                                    <i class="bi bi-check-circle me-1"></i>Konfirmasi Password
+                                </label>
+                                <div class="input-group-icon">
+                                    <i class="bi bi-shield-check input-icon"></i>
+                                    <input type="password" name="confirmPassword" class="form-control" required
+                                        placeholder="Ulangi password baru" minlength="4" id="confirmPassword">
+                                </div>
+                            </div>
+                            <div class="col-12 mt-4">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-check-lg me-2"></i>Simpan Password Baru
+                                </button>
+                            </div>
                         </div>
-                        <div class="mb-3">
-                            <label for="newPassword" class="form-label">Password Baru</label>
-                            <input type="password" class="form-control" id="newPassword" name="newPassword" required minlength="4">
-                            <div class="form-text">Minimal 4 karakter</div>
-                        </div>
-                        <div class="mb-3">
-                            <label for="confirmPassword" class="form-label">Konfirmasi Password Baru</label>
-                            <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" required minlength="4">
-                        </div>
-                        <button type="submit" class="btn btn-primary w-100">Ubah Password</button>
                     </form>
+
+                    <!-- Password Tips -->
+                    <div class="password-tips mt-4">
+                        <h6 class="text-muted mb-3">
+                            <i class="bi bi-lightbulb me-2"></i>Tips Password Aman
+                        </h6>
+                        <ul class="tips-list">
+                            <li><i class="bi bi-check-circle text-success me-2"></i>Gunakan minimal 4 karakter</li>
+                            <li><i class="bi bi-check-circle text-success me-2"></i>Kombinasikan huruf dan angka</li>
+                            <li><i class="bi bi-check-circle text-success me-2"></i>Jangan gunakan informasi pribadi
+                            </li>
+                            <li><i class="bi bi-check-circle text-success me-2"></i>Berbeda dari password sebelumnya
+                            </li>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Navigation Links -->
-    <div class="card shadow-soft">
-        <div class="card-body">
-            <h6 class="card-title mb-3">Menu Cepat</h6>
-            <div class="row g-2">
-                <div class="col-md-4">
-                    <a href="/student" class="btn btn-outline-primary w-100">
-                        📊 Dashboard
-                    </a>
-                </div>
-                <div class="col-md-4">
-                    <a href="/student/export-pdf" class="btn btn-outline-success w-100">
-                        📄 Export Nilai PDF
-                    </a>
-                </div>
-                <div class="col-md-4">
-                    <a href="/logout" class="btn btn-outline-danger w-100">
-                        🚪 Logout
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
+    <!-- Styles -->
+    <style>
+        .page-header {
+            padding: 1.5rem;
+            background: var(--surface);
+            border-radius: var(--radius-xl);
+            border: 1px solid var(--glass-border);
+        }
+
+        .page-title {
+            font-family: var(--font-display);
+            font-weight: 800;
+            color: var(--text-primary);
+        }
+
+        .profile-card {
+            overflow: hidden;
+        }
+
+        .profile-avatar {
+            width: 100px;
+            height: 100px;
+            background: var(--gradient-primary);
+            border-radius: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: white;
+            box-shadow: 0 12px 40px rgba(99, 102, 241, 0.4);
+        }
+
+        .profile-name {
+            font-family: var(--font-display);
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .profile-role {
+            color: var(--primary-400);
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .profile-info {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .info-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            background: var(--surface);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--glass-border);
+        }
+
+        .info-item>i {
+            width: 40px;
+            height: 40px;
+            background: rgba(99, 102, 241, 0.15);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-400);
+            font-size: 1.1rem;
+        }
+
+        .info-content {
+            text-align: left;
+        }
+
+        .info-content .label {
+            display: block;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .info-content .value {
+            display: block;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .input-group-icon {
+            position: relative;
+        }
+
+        .input-group-icon .input-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            z-index: 5;
+        }
+
+        .input-group-icon .form-control {
+            padding-left: 2.75rem;
+        }
+
+        .password-tips {
+            background: var(--surface);
+            border-radius: var(--radius-lg);
+            padding: 1.25rem;
+            border: 1px solid var(--glass-border);
+        }
+
+        .tips-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .tips-list li {
+            padding: 0.5rem 0;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+    </style>
 </section>
-</html>
 
+</html>

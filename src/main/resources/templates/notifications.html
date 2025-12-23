@@ -1,50 +1,145 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" th:replace="layout :: layout(~{::section})">
+<html xmlns:th="http://www.thymeleaf.org" th:replace="layout :: layout(~{::section})" lang="id">
 <section>
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <div>
-            <h5 class="mb-0">🔔 Notifikasi</h5>
-            <p class="text-muted small mb-0">Pemberitahuan dan update terbaru</p>
-        </div>
-        <div>
-            <form method="post" action="/notifications/read-all" class="d-inline">
-                <button type="submit" class="btn btn-sm btn-outline-primary me-2">✓ Tandai Semua Dibaca</button>
-            </form>
-            <a href="/" class="btn btn-outline-secondary btn-sm">← Kembali</a>
+    <!-- Page Header -->
+    <div class="page-header animate-fade-in mb-4">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <h4 class="page-title mb-1">
+                    <i class="bi bi-bell-fill text-warning me-2"></i>
+                    Notifikasi
+                </h4>
+                <p class="text-muted mb-0">Pemberitahuan dan update terbaru</p>
+            </div>
+            <div class="col-lg-4 text-lg-end mt-3 mt-lg-0" th:if="${!#lists.isEmpty(notifications)}">
+                <form action="/notifications/mark-all-read" method="post" class="d-inline">
+                    <button type="submit" class="btn btn-outline-primary btn-sm">
+                        <i class="bi bi-check-all me-1"></i>Tandai Semua Dibaca
+                    </button>
+                </form>
+            </div>
         </div>
     </div>
 
-    <div class="row g-3">
-        <div class="col-12" th:each="notif : ${notifications}">
-            <div class="card shadow-soft" th:classappend="${!notif.dibaca ? 'border-primary' : ''}">
-                <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-start">
-                        <div class="flex-grow-1">
-                            <div class="d-flex align-items-center gap-2 mb-2">
-                                <span class="badge"
-                                      th:classappend="${notif.tipe == 'SUCCESS' ? 'bg-success' : (notif.tipe == 'WARNING' ? 'bg-warning' : (notif.tipe == 'ERROR' ? 'bg-danger' : 'bg-info'))}"
-                                      th:text="${notif.tipe}">INFO</span>
-                                <span th:if="${!notif.dibaca}" class="badge bg-primary">Baru</span>
-                                <span class="text-muted small"
-                                      th:text="${#temporals.format(notif.createdAt, 'dd MMM yyyy HH:mm')}">Date</span>
-                            </div>
-                            <p class="mb-0" th:text="${notif.pesan}">Pesan notifikasi</p>
-                        </div>
-                        <form th:if="${!notif.dibaca}"
-                              th:action="@{/notifications/{id}/read(id=${notif.id})}"
-                              method="post" class="ms-2">
-                            <button type="submit" class="btn btn-sm btn-outline-secondary">✓</button>
+    <!-- Notifications List -->
+    <div class="card animate-fade-in">
+        <div class="card-body">
+            <div th:if="${#lists.isEmpty(notifications)}" class="empty-state">
+                <div class="empty-state-icon">🔔</div>
+                <h5 class="empty-state-title">Tidak Ada Notifikasi</h5>
+                <p class="empty-state-text">Anda akan menerima notifikasi ketika ada update penting.</p>
+            </div>
+
+            <div class="notification-list" th:unless="${#lists.isEmpty(notifications)}">
+                <div th:each="n : ${notifications}" class="notification-item"
+                    th:classappend="${n.read} ? '' : 'unread'">
+                    <div class="notification-icon"
+                        th:classappend="${n.type == 'GRADE' ? 'grade' : (n.type == 'ENROLLMENT' ? 'enrollment' : 'info')}">
+                        <i
+                            th:class="${n.type == 'GRADE' ? 'bi bi-clipboard-check' : (n.type == 'ENROLLMENT' ? 'bi bi-person-check' : 'bi bi-info-circle')}"></i>
+                    </div>
+                    <div class="notification-content">
+                        <p class="notification-message" th:text="${n.message}">Message</p>
+                        <span class="notification-time"
+                            th:text="${n.createdAt != null ? #temporals.format(n.createdAt, 'dd MMM yyyy, HH:mm') : '-'}">Time</span>
+                    </div>
+                    <div class="notification-actions" th:if="${!n.read}">
+                        <form th:action="@{/notifications/{id}/read(id=${n.id})}" method="post">
+                            <button type="submit" class="btn btn-xs btn-outline-success" title="Tandai dibaca">
+                                <i class="bi bi-check"></i>
+                            </button>
                         </form>
                     </div>
                 </div>
             </div>
         </div>
-
-        <div class="col-12" th:if="${#lists.isEmpty(notifications)}">
-            <div class="alert alert-light text-center">
-                Tidak ada notifikasi.
-            </div>
-        </div>
     </div>
+
+    <!-- Styles -->
+    <style>
+        .page-header {
+            padding: 1.5rem;
+            background: var(--surface);
+            border-radius: var(--radius-xl);
+            border: 1px solid var(--glass-border);
+        }
+
+        .page-title {
+            font-family: var(--font-display);
+            font-weight: 800;
+            color: var(--text-primary);
+        }
+
+        .notification-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .notification-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+            padding: 1rem 1.25rem;
+            background: var(--surface);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-lg);
+            transition: all 0.3s ease;
+        }
+
+        .notification-item.unread {
+            background: rgba(99, 102, 241, 0.08);
+            border-left: 3px solid var(--primary-500);
+        }
+
+        .notification-item:hover {
+            border-color: var(--primary-500);
+        }
+
+        .notification-icon {
+            width: 42px;
+            height: 42px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            flex-shrink: 0;
+        }
+
+        .notification-icon.grade {
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--success-400);
+        }
+
+        .notification-icon.enrollment {
+            background: rgba(99, 102, 241, 0.15);
+            color: var(--primary-400);
+        }
+
+        .notification-icon.info {
+            background: rgba(6, 182, 212, 0.15);
+            color: var(--info-400);
+        }
+
+        .notification-content {
+            flex: 1;
+        }
+
+        .notification-message {
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .notification-time {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .notification-actions {
+            flex-shrink: 0;
+        }
+    </style>
 </section>
+
 </html>

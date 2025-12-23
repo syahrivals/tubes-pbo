@@ -22,8 +22,7 @@ public class NilaiRepository {
                 rs.getString("mata_kuliah"),
                 rs.getDouble("tugas"),
                 rs.getDouble("uts"),
-                rs.getDouble("uas")
-        );
+                rs.getDouble("uas"));
         n.setId(rs.getLong("id"));
         return n;
     };
@@ -36,8 +35,7 @@ public class NilaiRepository {
         return jdbcTemplate.query(
                 "select id, mata_kuliah, tugas, uts, uas from nilai where nim = ? order by id",
                 mapper,
-                nim
-        );
+                nim);
     }
 
     public Nilai insert(String nim, Nilai nilai) {
@@ -45,8 +43,7 @@ public class NilaiRepository {
         jdbcTemplate.update(con -> {
             PreparedStatement ps = con.prepareStatement(
                     "insert into nilai(nim, mata_kuliah, tugas, uts, uas) values(?, ?, ?, ?, ?)",
-                    Statement.RETURN_GENERATED_KEYS
-            );
+                    Statement.RETURN_GENERATED_KEYS);
             ps.setString(1, nim);
             ps.setString(2, nilai.getMataKuliah());
             ps.setDouble(3, nilai.getTugas());
@@ -65,8 +62,7 @@ public class NilaiRepository {
         List<Nilai> list = jdbcTemplate.query(
                 "select id, mata_kuliah, tugas, uts, uas from nilai where id = ?",
                 mapper,
-                id
-        );
+                id);
         return list.stream().findFirst();
     }
 
@@ -77,8 +73,7 @@ public class NilaiRepository {
                 nilai.getTugas(),
                 nilai.getUts(),
                 nilai.getUas(),
-                id
-        );
+                id);
         return rows > 0;
     }
 
@@ -90,5 +85,12 @@ public class NilaiRepository {
         Long c = jdbcTemplate.queryForObject("select count(*) from nilai", Long.class);
         return c == null ? 0 : c;
     }
-}
 
+    public boolean existsByNimAndMataKuliah(String nim, String mataKuliah) {
+        Long count = jdbcTemplate.queryForObject(
+                "SELECT COUNT(*) FROM nilai WHERE nim = ? AND mata_kuliah = ?",
+                Long.class,
+                nim, mataKuliah);
+        return count != null && count > 0;
+    }
+}

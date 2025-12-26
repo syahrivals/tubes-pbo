@@ -187,9 +187,9 @@
     <style>
         .page-header {
             padding: 1.5rem;
-            background: var(--surface);
+            background: var(--bg-card);
             border-radius: var(--radius-xl);
-            border: 1px solid var(--glass-border);
+            border: 2px solid var(--border);
         }
 
         .page-title {
@@ -199,8 +199,8 @@
         }
 
         .student-nilai-card {
-            background: var(--surface);
-            border: 1px solid var(--glass-border);
+            background: var(--bg-card);
+            border: 2px solid var(--border);
             border-radius: var(--radius-xl);
             padding: 1.5rem;
         }
@@ -211,7 +211,7 @@
             align-items: center;
             margin-bottom: 1rem;
             padding-bottom: 1rem;
-            border-bottom: 1px solid var(--glass-border);
+            border-bottom: 2px solid var(--border);
         }
 
         .student-avatar {
@@ -228,15 +228,16 @@
         }
 
         .nilai-card {
-            background: rgba(99, 102, 241, 0.05);
-            border: 1px solid var(--glass-border);
+            background: rgba(99, 102, 241, 0.08);
+            border: 2px solid var(--border);
             border-radius: var(--radius-lg);
             padding: 1rem;
             transition: all 0.3s ease;
         }
 
         .nilai-card:hover {
-            border-color: var(--primary-500);
+            border-color: var(--primary-light);
+            background: rgba(99, 102, 241, 0.12);
             transform: translateY(-2px);
         }
 
@@ -297,7 +298,8 @@
         .score-item {
             text-align: center;
             padding: 0.5rem;
-            background: var(--surface);
+            background: rgba(99, 102, 241, 0.1);
+            border: 1px solid rgba(99, 102, 241, 0.2);
             border-radius: 8px;
         }
 
@@ -306,12 +308,14 @@
             font-size: 0.65rem;
             color: var(--text-muted);
             text-transform: uppercase;
+            font-weight: 600;
         }
 
         .score-item .value {
             display: block;
             font-weight: 700;
-            color: var(--text-primary);
+            color: var(--text);
+            font-size: 1.1rem;
         }
 
         .nilai-footer {
@@ -319,7 +323,7 @@
             justify-content: space-between;
             align-items: center;
             padding-top: 0.75rem;
-            border-top: 1px solid var(--glass-border);
+            border-top: 2px solid var(--border);
         }
 
         .average .avg-label {

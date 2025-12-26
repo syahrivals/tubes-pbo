@@ -24,6 +24,7 @@ public class NilaiRepository {
                 rs.getDouble("uts"),
                 rs.getDouble("uas"));
         n.setId(rs.getLong("id"));
+        n.setNim(rs.getString("nim"));
         return n;
     };
 
@@ -33,7 +34,7 @@ public class NilaiRepository {
 
     public List<Nilai> findByNim(String nim) {
         return jdbcTemplate.query(
-                "select id, mata_kuliah, tugas, uts, uas from nilai where nim = ? order by id",
+                "select id, nim, mata_kuliah, tugas, uts, uas from nilai where nim = ? order by id",
                 mapper,
                 nim);
     }
@@ -54,13 +55,14 @@ public class NilaiRepository {
         Number id = kh.getKey();
         if (id != null) {
             nilai.setId(id.longValue());
+            nilai.setNim(nim);
         }
         return nilai;
     }
 
     public Optional<Nilai> findById(long id) {
         List<Nilai> list = jdbcTemplate.query(
-                "select id, mata_kuliah, tugas, uts, uas from nilai where id = ?",
+                "select id, nim, mata_kuliah, tugas, uts, uas from nilai where id = ?",
                 mapper,
                 id);
         return list.stream().findFirst();

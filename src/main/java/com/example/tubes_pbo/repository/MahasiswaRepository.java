@@ -68,5 +68,10 @@ public class MahasiswaRepository {
         );
         return rows > 0;
     }
+
+    public boolean deleteByNim(String nim) {
+        int rows = jdbcTemplate.update("DELETE FROM mahasiswa WHERE nim = ?", nim);
+        return rows > 0;
+    }
 }
 

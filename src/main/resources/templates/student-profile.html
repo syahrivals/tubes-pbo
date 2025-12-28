@@ -2,273 +2,182 @@
 <html xmlns:th="http://www.thymeleaf.org" th:replace="layout :: layout(~{::section})" lang="id">
 <section>
     <!-- Page Header -->
-    <div class="page-header animate-fade-in mb-4">
-        <div class="row align-items-center">
-            <div class="col-lg-8">
-                <h4 class="page-title mb-1">
-                    <i class="bi bi-gear-fill text-primary me-2"></i>
+    <div class="bg-gradient-to-br from-slate-800 via-slate-800 to-primary-900/30 border-2 border-slate-700 rounded-2xl p-6 mb-6 shadow-xl animate-fade-in">
+        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+            <div>
+                <h2 class="text-3xl font-bold text-slate-50 mb-2">
+                    <i class="bi bi-gear-fill text-primary-400 mr-2"></i>
                     Pengaturan Profil
-                </h4>
-                <p class="text-muted mb-0">Kelola informasi akun dan keamanan Anda</p>
+                </h2>
+                <p class="text-slate-400 text-lg">Kelola informasi akun dan keamanan Anda</p>
             </div>
-            <div class="col-lg-4 text-lg-end mt-3 mt-lg-0">
-                <a class="btn btn-outline-secondary" href="/student">
-                    <i class="bi bi-arrow-left me-1"></i>Dashboard
+            <div class="lg:text-right">
+                <a class="inline-flex items-center gap-2 bg-slate-700 hover:bg-slate-600 text-slate-50 font-semibold px-6 py-3 rounded-xl transition-all duration-200"
+                   href="/student">
+                    <i class="bi bi-arrow-left"></i>
+                    <span>Dashboard</span>
                 </a>
             </div>
         </div>
     </div>
 
     <!-- Alerts -->
-    <div th:if="${successPwd}" class="alert alert-success alert-dismissible fade show animate-fade-in mb-4">
-        <i class="bi bi-check-circle-fill me-2"></i>
-        <span th:text="${successPwd}">Success</span>
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    <div th:if="${successPwd}" class="bg-gradient-to-r from-emerald-500/20 to-emerald-600/20 border-2 border-emerald-500/50 text-emerald-100 px-6 py-4 rounded-xl mb-6 flex items-center justify-between animate-fade-in">
+        <div class="flex items-center gap-3">
+            <i class="bi bi-check-circle-fill text-2xl text-emerald-400"></i>
+            <span class="font-semibold" th:text="${successPwd}">Success</span>
+        </div>
+        <button type="button" class="text-emerald-300 hover:text-emerald-100 transition-colors" data-bs-dismiss="alert">
+            <i class="bi bi-x-lg text-xl"></i>
+        </button>
     </div>
-    <div th:if="${errorPwd}" class="alert alert-danger alert-dismissible fade show animate-fade-in mb-4">
-        <i class="bi bi-exclamation-triangle-fill me-2"></i>
-        <span th:text="${errorPwd}">Error</span>
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    <div th:if="${errorPwd}" class="bg-gradient-to-r from-red-500/20 to-red-600/20 border-2 border-red-500/50 text-red-100 px-6 py-4 rounded-xl mb-6 flex items-center justify-between animate-fade-in">
+        <div class="flex items-center gap-3">
+            <i class="bi bi-exclamation-triangle-fill text-2xl text-red-400"></i>
+            <span class="font-semibold" th:text="${errorPwd}">Error</span>
+        </div>
+        <button type="button" class="text-red-300 hover:text-red-100 transition-colors" data-bs-dismiss="alert">
+            <i class="bi bi-x-lg text-xl"></i>
+        </button>
     </div>
 
-    <div class="row g-4">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <!-- Profile Card -->
-        <div class="col-lg-4 animate-fade-in">
-            <div class="card profile-card h-100">
-                <div class="card-body text-center">
-                    <div class="profile-avatar mx-auto mb-4">
-                        <span th:text="${nama != null ? nama.substring(0, 1).toUpperCase() : 'M'}">M</span>
-                    </div>
-                    <h4 class="profile-name" th:text="${nama}">Nama Mahasiswa</h4>
-                    <p class="profile-role">
-                        <i class="bi bi-mortarboard-fill me-1"></i>Mahasiswa
-                    </p>
+        <div class="bg-gradient-to-br from-slate-800 to-slate-800/50 border-2 border-slate-700 rounded-2xl p-6 shadow-xl animate-fade-in">
+            <div class="text-center">
+                <div class="w-28 h-28 bg-gradient-to-br from-primary-500 to-primary-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+                    <span class="text-4xl font-bold text-white" th:text="${nama != null ? nama.substring(0, 1).toUpperCase() : 'M'}">M</span>
+                </div>
+                <h4 class="text-2xl font-bold text-slate-50 mb-2" th:text="${nama}">Nama Mahasiswa</h4>
+                <p class="text-primary-400 font-semibold flex items-center justify-center gap-2 mb-6">
+                    <i class="bi bi-mortarboard-fill"></i>
+                    <span>Mahasiswa</span>
+                </p>
 
-                    <div class="profile-info mt-4">
-                        <div class="info-item">
-                            <i class="bi bi-hash"></i>
-                            <div class="info-content">
-                                <span class="label">NIM</span>
-                                <span class="value" th:text="${nim}">-</span>
-                            </div>
+                <div class="space-y-3 mb-6">
+                    <div class="flex items-center gap-3 p-3 bg-slate-700/30 border border-slate-600 rounded-xl">
+                        <div class="w-10 h-10 bg-primary-500/20 rounded-xl flex items-center justify-center">
+                            <i class="bi bi-hash text-primary-400"></i>
                         </div>
-                        <div class="info-item">
-                            <i class="bi bi-person"></i>
-                            <div class="info-content">
-                                <span class="label">Username</span>
-                                <span class="value" th:text="${username}">-</span>
-                            </div>
+                        <div class="text-left flex-1">
+                            <div class="text-xs text-slate-400 uppercase font-semibold">NIM</div>
+                            <div class="text-slate-50 font-bold" th:text="${nim}">-</div>
                         </div>
                     </div>
+                    <div class="flex items-center gap-3 p-3 bg-slate-700/30 border border-slate-600 rounded-xl">
+                        <div class="w-10 h-10 bg-primary-500/20 rounded-xl flex items-center justify-center">
+                            <i class="bi bi-person text-primary-400"></i>
+                        </div>
+                        <div class="text-left flex-1">
+                            <div class="text-xs text-slate-400 uppercase font-semibold">Username</div>
+                            <div class="text-slate-50 font-bold" th:text="${username}">-</div>
+                        </div>
+                    </div>
+                </div>
 
-                    <hr class="my-4" style="border-color: var(--glass-border);">
-
-                    <a href="/student/export-pdf" class="btn btn-success btn-sm w-100">
-                        <i class="bi bi-file-earmark-pdf me-2"></i>Export Transkrip PDF
+                <div class="pt-6 border-t border-slate-700">
+                    <a href="/student/export-pdf" 
+                       class="w-full bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 text-white font-semibold px-6 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 flex items-center justify-center gap-2">
+                        <i class="bi bi-file-earmark-pdf"></i>
+                        <span>Export Transkrip PDF</span>
                     </a>
                 </div>
             </div>
         </div>
 
         <!-- Settings Card -->
-        <div class="col-lg-8 animate-fade-in">
-            <div class="card h-100">
-                <div class="card-body">
-                    <h5 class="card-title mb-4">
-                        <i class="bi bi-shield-lock text-warning me-2"></i>
-                        Ubah Password
-                    </h5>
-                    <p class="text-muted mb-4">
-                        Pastikan password baru Anda kuat dan mudah diingat. Password minimal 4 karakter.
-                    </p>
+        <div class="lg:col-span-2 bg-gradient-to-br from-slate-800 to-slate-800/50 border-2 border-slate-700 rounded-2xl p-6 shadow-xl animate-fade-in">
+            <h5 class="text-2xl font-bold text-slate-50 mb-2 flex items-center gap-2">
+                <i class="bi bi-shield-lock text-yellow-400"></i>
+                Ubah Password
+            </h5>
+            <p class="text-slate-400 mb-6">
+                Pastikan password baru Anda kuat dan mudah diingat. Password minimal 4 karakter.
+            </p>
 
-                    <form method="post" action="/student/change-password">
-                        <div class="row g-3">
-                            <div class="col-12">
-                                <label class="form-label">
-                                    <i class="bi bi-key me-1"></i>Password Lama
-                                </label>
-                                <div class="input-group-icon">
-                                    <i class="bi bi-lock input-icon"></i>
-                                    <input type="password" name="oldPassword" class="form-control" required
-                                        placeholder="Masukkan password saat ini">
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label">
-                                    <i class="bi bi-lock-fill me-1"></i>Password Baru
-                                </label>
-                                <div class="input-group-icon">
-                                    <i class="bi bi-shield-lock input-icon"></i>
-                                    <input type="password" name="newPassword" class="form-control" required
-                                        placeholder="Password baru" minlength="4" id="newPassword">
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label">
-                                    <i class="bi bi-check-circle me-1"></i>Konfirmasi Password
-                                </label>
-                                <div class="input-group-icon">
-                                    <i class="bi bi-shield-check input-icon"></i>
-                                    <input type="password" name="confirmPassword" class="form-control" required
-                                        placeholder="Ulangi password baru" minlength="4" id="confirmPassword">
-                                </div>
-                            </div>
-                            <div class="col-12 mt-4">
-                                <button type="submit" class="btn btn-primary">
-                                    <i class="bi bi-check-lg me-2"></i>Simpan Password Baru
-                                </button>
-                            </div>
-                        </div>
-                    </form>
-
-                    <!-- Password Tips -->
-                    <div class="password-tips mt-4">
-                        <h6 class="text-muted mb-3">
-                            <i class="bi bi-lightbulb me-2"></i>Tips Password Aman
-                        </h6>
-                        <ul class="tips-list">
-                            <li><i class="bi bi-check-circle text-success me-2"></i>Gunakan minimal 4 karakter</li>
-                            <li><i class="bi bi-check-circle text-success me-2"></i>Kombinasikan huruf dan angka</li>
-                            <li><i class="bi bi-check-circle text-success me-2"></i>Jangan gunakan informasi pribadi
-                            </li>
-                            <li><i class="bi bi-check-circle text-success me-2"></i>Berbeda dari password sebelumnya
-                            </li>
-                        </ul>
+            <form method="post" action="/student/change-password" class="space-y-4">
+                <div>
+                    <label class="block text-slate-300 font-semibold mb-2 flex items-center gap-2">
+                        <i class="bi bi-key text-primary-400"></i>Password Lama
+                    </label>
+                    <div class="relative">
+                        <i class="bi bi-lock absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400"></i>
+                        <input type="password" 
+                               name="oldPassword" 
+                               class="w-full bg-slate-700/50 border-2 border-slate-600 text-slate-50 rounded-xl px-4 py-3 pl-11 focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all"
+                               placeholder="Masukkan password saat ini"
+                               required>
                     </div>
                 </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-slate-300 font-semibold mb-2 flex items-center gap-2">
+                            <i class="bi bi-lock-fill text-primary-400"></i>Password Baru
+                        </label>
+                        <div class="relative">
+                            <i class="bi bi-shield-lock absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400"></i>
+                            <input type="password" 
+                                   name="newPassword" 
+                                   id="newPassword"
+                                   class="w-full bg-slate-700/50 border-2 border-slate-600 text-slate-50 rounded-xl px-4 py-3 pl-11 focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all"
+                                   placeholder="Password baru"
+                                   minlength="4"
+                                   required>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-slate-300 font-semibold mb-2 flex items-center gap-2">
+                            <i class="bi bi-check-circle text-primary-400"></i>Konfirmasi Password
+                        </label>
+                        <div class="relative">
+                            <i class="bi bi-shield-check absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400"></i>
+                            <input type="password" 
+                                   name="confirmPassword" 
+                                   id="confirmPassword"
+                                   class="w-full bg-slate-700/50 border-2 border-slate-600 text-slate-50 rounded-xl px-4 py-3 pl-11 focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all"
+                                   placeholder="Ulangi password baru"
+                                   minlength="4"
+                                   required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pt-4">
+                    <button type="submit" 
+                            class="bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 text-white font-semibold px-6 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 flex items-center gap-2">
+                        <i class="bi bi-check-lg"></i>
+                        <span>Simpan Password Baru</span>
+                    </button>
+                </div>
+            </form>
+
+            <!-- Password Tips -->
+            <div class="mt-6 bg-slate-700/30 border border-slate-600 rounded-xl p-5">
+                <h6 class="text-slate-300 font-semibold mb-3 flex items-center gap-2">
+                    <i class="bi bi-lightbulb text-yellow-400"></i>
+                    Tips Password Aman
+                </h6>
+                <ul class="space-y-2">
+                    <li class="flex items-center gap-2 text-slate-300">
+                        <i class="bi bi-check-circle text-emerald-400"></i>
+                        <span>Gunakan minimal 4 karakter</span>
+                    </li>
+                    <li class="flex items-center gap-2 text-slate-300">
+                        <i class="bi bi-check-circle text-emerald-400"></i>
+                        <span>Kombinasikan huruf dan angka</span>
+                    </li>
+                    <li class="flex items-center gap-2 text-slate-300">
+                        <i class="bi bi-check-circle text-emerald-400"></i>
+                        <span>Jangan gunakan informasi pribadi</span>
+                    </li>
+                    <li class="flex items-center gap-2 text-slate-300">
+                        <i class="bi bi-check-circle text-emerald-400"></i>
+                        <span>Berbeda dari password sebelumnya</span>
+                    </li>
+                </ul>
             </div>
         </div>
     </div>
-
-    <!-- Styles -->
-    <style>
-        .page-header {
-            padding: 1.5rem;
-            background: var(--surface);
-            border-radius: var(--radius-xl);
-            border: 1px solid var(--glass-border);
-        }
-
-        .page-title {
-            font-family: var(--font-display);
-            font-weight: 800;
-            color: var(--text-primary);
-        }
-
-        .profile-card {
-            overflow: hidden;
-        }
-
-        .profile-avatar {
-            width: 100px;
-            height: 100px;
-            background: var(--gradient-primary);
-            border-radius: 28px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2.5rem;
-            font-weight: 800;
-            color: white;
-            box-shadow: 0 12px 40px rgba(99, 102, 241, 0.4);
-        }
-
-        .profile-name {
-            font-family: var(--font-display);
-            font-weight: 800;
-            color: var(--text-primary);
-            margin-bottom: 0.25rem;
-        }
-
-        .profile-role {
-            color: var(--primary-400);
-            font-weight: 500;
-            font-size: 0.9rem;
-        }
-
-        .profile-info {
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-        }
-
-        .info-item {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            padding: 1rem;
-            background: var(--surface);
-            border-radius: var(--radius-lg);
-            border: 1px solid var(--glass-border);
-        }
-
-        .info-item>i {
-            width: 40px;
-            height: 40px;
-            background: rgba(99, 102, 241, 0.15);
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--primary-400);
-            font-size: 1.1rem;
-        }
-
-        .info-content {
-            text-align: left;
-        }
-
-        .info-content .label {
-            display: block;
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .info-content .value {
-            display: block;
-            font-weight: 600;
-            color: var(--text-primary);
-        }
-
-        .input-group-icon {
-            position: relative;
-        }
-
-        .input-group-icon .input-icon {
-            position: absolute;
-            left: 1rem;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--text-muted);
-            z-index: 5;
-        }
-
-        .input-group-icon .form-control {
-            padding-left: 2.75rem;
-        }
-
-        .password-tips {
-            background: var(--surface);
-            border-radius: var(--radius-lg);
-            padding: 1.25rem;
-            border: 1px solid var(--glass-border);
-        }
-
-        .tips-list {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-
-        .tips-list li {
-            padding: 0.5rem 0;
-            color: var(--text-secondary);
-            font-size: 0.9rem;
-        }
-    </style>
 </section>
-
 </html>

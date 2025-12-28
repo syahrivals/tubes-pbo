@@ -2,144 +2,105 @@
 <html xmlns:th="http://www.thymeleaf.org" th:replace="layout :: layout(~{::section})" lang="id">
 <section>
     <!-- Page Header -->
-    <div class="page-header animate-fade-in mb-4">
-        <div class="row align-items-center">
-            <div class="col-lg-8">
-                <h4 class="page-title mb-1">
-                    <i class="bi bi-journal-bookmark-fill text-primary me-2"></i>
+    <div class="bg-gradient-to-br from-slate-800 via-slate-800 to-primary-900/30 border-2 border-slate-700 rounded-2xl p-6 mb-6 shadow-xl animate-fade-in">
+        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+            <div>
+                <h2 class="text-3xl font-bold text-slate-50 mb-2">
+                    <i class="bi bi-journal-bookmark-fill text-primary-400 mr-2"></i>
                     Katalog Mata Kuliah
-                </h4>
-                <p class="text-muted mb-0">Daftar mata kuliah yang tersedia untuk di-enroll</p>
+                </h2>
+                <p class="text-slate-400 text-lg">Daftar mata kuliah yang tersedia untuk di-enroll</p>
             </div>
-            <div class="col-lg-4 text-lg-end mt-3 mt-lg-0">
-                <a class="btn btn-outline-primary btn-sm" href="/student/enrollments">
-                    <i class="bi bi-bookmark-check me-1"></i>Lihat MK Saya
+            <div class="lg:text-right flex flex-col lg:flex-row items-center gap-4">
+                <!-- Enrolled Count Badge -->
+                <div th:if="${#lists.size(enrolledIds) > 0}" class="bg-emerald-500/20 border-2 border-emerald-500/50 text-emerald-300 font-bold px-5 py-3 rounded-xl flex items-center gap-2">
+                    <i class="bi bi-check-circle-fill text-lg"></i>
+                    <span th:text="${#lists.size(enrolledIds) + ' MK Enrolled'}">0 MK Enrolled</span>
+                </div>
+                <a class="inline-flex items-center gap-2 bg-slate-700 hover:bg-slate-600 text-slate-50 font-semibold px-6 py-3 rounded-xl transition-all duration-200"
+                   href="/student/enrollments">
+                    <i class="bi bi-bookmark-check"></i>
+                    <span>Lihat MK Saya</span>
                 </a>
             </div>
         </div>
     </div>
 
+    <!-- Alerts -->
+    <div th:if="${success}" class="bg-gradient-to-r from-emerald-500/20 to-emerald-600/20 border-2 border-emerald-500/50 text-emerald-100 px-6 py-4 rounded-xl mb-6 flex items-center justify-between animate-fade-in">
+        <div class="flex items-center gap-3">
+            <i class="bi bi-check-circle-fill text-2xl text-emerald-400"></i>
+            <span class="font-semibold" th:text="${success}">Success</span>
+        </div>
+        <button type="button" class="text-emerald-300 hover:text-emerald-100 transition-colors" onclick="this.parentElement.remove()">
+            <i class="bi bi-x-lg text-xl"></i>
+        </button>
+    </div>
+    <div th:if="${error}" class="bg-gradient-to-r from-red-500/20 to-red-600/20 border-2 border-red-500/50 text-red-100 px-6 py-4 rounded-xl mb-6 flex items-center justify-between animate-fade-in">
+        <div class="flex items-center gap-3">
+            <i class="bi bi-exclamation-triangle-fill text-2xl text-red-400"></i>
+            <span class="font-semibold" th:text="${error}">Error</span>
+        </div>
+        <button type="button" class="text-red-300 hover:text-red-100 transition-colors" onclick="this.parentElement.remove()">
+            <i class="bi bi-x-lg text-xl"></i>
+        </button>
+    </div>
+
     <!-- Course Grid -->
-    <div class="row g-4">
-        <div class="col-md-6 col-lg-4 animate-fade-in" th:each="course, iterStat : ${courses}"
-            th:style="${'animation-delay: ' + (iterStat.index * 0.05) + 's'}">
-            <div class="course-card-student">
-                <div class="course-icon">
-                    <i class="bi bi-book"></i>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div class="group bg-gradient-to-br from-slate-800 to-slate-800/50 border-2 border-slate-700 rounded-2xl p-6 shadow-lg hover:shadow-2xl hover:border-primary-500/50 transition-all duration-300 transform hover:-translate-y-1 animate-fade-in"
+             th:each="course, iterStat : ${courses}"
+             th:style="${'animation-delay: ' + (iterStat.index * 0.05) + 's'}">
+            <div class="relative">
+                <!-- Left border accent -->
+               
+                <!-- Icon -->
+                <div class="w-14 h-14 bg-gradient-to-br from-primary-500 to-primary-600 rounded-xl flex items-center justify-center mb-4 shadow-lg">
+                    <i class="bi bi-book text-2xl text-white"></i>
                 </div>
-                <div class="course-header">
-                    <span class="course-code" th:text="${course.kode}">IF101</span>
-                    <span class="course-sks" th:text="${course.sks + ' SKS'}">3 SKS</span>
+
+                <!-- Content -->
+                <div class="mb-4">
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="bg-primary-500/20 text-primary-300 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide" 
+                              th:text="${course.kode}">IF101</span>
+                        <span class="bg-gradient-to-r from-emerald-500 to-emerald-600 text-white px-3 py-1 rounded-full text-xs font-semibold"
+                              th:text="${course.sks + ' SKS'}">3 SKS</span>
+                    </div>
+                    <h6 class="text-lg font-bold text-slate-50 mb-0 leading-tight" th:text="${course.nama}">Nama MK</h6>
                 </div>
-                <h6 class="course-name" th:text="${course.nama}">Nama MK</h6>
-                <form th:action="@{/student/courses/{id}/enroll(id=${course.id})}" method="post" class="mt-auto">
-                    <button type="submit" class="btn btn-primary btn-sm w-100">
-                        <i class="bi bi-plus-circle me-1"></i>Enroll
-                    </button>
-                </form>
+
+                <!-- Actions -->
+                <div class="pt-4 border-t border-slate-700">
+                    <!-- Jika sudah enrolled -->
+                    <div th:if="${#lists.contains(enrolledIds, course.id)}">
+                        <button type="button" disabled
+                                class="w-full bg-emerald-500/20 border-2 border-emerald-500/50 text-emerald-400 font-semibold px-4 py-2 rounded-xl cursor-not-allowed flex items-center justify-center gap-2">
+                            <i class="bi bi-check-circle-fill"></i>
+                            <span>Enrolled</span>
+                        </button>
+                    </div>
+                    <!-- Jika belum enrolled -->
+                    <form th:unless="${#lists.contains(enrolledIds, course.id)}" 
+                          th:action="@{/student/courses/{id}/enroll(id=${course.id})}" method="post">
+                        <button type="submit" 
+                                class="w-full bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 text-white font-semibold px-4 py-2 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 flex items-center justify-center gap-2">
+                            <i class="bi bi-plus-circle"></i>
+                            <span>Enroll</span>
+                        </button>
+                    </form>
+                </div>
             </div>
         </div>
 
-        <div class="col-12" th:if="${#lists.isEmpty(courses)}">
-            <div class="empty-state">
-                <div class="empty-state-icon">📚</div>
-                <h5 class="empty-state-title">Tidak Ada Mata Kuliah</h5>
-                <p class="empty-state-text">Belum ada mata kuliah yang tersedia saat ini.</p>
+        <!-- Empty State -->
+        <div class="col-span-full" th:if="${#lists.isEmpty(courses)}">
+            <div class="bg-gradient-to-br from-slate-800 to-slate-800/50 border-2 border-slate-700 rounded-2xl p-12 text-center">
+                <div class="text-6xl mb-4">📚</div>
+                <h5 class="text-2xl font-bold text-slate-50 mb-2">Tidak Ada Mata Kuliah</h5>
+                <p class="text-slate-400 text-lg">Belum ada mata kuliah yang tersedia saat ini.</p>
             </div>
         </div>
     </div>
-
-    <style>
-        .page-header {
-            padding: 1.5rem;
-            background: var(--surface);
-            border-radius: var(--radius-xl);
-            border: 1px solid var(--glass-border);
-        }
-
-        .page-title {
-            font-family: var(--font-display);
-            font-weight: 800;
-            color: var(--text-primary);
-        }
-
-        .course-card-student {
-            background: var(--surface);
-            border: 1px solid var(--glass-border);
-            border-radius: var(--radius-xl);
-            padding: 1.5rem;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .course-card-student::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 4px;
-            height: 100%;
-            background: var(--gradient-primary);
-        }
-
-        .course-card-student:hover {
-            border-color: var(--primary-500);
-            transform: translateY(-4px);
-            box-shadow: 0 12px 30px rgba(99, 102, 241, 0.15);
-        }
-
-        .course-icon {
-            width: 50px;
-            height: 50px;
-            background: var(--gradient-primary);
-            border-radius: 14px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.25rem;
-            color: white;
-            margin-bottom: 1rem;
-            box-shadow: 0 6px 16px rgba(99, 102, 241, 0.3);
-        }
-
-        .course-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 0.5rem;
-        }
-
-        .course-code {
-            background: rgba(99, 102, 241, 0.15);
-            color: var(--primary-400);
-            padding: 0.2rem 0.6rem;
-            border-radius: 999px;
-            font-size: 0.7rem;
-            font-weight: 700;
-        }
-
-        .course-sks {
-            background: linear-gradient(135deg, #11998e, #38ef7d);
-            color: white;
-            padding: 0.2rem 0.6rem;
-            border-radius: 999px;
-            font-size: 0.7rem;
-            font-weight: 600;
-        }
-
-        .course-name {
-            font-family: var(--font-display);
-            font-weight: 700;
-            color: var(--text-primary);
-            font-size: 1rem;
-            margin-bottom: 1rem;
-            flex: 1;
-        }
-    </style>
 </section>
-
 </html>

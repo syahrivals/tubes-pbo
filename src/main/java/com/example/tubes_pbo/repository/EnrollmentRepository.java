@@ -133,4 +133,20 @@ public class EnrollmentRepository {
                     "ORDER BY e.enrolled_at DESC";
         return jdbcTemplate.query(sql, mapper, kodeDosen);
     }
+
+    public List<Enrollment> findByKodeDosen(String kodeDosen) {
+        String sql = "SELECT e.*, m.nama as nama_mahasiswa, " +
+                    "mk.kode as kode_mata_kuliah, mk.nama as nama_mata_kuliah, mk.sks " +
+                    "FROM enrollment e " +
+                    "LEFT JOIN mahasiswa m ON e.nim = m.nim " +
+                    "LEFT JOIN mata_kuliah mk ON e.mata_kuliah_id = mk.id " +
+                    "WHERE mk.kode_dosen = ? " +
+                    "ORDER BY e.enrolled_at DESC";
+        return jdbcTemplate.query(sql, mapper, kodeDosen);
+    }
+
+    public int deleteByNim(String nim) {
+        String sql = "DELETE FROM enrollment WHERE nim = ?";
+        return jdbcTemplate.update(sql, nim);
+    }
 }

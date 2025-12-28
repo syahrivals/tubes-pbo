@@ -179,6 +179,33 @@ public class HomeController {
 
     // POST /mahasiswa removed - mahasiswa register sendiri via /register
 
+    @PostMapping("/mahasiswa/{nim}/delete")
+    public String deleteMahasiswa(@PathVariable String nim,
+                                  HttpSession session,
+                                  RedirectAttributes redirectAttributes) {
+        if (!isDosen(session)) return "redirect:/login";
+        
+        try {
+            // Hapus enrollments mahasiswa terlebih dahulu
+            enrollmentRepository.deleteByNim(nim);
+            
+            // Hapus mahasiswa beserta nilainya
+            boolean deleted = gradebookService.deleteMahasiswa(nim);
+            
+            if (deleted) {
+                String username = (String) session.getAttribute("username");
+                logService.logActivity("DOSEN", username != null ? username : "system", "DELETE", "MAHASISWA", "Menghapus mahasiswa dengan NIM: " + nim);
+                redirectAttributes.addFlashAttribute("success", "Mahasiswa berhasil dihapus!");
+            } else {
+                redirectAttributes.addFlashAttribute("error", "Mahasiswa tidak ditemukan!");
+            }
+        } catch (Exception e) {
+            redirectAttributes.addFlashAttribute("error", "Gagal menghapus mahasiswa: " + e.getMessage());
+        }
+        
+        return "redirect:/mahasiswa";
+    }
+
     @PostMapping("/nilai")
     public String addNilai(@RequestParam String nim,
             @RequestParam String mataKuliah,

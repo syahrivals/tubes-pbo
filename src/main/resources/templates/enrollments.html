@@ -2,161 +2,313 @@
 <html xmlns:th="http://www.thymeleaf.org" th:replace="layout :: layout(~{::section})" lang="id">
 <section>
     <!-- Page Header -->
-    <div class="page-header animate-fade-in mb-4">
-        <div class="row align-items-center">
-            <div class="col-lg-8">
-                <h4 class="page-title mb-1">
-                    <i class="bi bi-person-check-fill text-primary me-2"></i>
+    <div class="bg-gradient-to-br from-slate-800 via-slate-800 to-primary-900/30 border-2 border-slate-700 rounded-2xl p-6 mb-6 shadow-xl animate-fade-in">
+        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+            <div>
+                <h2 class="text-3xl font-bold text-slate-50 mb-2">
+                    <i class="bi bi-person-check-fill text-primary-400 mr-2"></i>
                     Kelola Enrollment
-                </h4>
-                <p class="text-muted mb-0">Atur pendaftaran mahasiswa ke mata kuliah</p>
+                </h2>
+                <p class="text-slate-400 text-lg">Atur pendaftaran mahasiswa ke mata kuliah</p>
             </div>
-            <div class="col-lg-4 text-lg-end mt-3 mt-lg-0">
-                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addEnrollModal">
-                    <i class="bi bi-plus-circle me-2"></i>Tambah Enrollment
-                </button>
+            <div class="lg:text-right flex flex-col lg:flex-row items-center gap-4">
+                <!-- Total Enrollments Badge -->
+                <div class="bg-emerald-500/20 border-2 border-emerald-500/50 text-emerald-300 font-bold px-5 py-3 rounded-xl flex items-center gap-2">
+                    <i class="bi bi-people-fill text-lg"></i>
+                    <span th:text="${totalEnrollments + ' Enrollment Terdaftar'}">0 Mahasiswa Terdaftar</span>
+                </div>
+                
             </div>
         </div>
     </div>
 
     <!-- Alerts -->
-    <div th:if="${success}" class="alert alert-success alert-dismissible fade show animate-fade-in mb-4">
-        <i class="bi bi-check-circle-fill me-2"></i>
-        <span th:text="${success}">Success</span>
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    <div th:if="${success}" class="bg-gradient-to-r from-emerald-500/20 to-emerald-600/20 border-2 border-emerald-500/50 text-emerald-100 px-6 py-4 rounded-xl mb-6 flex items-center justify-between animate-fade-in">
+        <div class="flex items-center gap-3">
+            <i class="bi bi-check-circle-fill text-2xl text-emerald-400"></i>
+            <span class="font-semibold" th:text="${success}">Success</span>
+        </div>
+        <button type="button" class="text-emerald-300 hover:text-emerald-100 transition-colors" onclick="this.parentElement.remove()">
+            <i class="bi bi-x-lg text-xl"></i>
+        </button>
     </div>
-    <div th:if="${error}" class="alert alert-danger alert-dismissible fade show animate-fade-in mb-4">
-        <i class="bi bi-exclamation-triangle-fill me-2"></i>
-        <span th:text="${error}">Error</span>
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    <div th:if="${error}" class="bg-gradient-to-r from-red-500/20 to-red-600/20 border-2 border-red-500/50 text-red-100 px-6 py-4 rounded-xl mb-6 flex items-center justify-between animate-fade-in">
+        <div class="flex items-center gap-3">
+            <i class="bi bi-exclamation-triangle-fill text-2xl text-red-400"></i>
+            <span class="font-semibold" th:text="${error}">Error</span>
+        </div>
+        <button type="button" class="text-red-300 hover:text-red-100 transition-colors" onclick="this.parentElement.remove()">
+            <i class="bi bi-x-lg text-xl"></i>
+        </button>
     </div>
 
-    <!-- Enrollments Table -->
-    <div class="card animate-fade-in">
-        <div class="card-body">
-            <div class="table-responsive" th:if="${!#lists.isEmpty(enrollments)}">
-                <table class="table table-hover mb-0">
-                    <thead>
-                        <tr>
-                            <th><i class="bi bi-person me-1"></i>Mahasiswa</th>
-                            <th><i class="bi bi-book me-1"></i>Mata Kuliah</th>
-                            <th><i class="bi bi-calendar me-1"></i>Tanggal Enroll</th>
-                            <th class="text-end">Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr th:each="e : ${enrollments}">
-                            <td>
-                                <div class="d-flex align-items-center gap-2">
-                                    <div class="mini-avatar"
-                                        th:text="${e.mahasiswaNama?.substring(0, 1).toUpperCase()}">M</div>
-                                    <div>
-                                        <div class="fw-semibold" th:text="${e.mahasiswaNama}">Nama</div>
-                                        <small class="text-muted" th:text="${e.nim}">NIM</small>
-                                    </div>
-                                </div>
-                            </td>
-                            <td>
-                                <span class="badge bg-primary-subtle text-primary" th:text="${e.courseKode}">KODE</span>
-                                <span th:text="${e.courseNama}">Nama MK</span>
-                            </td>
-                            <td>
-                                <span class="text-muted"
-                                    th:text="${e.enrolledAt != null ? #temporals.format(e.enrolledAt, 'dd MMM yyyy') : '-'}">-</span>
-                            </td>
-                            <td class="text-end">
-                                <form th:action="@{/enrollments/{id}/delete(id=${e.id})}" method="post" class="d-inline"
-                                    onsubmit="return confirm('Hapus enrollment ini?')">
-                                    <button type="submit" class="btn btn-xs btn-outline-danger">
-                                        <i class="bi bi-trash"></i>
-                                    </button>
-                                </form>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+    <!-- Pending Enrollments Section (if any) -->
+    <div th:if="${!#lists.isEmpty(pendingEnrollments)}" class="mb-8">
+        <h3 class="text-xl font-bold text-amber-400 mb-4 flex items-center gap-2">
+            <i class="bi bi-hourglass-split"></i>
+            Pending Enrollments
+            <span class="bg-amber-500/20 text-amber-300 px-3 py-1 rounded-full text-sm" th:text="${#lists.size(pendingEnrollments)}">0</span>
+        </h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div class="group bg-gradient-to-br from-slate-800 to-slate-800/50 border-2 border-amber-500/50 rounded-2xl p-6 shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 animate-fade-in"
+                 th:each="e, iterStat : ${pendingEnrollments}"
+                 th:style="${'animation-delay: ' + (iterStat.index * 0.05) + 's'}">
+                <div class="relative">
+                    <!-- Icon -->
+                    <div class="w-14 h-14 bg-gradient-to-br from-amber-500 to-amber-600 rounded-xl flex items-center justify-center mb-4 shadow-lg">
+                        <i class="bi bi-hourglass-split text-2xl text-white"></i>
+                    </div>
 
-            <!-- Empty State -->
-            <div th:if="${#lists.isEmpty(enrollments)}" class="empty-state">
-                <div class="empty-state-icon">📋</div>
-                <h5 class="empty-state-title">Belum Ada Enrollment</h5>
-                <p class="empty-state-text">Klik tombol "Tambah Enrollment" untuk mendaftarkan mahasiswa ke mata kuliah.
-                </p>
+                    <!-- Content -->
+                    <div class="mb-4">
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="bg-primary-500/20 text-primary-300 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide" 
+                                  th:text="${e.kodeMataKuliah}">IF101</span>
+                            <span class="bg-amber-500/20 text-amber-300 px-3 py-1 rounded-full text-xs font-semibold">
+                                PENDING
+                            </span>
+                        </div>
+                        <h6 class="text-lg font-bold text-slate-50 mb-2 leading-tight" th:text="${e.namaMataKuliah}">Nama MK</h6>
+                        <div class="flex items-center gap-2 text-slate-400 text-sm mb-2">
+                            <i class="bi bi-person"></i>
+                            <span th:text="${e.namaMahasiswa != null ? e.namaMahasiswa : e.nim}">Mahasiswa</span>
+                        </div>
+                        <div class="flex items-center gap-2 text-slate-400 text-sm">
+                            <i class="bi bi-calendar"></i>
+                            <span th:text="${e.enrolledAt != null ? #temporals.format(e.enrolledAt, 'dd MMM yyyy HH:mm') : '-'}">Tanggal</span>
+                        </div>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="pt-4 border-t border-slate-700 flex gap-2">
+                        <form th:action="@{/enrollments/{id}/accept(id=${e.id})}" method="post" class="flex-1">
+                            <button type="submit" 
+                                    class="w-full bg-emerald-500/10 hover:bg-emerald-500/20 border-2 border-emerald-500/50 text-emerald-400 hover:text-emerald-300 font-semibold px-4 py-2 rounded-xl transition-all duration-200 flex items-center justify-center gap-2">
+                                <i class="bi bi-check-lg"></i>
+                                <span>Terima</span>
+                            </button>
+                        </form>
+                        <form th:action="@{/enrollments/{id}/reject(id=${e.id})}" method="post" class="flex-1">
+                            <button type="submit" 
+                                    class="w-full bg-red-500/10 hover:bg-red-500/20 border-2 border-red-500/50 text-red-400 hover:text-red-300 font-semibold px-4 py-2 rounded-xl transition-all duration-200 flex items-center justify-center gap-2">
+                                <i class="bi bi-x-lg"></i>
+                                <span>Tolak</span>
+                            </button>
+                        </form>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
+    <!-- Active Enrollments Section -->
+    <div>
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="text-xl font-bold text-emerald-400 flex items-center gap-2">
+                <i class="bi bi-check-circle-fill"></i>
+                Mahasiswa Terdaftar
+                <span class="bg-emerald-500/20 text-emerald-300 px-3 py-1 rounded-full text-sm" th:text="${#lists.size(activeEnrollments)}">0</span>
+            </h3>
+            <!-- Pagination Controls -->
+            <div th:if="${#lists.size(activeEnrollments) > 6}" class="flex items-center gap-3">
+                <button id="prevBtn" onclick="prevPage()" 
+                        class="w-10 h-10 bg-slate-700 hover:bg-slate-600 disabled:bg-slate-800 disabled:text-slate-600 text-slate-50 rounded-xl transition-all duration-200 flex items-center justify-center disabled:cursor-not-allowed">
+                    <i class="bi bi-chevron-left text-lg"></i>
+                </button>
+                <span class="text-slate-400 text-sm font-medium">
+                    <span id="currentPage">1</span> / <span id="totalPages">1</span>
+                </span>
+                <button id="nextBtn" onclick="nextPage()" 
+                        class="w-10 h-10 bg-slate-700 hover:bg-slate-600 disabled:bg-slate-800 disabled:text-slate-600 text-slate-50 rounded-xl transition-all duration-200 flex items-center justify-center disabled:cursor-not-allowed">
+                    <i class="bi bi-chevron-right text-lg"></i>
+                </button>
+            </div>
+        </div>
+        
+        <div id="enrollmentGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div class="enrollment-card group bg-gradient-to-br from-slate-800 to-slate-800/50 border-2 border-slate-700 rounded-2xl p-6 shadow-lg hover:shadow-2xl hover:border-emerald-500/50 transition-all duration-300 transform hover:-translate-y-1"
+                 th:each="e, iterStat : ${activeEnrollments}"
+                 th:data-index="${iterStat.index}">
+                <div class="relative">
+                    <!-- Icon -->
+                    <div class="w-14 h-14 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-xl flex items-center justify-center mb-4 shadow-lg">
+                        <i class="bi bi-person-check text-2xl text-white"></i>
+                    </div>
+
+                    <!-- Content -->
+                    <div class="mb-4">
+                        <div class="flex items-center justify-between mb-3">
+                            <span class="bg-primary-500/20 text-primary-300 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide" 
+                                  th:text="${e.kodeMataKuliah}">IF101</span>
+                            <span class="bg-gradient-to-r from-emerald-500 to-emerald-600 text-white px-3 py-1 rounded-full text-xs font-semibold"
+                                  th:text="${e.sks + ' SKS'}">3 SKS</span>
+                        </div>
+                        <h6 class="text-lg font-bold text-slate-50 mb-2 leading-tight" th:text="${e.namaMataKuliah}">Nama MK</h6>
+                        <div class="flex items-center gap-2 text-slate-300 text-sm mb-2">
+                            <div class="w-6 h-6 bg-primary-500/20 rounded-lg flex items-center justify-center">
+                                <i class="bi bi-person text-primary-400 text-xs"></i>
+                            </div>
+                            <span th:text="${e.namaMahasiswa != null ? e.namaMahasiswa : 'N/A'}">Mahasiswa</span>
+                        </div>
+                        <div class="flex items-center gap-2 text-slate-400 text-sm mb-2">
+                            <i class="bi bi-hash"></i>
+                            <span th:text="${e.nim}">NIM</span>
+                        </div>
+                        <div class="flex items-center gap-2 text-slate-400 text-sm">
+                            <i class="bi bi-calendar-check"></i>
+                            <span th:text="${e.enrolledAt != null ? #temporals.format(e.enrolledAt, 'dd MMM yyyy') : '-'}">Tanggal</span>
+                        </div>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="pt-4 border-t border-slate-700">
+                        <form th:action="@{/enrollments/{id}/delete(id=${e.id})}" method="post"
+                              onsubmit="return confirm('Hapus enrollment ini?')">
+                            <button type="submit" 
+                                    class="w-full bg-red-500/10 hover:bg-red-500/20 border-2 border-red-500/50 text-red-400 hover:text-red-300 font-semibold px-4 py-2 rounded-xl transition-all duration-200 flex items-center justify-center gap-2">
+                                <i class="bi bi-trash"></i>
+                                <span>Hapus</span>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Empty State -->
+            <div class="col-span-full" th:if="${#lists.isEmpty(activeEnrollments)}">
+                <div class="bg-gradient-to-br from-slate-800 to-slate-800/50 border-2 border-slate-700 rounded-2xl p-12 text-center">
+                    <div class="text-6xl mb-4">📋</div>
+                    <h5 class="text-2xl font-bold text-slate-50 mb-2">Belum Ada Enrollment</h5>
+                    <p class="text-slate-400 text-lg mb-6">Klik tombol "Tambah Enrollment" untuk mendaftarkan mahasiswa ke mata kuliah.</p>
+                    <button class="inline-flex items-center gap-2 bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 text-white font-semibold px-6 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
+                            data-bs-toggle="modal" data-bs-target="#addEnrollModal">
+                        <i class="bi bi-person-plus text-lg"></i>
+                        <span>Tambah Enrollment</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pagination Script -->
+    <script th:inline="javascript">
+        const ITEMS_PER_PAGE = 6;
+        let currentPage = 1;
+        const cards = document.querySelectorAll('.enrollment-card');
+        const totalItems = cards.length;
+        const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);
+
+        function updateDisplay() {
+            const start = (currentPage - 1) * ITEMS_PER_PAGE;
+            const end = start + ITEMS_PER_PAGE;
+
+            cards.forEach((card, index) => {
+                if (index >= start && index < end) {
+                    card.style.display = 'block';
+                    card.classList.add('animate-fade-in');
+                } else {
+                    card.style.display = 'none';
+                    card.classList.remove('animate-fade-in');
+                }
+            });
+
+            // Update page indicator
+            const currentPageEl = document.getElementById('currentPage');
+            const totalPagesEl = document.getElementById('totalPages');
+            if (currentPageEl) currentPageEl.textContent = currentPage;
+            if (totalPagesEl) totalPagesEl.textContent = totalPages;
+
+            // Update button states
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            if (prevBtn) prevBtn.disabled = currentPage === 1;
+            if (nextBtn) nextBtn.disabled = currentPage === totalPages;
+        }
+
+        function nextPage() {
+            if (currentPage < totalPages) {
+                currentPage++;
+                updateDisplay();
+            }
+        }
+
+        function prevPage() {
+            if (currentPage > 1) {
+                currentPage--;
+                updateDisplay();
+            }
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            if (totalItems > 0) {
+                updateDisplay();
+            }
+        });
+    </script>
+
     <!-- Add Enrollment Modal -->
     <div class="modal fade" id="addEnrollModal" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title">
-                        <i class="bi bi-person-check text-primary me-2"></i>Tambah Enrollment
+            <div class="modal-content bg-slate-800 border-2 border-slate-700 rounded-2xl">
+                <div class="modal-header border-b border-slate-700 px-6 py-4">
+                    <h5 class="modal-title text-2xl font-bold text-slate-50 flex items-center gap-2">
+                        <i class="bi bi-person-check text-primary-400"></i>
+                        Tambah Enrollment
                     </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
                 <form method="post" action="/enrollments">
-                    <div class="modal-body">
-                        <div class="mb-3">
-                            <label class="form-label"><i class="bi bi-person me-1"></i>Mahasiswa</label>
-                            <select name="nim" class="form-select" required>
+                    <div class="modal-body px-6 py-4">
+                        <div class="mb-4">
+                            <label class="block text-slate-300 font-semibold mb-2 flex items-center gap-2">
+                                <i class="bi bi-person text-primary-400"></i>Mahasiswa
+                            </label>
+                            <select name="nim" 
+                                    class="w-full bg-slate-700/50 border-2 border-slate-600 text-slate-50 rounded-xl px-4 py-3 focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all"
+                                    required>
                                 <option value="">-- Pilih Mahasiswa --</option>
                                 <option th:each="m : ${mahasiswaList}" th:value="${m.nim}"
-                                    th:text="${m.nim + ' - ' + m.nama}">NIM - Nama</option>
+                                        th:text="${m.nim + ' - ' + m.nama}">NIM - Nama</option>
                             </select>
                         </div>
-                        <div class="mb-3">
-                            <label class="form-label"><i class="bi bi-book me-1"></i>Mata Kuliah</label>
-                            <select name="courseId" class="form-select" required>
+                        <div class="mb-4">
+                            <label class="block text-slate-300 font-semibold mb-2 flex items-center gap-2">
+                                <i class="bi bi-book text-primary-400"></i>Mata Kuliah
+                            </label>
+                            <select name="courseId" 
+                                    class="w-full bg-slate-700/50 border-2 border-slate-600 text-slate-50 rounded-xl px-4 py-3 focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all"
+                                    required>
                                 <option value="">-- Pilih Mata Kuliah --</option>
                                 <option th:each="c : ${courses}" th:value="${c.id}"
-                                    th:text="${c.kode + ' - ' + c.nama}">KODE - Nama</option>
+                                        th:text="${c.kode + ' - ' + c.nama + ' (' + c.sks + ' SKS)'}">KODE - Nama</option>
                             </select>
                         </div>
+                        <!-- Info Box -->
+                        <div class="bg-primary-500/10 border-2 border-primary-500/30 rounded-xl p-4">
+                            <div class="flex items-start gap-3">
+                                <i class="bi bi-info-circle text-primary-400 text-xl"></i>
+                                <div class="text-sm text-slate-300">
+                                    <p class="font-semibold text-primary-300 mb-1">Info:</p>
+                                    <p>Mahasiswa akan otomatis terdaftar di mata kuliah yang dipilih dan menerima notifikasi.</p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Batal</button>
-                        <button type="submit" class="btn btn-primary"><i class="bi bi-check-lg me-1"></i>Simpan</button>
+                    <div class="modal-footer border-t border-slate-700 px-6 py-4 flex gap-3">
+                        <button type="button" 
+                                class="flex-1 bg-slate-700 hover:bg-slate-600 text-slate-50 font-semibold px-6 py-3 rounded-xl transition-all duration-200"
+                                data-bs-dismiss="modal">
+                            Batal
+                        </button>
+                        <button type="submit" 
+                                class="flex-1 bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 text-white font-semibold px-6 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200">
+                            <i class="bi bi-check-lg me-2"></i>Simpan
+                        </button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
-
-    <!-- Styles -->
-    <style>
-        .page-header {
-            padding: 1.5rem;
-            background: var(--surface);
-            border-radius: var(--radius-xl);
-            border: 1px solid var(--glass-border);
-        }
-
-        .page-title {
-            font-family: var(--font-display);
-            font-weight: 800;
-            color: var(--text-primary);
-        }
-
-        .mini-avatar {
-            width: 36px;
-            height: 36px;
-            background: var(--gradient-primary);
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            font-size: 0.9rem;
-            color: white;
-        }
-
-        .bg-primary-subtle {
-            background: rgba(99, 102, 241, 0.2) !important;
-        }
-    </style>
 </section>
-
 </html>

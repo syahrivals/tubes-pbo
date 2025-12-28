@@ -2,168 +2,105 @@
 <html xmlns:th="http://www.thymeleaf.org" th:replace="layout :: layout(~{::section})" lang="id">
 <section>
     <!-- Page Header -->
-    <div class="page-header animate-fade-in mb-4">
-        <div class="row align-items-center">
-            <div class="col-lg-8">
-                <h4 class="page-title mb-1">
-                    <i class="bi bi-bookmark-check-fill text-success me-2"></i>
+    <div class="bg-gradient-to-br from-slate-800 via-slate-800 to-primary-900/30 border-2 border-slate-700 rounded-2xl p-6 mb-6 shadow-xl animate-fade-in">
+        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+            <div>
+                <h2 class="text-3xl font-bold text-slate-50 mb-2">
+                    <i class="bi bi-bookmark-check-fill text-emerald-400 mr-2"></i>
                     Mata Kuliah Saya
-                </h4>
-                <p class="text-muted mb-0">Daftar mata kuliah yang sudah Anda ikuti</p>
+                </h2>
+                <p class="text-slate-400 text-lg">Daftar mata kuliah yang sudah Anda ikuti</p>
             </div>
-            <div class="col-lg-4 text-lg-end mt-3 mt-lg-0">
-                <a class="btn btn-primary btn-sm" href="/student/courses">
-                    <i class="bi bi-plus-circle me-1"></i>Enroll MK Baru
+            <div class="lg:text-right flex flex-col lg:flex-row items-center gap-4">
+                <!-- Total SKS Badge -->
+                <div class="bg-emerald-500/20 border-2 border-emerald-500/50 text-emerald-300 font-bold px-5 py-3 rounded-xl flex items-center gap-2">
+                    <i class="bi bi-journal-check text-lg"></i>
+                    <span>Total: <span th:text="${totalSks}">0</span> SKS</span>
+                </div>
+                <a class="inline-flex items-center gap-2 bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 text-white font-semibold px-6 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 transform hover:-translate-y-0.5"
+                   href="/student/courses">
+                    <i class="bi bi-plus-circle text-lg"></i>
+                    <span>Enroll MK Baru</span>
                 </a>
             </div>
         </div>
     </div>
 
     <!-- Alerts -->
-    <div th:if="${success}" class="alert alert-success alert-dismissible fade show animate-fade-in mb-4">
-        <i class="bi bi-check-circle-fill me-2"></i><span th:text="${success}">Success</span>
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    <div th:if="${success}" class="bg-gradient-to-r from-emerald-500/20 to-emerald-600/20 border-2 border-emerald-500/50 text-emerald-100 px-6 py-4 rounded-xl mb-6 flex items-center justify-between animate-fade-in">
+        <div class="flex items-center gap-3">
+            <i class="bi bi-check-circle-fill text-2xl text-emerald-400"></i>
+            <span class="font-semibold" th:text="${success}">Success</span>
+        </div>
+        <button type="button" class="text-emerald-300 hover:text-emerald-100 transition-colors" onclick="this.parentElement.remove()">
+            <i class="bi bi-x-lg text-xl"></i>
+        </button>
     </div>
-    <div th:if="${error}" class="alert alert-danger alert-dismissible fade show animate-fade-in mb-4">
-        <i class="bi bi-exclamation-triangle-fill me-2"></i><span th:text="${error}">Error</span>
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    <div th:if="${error}" class="bg-gradient-to-r from-red-500/20 to-red-600/20 border-2 border-red-500/50 text-red-100 px-6 py-4 rounded-xl mb-6 flex items-center justify-between animate-fade-in">
+        <div class="flex items-center gap-3">
+            <i class="bi bi-exclamation-triangle-fill text-2xl text-red-400"></i>
+            <span class="font-semibold" th:text="${error}">Error</span>
+        </div>
+        <button type="button" class="text-red-300 hover:text-red-100 transition-colors" onclick="this.parentElement.remove()">
+            <i class="bi bi-x-lg text-xl"></i>
+        </button>
     </div>
 
     <!-- Enrollments Grid -->
-    <div class="row g-4">
-        <div class="col-md-6 col-lg-4 animate-fade-in" th:each="e, iterStat : ${enrollments}"
-            th:style="${'animation-delay: ' + (iterStat.index * 0.05) + 's'}">
-            <div class="enrollment-card">
-                <div class="enrollment-icon">
-                    <i class="bi bi-journal-check"></i>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div class="group bg-gradient-to-br from-slate-800 to-slate-800/50 border-2 border-slate-700 rounded-2xl p-6 shadow-lg hover:shadow-2xl hover:border-emerald-500/50 transition-all duration-300 transform hover:-translate-y-1 animate-fade-in"
+             th:each="e, iterStat : ${enrollments}"
+             th:style="${'animation-delay: ' + (iterStat.index * 0.05) + 's'}">
+            <div class="relative">
+                <!-- Left border accent -->
+                
+                <!-- Icon -->
+                <div class="w-14 h-14 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-xl flex items-center justify-center mb-4 shadow-lg">
+                    <i class="bi bi-journal-check text-2xl text-white"></i>
                 </div>
-                <div class="enrollment-header">
-                    <span class="course-code" th:text="${e.courseKode}">IF101</span>
-                    <span class="course-sks" th:text="${e.courseSks + ' SKS'}">3 SKS</span>
+
+                <!-- Content -->
+                <div class="mb-4">
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="bg-primary-500/20 text-primary-300 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide" 
+                              th:text="${e.kodeMataKuliah}">IF101</span>
+                        <span class="bg-gradient-to-r from-emerald-500 to-emerald-600 text-white px-3 py-1 rounded-full text-xs font-semibold"
+                              th:text="${e.sks + ' SKS'}">3 SKS</span>
+                    </div>
+                    <h6 class="text-lg font-bold text-slate-50 mb-2 leading-tight" th:text="${e.namaMataKuliah}">Nama MK</h6>
+                    <div class="flex items-center gap-2 text-slate-400 text-sm">
+                        <i class="bi bi-calendar-check"></i>
+                        <span th:text="${e.enrolledAt != null ? #temporals.format(e.enrolledAt, 'dd MMM yyyy') : '-'}">Tanggal</span>
+                    </div>
                 </div>
-                <h6 class="course-name" th:text="${e.courseNama}">Nama MK</h6>
-                <div class="enrollment-meta">
-                    <i class="bi bi-calendar-check me-1"></i>
-                    <span
-                        th:text="${e.enrolledAt != null ? #temporals.format(e.enrolledAt, 'dd MMM yyyy') : '-'}">Tanggal</span>
+
+                <!-- Actions -->
+                <div class="pt-4 border-t border-slate-700">
+                    <form th:action="@{/student/enrollments/{id}/drop(id=${e.id})}" method="post"
+                          onsubmit="return confirm('Drop mata kuliah ini?')">
+                        <button type="submit" 
+                                class="w-full bg-red-500/10 hover:bg-red-500/20 border-2 border-red-500/50 text-red-400 hover:text-red-300 font-semibold px-4 py-2 rounded-xl transition-all duration-200 flex items-center justify-center gap-2">
+                            <i class="bi bi-x-circle"></i>
+                            <span>Drop</span>
+                        </button>
+                    </form>
                 </div>
-                <form th:action="@{/student/enrollments/{id}/drop(id=${e.id})}" method="post" class="mt-auto"
-                    onsubmit="return confirm('Drop mata kuliah ini?')">
-                    <button type="submit" class="btn btn-outline-danger btn-sm w-100">
-                        <i class="bi bi-x-circle me-1"></i>Drop
-                    </button>
-                </form>
             </div>
         </div>
 
-        <div class="col-12" th:if="${#lists.isEmpty(enrollments)}">
-            <div class="empty-state">
-                <div class="empty-state-icon">📋</div>
-                <h5 class="empty-state-title">Belum Enroll Mata Kuliah</h5>
-                <p class="empty-state-text">Kunjungi katalog MK untuk mendaftar ke mata kuliah.</p>
-                <a href="/student/courses" class="btn btn-primary btn-sm mt-3">
-                    <i class="bi bi-journal-bookmark me-1"></i>Lihat Katalog
+        <!-- Empty State -->
+        <div class="col-span-full" th:if="${#lists.isEmpty(enrollments)}">
+            <div class="bg-gradient-to-br from-slate-800 to-slate-800/50 border-2 border-slate-700 rounded-2xl p-12 text-center">
+                <div class="text-6xl mb-4">📋</div>
+                <h5 class="text-2xl font-bold text-slate-50 mb-2">Belum Enroll Mata Kuliah</h5>
+                <p class="text-slate-400 text-lg mb-6">Kunjungi katalog MK untuk mendaftar ke mata kuliah.</p>
+                <a href="/student/courses" 
+                   class="inline-flex items-center gap-2 bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 text-white font-semibold px-6 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200">
+                    <i class="bi bi-journal-bookmark"></i>
+                    <span>Lihat Katalog</span>
                 </a>
             </div>
         </div>
     </div>
-
-    <style>
-        .page-header {
-            padding: 1.5rem;
-            background: var(--surface);
-            border-radius: var(--radius-xl);
-            border: 1px solid var(--glass-border);
-        }
-
-        .page-title {
-            font-family: var(--font-display);
-            font-weight: 800;
-            color: var(--text-primary);
-        }
-
-        .enrollment-card {
-            background: var(--surface);
-            border: 1px solid var(--glass-border);
-            border-radius: var(--radius-xl);
-            padding: 1.5rem;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .enrollment-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 4px;
-            height: 100%;
-            background: linear-gradient(135deg, #11998e, #38ef7d);
-        }
-
-        .enrollment-card:hover {
-            border-color: var(--success-500);
-            transform: translateY(-4px);
-            box-shadow: 0 12px 30px rgba(16, 185, 129, 0.15);
-        }
-
-        .enrollment-icon {
-            width: 50px;
-            height: 50px;
-            background: linear-gradient(135deg, #11998e, #38ef7d);
-            border-radius: 14px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.25rem;
-            color: white;
-            margin-bottom: 1rem;
-            box-shadow: 0 6px 16px rgba(16, 185, 129, 0.3);
-        }
-
-        .enrollment-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 0.5rem;
-        }
-
-        .course-code {
-            background: rgba(99, 102, 241, 0.15);
-            color: var(--primary-400);
-            padding: 0.2rem 0.6rem;
-            border-radius: 999px;
-            font-size: 0.7rem;
-            font-weight: 700;
-        }
-
-        .course-sks {
-            background: linear-gradient(135deg, #11998e, #38ef7d);
-            color: white;
-            padding: 0.2rem 0.6rem;
-            border-radius: 999px;
-            font-size: 0.7rem;
-            font-weight: 600;
-        }
-
-        .course-name {
-            font-family: var(--font-display);
-            font-weight: 700;
-            color: var(--text-primary);
-            font-size: 1rem;
-            margin-bottom: 0.75rem;
-        }
-
-        .enrollment-meta {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            margin-bottom: 1rem;
-        }
-    </style>
 </section>
-
 </html>

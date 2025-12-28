@@ -95,4 +95,8 @@ public class NilaiRepository {
                 nim, mataKuliah);
         return count != null && count > 0;
     }
+
+    public int deleteByNim(String nim) {
+        return jdbcTemplate.update("DELETE FROM nilai WHERE nim = ?", nim);
+    }
 }

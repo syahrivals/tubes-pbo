@@ -120,4 +120,11 @@ public class GradebookService {
     public boolean updateMahasiswa(String nim, String nama, String username) {
         return mahasiswaRepository.update(nim, nama, username);
     }
+
+    public boolean deleteMahasiswa(String nim) {
+        // Hapus semua nilai mahasiswa terlebih dahulu
+        nilaiRepository.deleteByNim(nim);
+        // Kemudian hapus mahasiswa
+        return mahasiswaRepository.deleteByNim(nim);
+    }
 }

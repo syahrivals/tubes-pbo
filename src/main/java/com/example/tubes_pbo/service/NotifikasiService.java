@@ -45,8 +45,8 @@ public class NotifikasiService {
 
     public void notifyEnrollment(String nim, String mataKuliah) {
         createNotifikasi(nim,
-            "Anda telah mengirim permintaan enrollment untuk mata kuliah " + mataKuliah,
-            "INFO");
+            "Anda telah berhasil terdaftar di mata kuliah " + mataKuliah + "!",
+            "SUCCESS");
     }
 }
 

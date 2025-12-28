@@ -2,179 +2,200 @@
 <html xmlns:th="http://www.thymeleaf.org" th:replace="layout :: layout(~{::section})" lang="id">
 <section>
     <!-- Page Header -->
-    <div class="page-header animate-fade-in mb-4">
-        <div class="row align-items-center">
-            <div class="col-lg-8">
-                <h4 class="page-title mb-1">
-                    <i class="bi bi-clipboard-data-fill text-primary me-2"></i>
+    <div class="bg-gradient-to-br from-slate-800 via-slate-800 to-primary-900/30 border-2 border-slate-700 rounded-2xl p-6 mb-6 shadow-xl animate-fade-in">
+        <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+            <div>
+                <h2 class="text-3xl font-bold text-slate-50 mb-2">
+                    <i class="bi bi-clipboard-data-fill text-primary-400 mr-2"></i>
                     Kelola Nilai Mahasiswa
-                </h4>
-                <p class="text-muted mb-0">Input dan kelola nilai per mahasiswa berdasarkan mata kuliah yang dienroll
-                </p>
+                </h2>
+                <p class="text-slate-400 text-lg">Input dan kelola nilai per mahasiswa berdasarkan mata kuliah yang dienroll</p>
             </div>
-            <div class="col-lg-4 text-lg-end mt-3 mt-lg-0">
-                <a class="btn btn-outline-secondary" href="/">
-                    <i class="bi bi-arrow-left me-1"></i>Dashboard
+            <div class="lg:text-right">
+                <a class="inline-flex items-center gap-2 bg-slate-700 hover:bg-slate-600 text-slate-50 font-semibold px-6 py-3 rounded-xl transition-all duration-200"
+                   href="/">
+                    <i class="bi bi-arrow-left"></i>
+                    <span>Dashboard</span>
                 </a>
             </div>
         </div>
     </div>
 
     <!-- Alerts -->
-    <div th:if="${success}" class="alert alert-success alert-dismissible fade show animate-fade-in mb-4">
-        <i class="bi bi-check-circle-fill me-2"></i>
-        <span th:text="${success}">Success</span>
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    <div th:if="${success}" class="bg-gradient-to-r from-emerald-500/20 to-emerald-600/20 border-2 border-emerald-500/50 text-emerald-100 px-6 py-4 rounded-xl mb-6 flex items-center justify-between animate-fade-in">
+        <div class="flex items-center gap-3">
+            <i class="bi bi-check-circle-fill text-2xl text-emerald-400"></i>
+            <span class="font-semibold" th:text="${success}">Success</span>
+        </div>
+        <button type="button" class="text-emerald-300 hover:text-emerald-100 transition-colors" data-bs-dismiss="alert">
+            <i class="bi bi-x-lg text-xl"></i>
+        </button>
     </div>
-    <div th:if="${error}" class="alert alert-danger alert-dismissible fade show animate-fade-in mb-4">
-        <i class="bi bi-exclamation-triangle-fill me-2"></i>
-        <span th:text="${error}">Error</span>
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    <div th:if="${error}" class="bg-gradient-to-r from-red-500/20 to-red-600/20 border-2 border-red-500/50 text-red-100 px-6 py-4 rounded-xl mb-6 flex items-center justify-between animate-fade-in">
+        <div class="flex items-center gap-3">
+            <i class="bi bi-exclamation-triangle-fill text-2xl text-red-400"></i>
+            <span class="font-semibold" th:text="${error}">Error</span>
+        </div>
+        <button type="button" class="text-red-300 hover:text-red-100 transition-colors" data-bs-dismiss="alert">
+            <i class="bi bi-x-lg text-xl"></i>
+        </button>
     </div>
 
     <!-- Add Grade Form -->
-    <div class="card animate-fade-in mb-4">
-        <div class="card-body">
-            <h5 class="card-title mb-4">
-                <i class="bi bi-plus-circle text-success me-2"></i>
-                Tambah Nilai Baru
-            </h5>
-            <form method="post" action="/nilai" class="row g-3">
-                <div class="col-md-3">
-                    <label class="form-label fw-semibold">
-                        <i class="bi bi-person me-1"></i>Mahasiswa *
+    <div class="bg-gradient-to-br from-slate-800 to-slate-800/50 border-2 border-slate-700 rounded-2xl p-6 mb-6 shadow-xl animate-fade-in">
+        <h5 class="text-2xl font-bold text-slate-50 mb-6 flex items-center gap-2">
+            <i class="bi bi-plus-circle text-emerald-400"></i>
+            Tambah Nilai Baru
+        </h5>
+        <form method="post" action="/nilai" class="space-y-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+                <div class="lg:col-span-2">
+                    <label class="block text-slate-300 font-semibold mb-2 flex items-center gap-2">
+                        <i class="bi bi-person text-primary-400"></i>Mahasiswa *
                     </label>
-                    <select class="form-select" id="nimNilai" name="nim" required>
+                    <select class="w-full bg-slate-700/50 border-2 border-slate-600 text-slate-50 rounded-xl px-4 py-3 focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all"
+                            id="nimNilai" name="nim" required>
                         <option value="">-- Pilih Mahasiswa --</option>
                         <option th:each="m : ${mahasiswaList}" th:value="${m.nim}" th:text="${m.nim + ' - ' + m.nama}">
                             NIM - Nama
                         </option>
                     </select>
                 </div>
-                <div class="col-md-3">
-                    <label class="form-label fw-semibold">
-                        <i class="bi bi-book me-1"></i>Mata Kuliah *
+                <div class="lg:col-span-2">
+                    <label class="block text-slate-300 font-semibold mb-2 flex items-center gap-2">
+                        <i class="bi bi-book text-primary-400"></i>Mata Kuliah *
                     </label>
-                    <select class="form-select" id="mataKuliah" name="mataKuliah" required disabled>
+                    <select class="w-full bg-slate-700/50 border-2 border-slate-600 text-slate-50 rounded-xl px-4 py-3 focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all"
+                            id="mataKuliah" name="mataKuliah" required disabled>
                         <option value="">-- Pilih Mahasiswa Dulu --</option>
                     </select>
-                    <div class="form-text" id="mataKuliahHelp">
-                        <i class="bi bi-info-circle me-1"></i>Pilih mahasiswa terlebih dahulu
+                    <div class="text-slate-400 text-sm mt-2 flex items-center gap-1" id="mataKuliahHelp">
+                        <i class="bi bi-info-circle"></i>
+                        <span>Pilih mahasiswa terlebih dahulu</span>
                     </div>
                 </div>
-                <div class="col-md-2">
-                    <label class="form-label fw-semibold">
-                        <i class="bi bi-clipboard-check me-1"></i>Tugas *
+                <div></div>
+                <div>
+                    <label class="block text-slate-300 font-semibold mb-2 flex items-center gap-2">
+                        <i class="bi bi-clipboard-check text-primary-400"></i>Tugas *
                     </label>
-                    <input class="form-control" id="tugas" name="tugas" type="number" step="0.01" min="0" max="100"
-                        placeholder="0-100" required>
+                    <input class="w-full bg-slate-700/50 border-2 border-slate-600 text-slate-50 rounded-xl px-4 py-3 focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all"
+                           id="tugas" name="tugas" type="number" step="0.01" min="0" max="100" placeholder="0-100" required>
                 </div>
-                <div class="col-md-2">
-                    <label class="form-label fw-semibold">
-                        <i class="bi bi-file-text me-1"></i>UTS *
+                <div>
+                    <label class="block text-slate-300 font-semibold mb-2 flex items-center gap-2">
+                        <i class="bi bi-file-text text-primary-400"></i>UTS *
                     </label>
-                    <input class="form-control" id="uts" name="uts" type="number" step="0.01" min="0" max="100"
-                        placeholder="0-100" required>
+                    <input class="w-full bg-slate-700/50 border-2 border-slate-600 text-slate-50 rounded-xl px-4 py-3 focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all"
+                           id="uts" name="uts" type="number" step="0.01" min="0" max="100" placeholder="0-100" required>
                 </div>
-                <div class="col-md-2">
-                    <label class="form-label fw-semibold">
-                        <i class="bi bi-file-earmark-text me-1"></i>UAS *
+                <div>
+                    <label class="block text-slate-300 font-semibold mb-2 flex items-center gap-2">
+                        <i class="bi bi-file-earmark-text text-primary-400"></i>UAS *
                     </label>
-                    <input class="form-control" id="uas" name="uas" type="number" step="0.01" min="0" max="100"
-                        placeholder="0-100" required>
+                    <input class="w-full bg-slate-700/50 border-2 border-slate-600 text-slate-50 rounded-xl px-4 py-3 focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all"
+                           id="uas" name="uas" type="number" step="0.01" min="0" max="100" placeholder="0-100" required>
                 </div>
-                <div class="col-12">
-                    <button type="submit" class="btn btn-success w-100">
-                        <i class="bi bi-plus-lg me-2"></i>Tambah Nilai
-                    </button>
-                </div>
-            </form>
-        </div>
+            </div>
+            <div class="pt-4">
+                <button type="submit" 
+                        class="w-full bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 text-white font-semibold px-6 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 flex items-center justify-center gap-2">
+                    <i class="bi bi-plus-lg text-lg"></i>
+                    <span>Tambah Nilai</span>
+                </button>
+            </div>
+        </form>
     </div>
 
     <!-- Grades List by Student -->
-    <div class="card animate-fade-in">
-        <div class="card-body">
-            <h5 class="card-title mb-4">
-                <i class="bi bi-list-columns text-info me-2"></i>
-                Daftar Nilai Per Mahasiswa
-            </h5>
+    <div class="bg-gradient-to-br from-slate-800 to-slate-800/50 border-2 border-slate-700 rounded-2xl p-6 shadow-xl animate-fade-in">
+        <h5 class="text-2xl font-bold text-slate-50 mb-6 flex items-center gap-2">
+            <i class="bi bi-list-columns text-cyan-400"></i>
+            Daftar Nilai Per Mahasiswa
+        </h5>
 
-            <!-- Empty State -->
-            <div th:if="${#lists.isEmpty(mahasiswaList)}" class="empty-state">
-                <div class="empty-state-icon">📋</div>
-                <h6 class="empty-state-title">Belum Ada Data</h6>
-                <p class="empty-state-text">Tambahkan mahasiswa terlebih dahulu untuk mulai menginput nilai.</p>
-                <a href="/mahasiswa" class="btn btn-primary btn-sm mt-3">
-                    <i class="bi bi-person-plus me-1"></i>Tambah Mahasiswa
-                </a>
-            </div>
+        <!-- Empty State -->
+        <div th:if="${#lists.isEmpty(mahasiswaList)}" class="text-center py-12">
+            <div class="text-6xl mb-4">📋</div>
+            <h6 class="text-2xl font-bold text-slate-50 mb-2">Belum Ada Data</h6>
+            <p class="text-slate-400 text-lg mb-6">Tambahkan mahasiswa terlebih dahulu untuk mulai menginput nilai.</p>
+            <a href="/mahasiswa" 
+               class="inline-flex items-center gap-2 bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 text-white font-semibold px-6 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200">
+                <i class="bi bi-person-plus"></i>
+                <span>Tambah Mahasiswa</span>
+            </a>
+        </div>
 
-            <!-- Student Cards -->
-            <div class="student-list" th:unless="${#lists.isEmpty(mahasiswaList)}">
-                <div class="student-nilai-card mb-4" th:each="m : ${mahasiswaList}">
-                    <div class="student-header">
-                        <div class="d-flex align-items-center gap-3">
-                            <div class="student-avatar" th:text="${m.nama.substring(0, 1).toUpperCase()}">B</div>
-                            <div>
-                                <h6 class="mb-0 fw-bold" th:text="${m.nama}">Nama</h6>
-                                <span class="text-muted small">
-                                    <i class="bi bi-hash"></i><span th:text="${m.nim}">NIM</span>
-                                </span>
+        <!-- Student Cards -->
+        <div class="space-y-6" th:unless="${#lists.isEmpty(mahasiswaList)}">
+            <div class="bg-slate-700/30 border-2 border-slate-700 rounded-2xl p-6" th:each="m : ${mahasiswaList}">
+                <div class="flex items-center justify-between mb-6 pb-4 border-b-2 border-slate-700">
+                    <div class="flex items-center gap-4">
+                        <div class="w-14 h-14 bg-gradient-to-br from-primary-500 to-primary-600 rounded-xl flex items-center justify-center font-bold text-white text-xl shadow-lg"
+                             th:text="${m.nama.substring(0, 1).toUpperCase()}">B</div>
+                        <div>
+                            <h6 class="text-xl font-bold text-slate-50 mb-1" th:text="${m.nama}">Nama</h6>
+                            <span class="text-slate-400 text-sm flex items-center gap-1">
+                                <i class="bi bi-hash"></i>
+                                <span th:text="${m.nim}">NIM</span>
+                            </span>
+                        </div>
+                    </div>
+                    <a class="inline-flex items-center gap-2 bg-primary-500/10 hover:bg-primary-500/20 border-2 border-primary-500/50 text-primary-400 hover:text-primary-300 font-semibold px-4 py-2 rounded-xl transition-all duration-200"
+                       th:href="@{'/report/' + ${m.nim}}">
+                        <i class="bi bi-file-earmark-pdf"></i>
+                        <span>Report</span>
+                    </a>
+                </div>
+
+                <div th:if="${#lists.isEmpty(nilaiMap[m.nim])}" class="text-center py-8">
+                    <p class="text-slate-400 text-lg flex items-center justify-center gap-2">
+                        <i class="bi bi-inbox text-2xl"></i>
+                        <span>Belum ada nilai</span>
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" th:unless="${#lists.isEmpty(nilaiMap[m.nim])}">
+                    <div class="group bg-gradient-to-br from-primary-500/10 to-primary-600/10 border-2 border-primary-500/30 rounded-xl p-4 hover:border-primary-500/50 hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1"
+                         th:each="n : ${nilaiMap[m.nim]}">
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="font-bold text-slate-50" th:text="${n.mataKuliah}">MK</span>
+                            <span class="w-10 h-10 flex items-center justify-center rounded-xl font-bold text-white text-lg shadow-lg"
+                                  th:classappend="${'grade-' + n.grade}"
+                                  th:text="${n.grade}">A</span>
+                        </div>
+                        <div class="grid grid-cols-3 gap-2 mb-4">
+                            <div class="text-center bg-slate-700/50 border border-slate-600 rounded-lg p-2">
+                                <div class="text-xs text-slate-400 uppercase font-semibold mb-1">Tugas</div>
+                                <div class="text-lg font-bold text-slate-50" th:text="${n.tugas}">0</div>
+                            </div>
+                            <div class="text-center bg-slate-700/50 border border-slate-600 rounded-lg p-2">
+                                <div class="text-xs text-slate-400 uppercase font-semibold mb-1">UTS</div>
+                                <div class="text-lg font-bold text-slate-50" th:text="${n.uts}">0</div>
+                            </div>
+                            <div class="text-center bg-slate-700/50 border border-slate-600 rounded-lg p-2">
+                                <div class="text-xs text-slate-400 uppercase font-semibold mb-1">UAS</div>
+                                <div class="text-lg font-bold text-slate-50" th:text="${n.uas}">0</div>
                             </div>
                         </div>
-                        <a class="btn btn-outline-primary btn-sm" th:href="@{'/report/' + ${m.nim}}">
-                            <i class="bi bi-file-earmark-pdf me-1"></i>Report
-                        </a>
-                    </div>
-
-                    <div th:if="${#lists.isEmpty(nilaiMap[m.nim])}" class="text-center py-4">
-                        <p class="text-muted mb-0">
-                            <i class="bi bi-inbox me-2"></i>Belum ada nilai
-                        </p>
-                    </div>
-
-                    <div class="row g-3" th:unless="${#lists.isEmpty(nilaiMap[m.nim])}">
-                        <div class="col-md-6 col-lg-4" th:each="n : ${nilaiMap[m.nim]}">
-                            <div class="nilai-card">
-                                <div class="nilai-header">
-                                    <span class="subject-name" th:text="${n.mataKuliah}">MK</span>
-                                    <span class="grade-badge" th:classappend="${'grade-' + n.grade}"
-                                        th:text="${n.grade}">A</span>
-                                </div>
-                                <div class="nilai-scores">
-                                    <div class="score-item">
-                                        <span class="label">Tugas</span>
-                                        <span class="value" th:text="${n.tugas}">0</span>
-                                    </div>
-                                    <div class="score-item">
-                                        <span class="label">UTS</span>
-                                        <span class="value" th:text="${n.uts}">0</span>
-                                    </div>
-                                    <div class="score-item">
-                                        <span class="label">UAS</span>
-                                        <span class="value" th:text="${n.uas}">0</span>
-                                    </div>
-                                </div>
-                                <div class="nilai-footer">
-                                    <div class="average">
-                                        <span class="avg-label">Rata-rata</span>
-                                        <span class="avg-value"
-                                            th:text="${#numbers.formatDecimal(n.hitungRataRata(),1,2)}">0.00</span>
-                                    </div>
-                                    <div class="actions">
-                                        <a class="btn btn-xs btn-outline-primary"
-                                            th:href="@{'/nilai/' + ${n.id} + '/edit'}">
-                                            <i class="bi bi-pencil"></i>
-                                        </a>
-                                        <form th:action="@{'/nilai/' + ${n.id} + '/delete'}" method="post"
-                                            class="d-inline" onsubmit="return confirm('Yakin hapus nilai ini?')">
-                                            <button class="btn btn-xs btn-outline-danger" type="submit">
-                                                <i class="bi bi-trash"></i>
-                                            </button>
-                                        </form>
-                                    </div>
-                                </div>
+                        <div class="flex items-center justify-between pt-3 border-t border-slate-700">
+                            <div>
+                                <div class="text-xs text-slate-400 uppercase font-semibold mb-1">Rata-rata</div>
+                                <div class="text-xl font-bold bg-gradient-to-r from-primary-400 to-cyan-400 bg-clip-text text-transparent"
+                                     th:text="${#numbers.formatDecimal(n.hitungRataRata(),1,2)}">0.00</div>
+                            </div>
+                            <div class="flex gap-2">
+                                <a class="bg-primary-500/10 hover:bg-primary-500/20 border-2 border-primary-500/50 text-primary-400 hover:text-primary-300 font-semibold px-3 py-1.5 rounded-lg transition-all duration-200"
+                                   th:href="@{'/nilai/' + ${n.id} + '/edit'}">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <form th:action="@{'/nilai/' + ${n.id} + '/delete'}" method="post" class="inline"
+                                      onsubmit="return confirm('Yakin hapus nilai ini?')">
+                                    <button class="bg-red-500/10 hover:bg-red-500/20 border-2 border-red-500/50 text-red-400 hover:text-red-300 font-semibold px-3 py-1.5 rounded-lg transition-all duration-200"
+                                            type="submit">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
                             </div>
                         </div>
                     </div>
@@ -183,166 +204,22 @@
         </div>
     </div>
 
-    <!-- Styles -->
+    <!-- Grade Badge Styles -->
     <style>
-        .page-header {
-            padding: 1.5rem;
-            background: var(--bg-card);
-            border-radius: var(--radius-xl);
-            border: 2px solid var(--border);
+        .grade-A {
+            background: linear-gradient(135deg, #10b981, #059669) !important;
         }
-
-        .page-title {
-            font-family: var(--font-display);
-            font-weight: 800;
-            color: var(--text-primary);
+        .grade-B {
+            background: linear-gradient(135deg, #6366f1, #4f46e5) !important;
         }
-
-        .student-nilai-card {
-            background: var(--bg-card);
-            border: 2px solid var(--border);
-            border-radius: var(--radius-xl);
-            padding: 1.5rem;
+        .grade-C {
+            background: linear-gradient(135deg, #06b6d4, #0891b2) !important;
         }
-
-        .student-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1rem;
-            padding-bottom: 1rem;
-            border-bottom: 2px solid var(--border);
+        .grade-D {
+            background: linear-gradient(135deg, #eab308, #f59e0b) !important;
         }
-
-        .student-avatar {
-            width: 48px;
-            height: 48px;
-            background: var(--gradient-primary);
-            border-radius: 14px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            font-size: 1.25rem;
-            color: white;
-        }
-
-        .nilai-card {
-            background: rgba(99, 102, 241, 0.08);
-            border: 2px solid var(--border);
-            border-radius: var(--radius-lg);
-            padding: 1rem;
-            transition: all 0.3s ease;
-        }
-
-        .nilai-card:hover {
-            border-color: var(--primary-light);
-            background: rgba(99, 102, 241, 0.12);
-            transform: translateY(-2px);
-        }
-
-        .nilai-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1rem;
-        }
-
-        .subject-name {
-            font-weight: 600;
-            color: var(--text-primary);
-        }
-
-        .grade-badge {
-            width: 32px;
-            height: 32px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 10px;
-            font-weight: 700;
-        }
-
-        .grade-badge.grade-A {
-            background: linear-gradient(135deg, #11998e, #38ef7d);
-            color: white;
-        }
-
-        .grade-badge.grade-B {
-            background: var(--gradient-primary);
-            color: white;
-        }
-
-        .grade-badge.grade-C {
-            background: linear-gradient(135deg, #00d2ff, #3a7bd5);
-            color: white;
-        }
-
-        .grade-badge.grade-D {
-            background: linear-gradient(135deg, #fa709a, #fee140);
-            color: #333;
-        }
-
-        .grade-badge.grade-E {
-            background: linear-gradient(135deg, #ef4444, #dc2626);
-            color: white;
-        }
-
-        .nilai-scores {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 0.5rem;
-            margin-bottom: 1rem;
-        }
-
-        .score-item {
-            text-align: center;
-            padding: 0.5rem;
-            background: rgba(99, 102, 241, 0.1);
-            border: 1px solid rgba(99, 102, 241, 0.2);
-            border-radius: 8px;
-        }
-
-        .score-item .label {
-            display: block;
-            font-size: 0.65rem;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            font-weight: 600;
-        }
-
-        .score-item .value {
-            display: block;
-            font-weight: 700;
-            color: var(--text);
-            font-size: 1.1rem;
-        }
-
-        .nilai-footer {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding-top: 0.75rem;
-            border-top: 2px solid var(--border);
-        }
-
-        .average .avg-label {
-            display: block;
-            font-size: 0.65rem;
-            color: var(--text-muted);
-        }
-
-        .average .avg-value {
-            font-weight: 800;
-            font-size: 1.1rem;
-            background: var(--gradient-primary);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .actions {
-            display: flex;
-            gap: 0.5rem;
+        .grade-E {
+            background: linear-gradient(135deg, #ef4444, #dc2626) !important;
         }
     </style>
 
@@ -380,22 +257,21 @@
                                 mataKuliahSelect.appendChild(option);
                             });
                             mataKuliahSelect.disabled = false;
-                            mataKuliahHelp.innerHTML = '<i class="bi bi-check-circle text-success me-1"></i>' + data.courses.length + ' mata kuliah tersedia';
+                            mataKuliahHelp.innerHTML = '<i class="bi bi-check-circle text-emerald-400 me-1"></i>' + data.courses.length + ' mata kuliah tersedia';
                         } else {
                             mataKuliahSelect.innerHTML = '<option value="">-- Tidak ada mata kuliah --</option>';
                             mataKuliahSelect.disabled = true;
-                            mataKuliahHelp.innerHTML = '<i class="bi bi-exclamation-circle text-warning me-1"></i>Mahasiswa ini belum enroll mata kuliah';
+                            mataKuliahHelp.innerHTML = '<i class="bi bi-exclamation-circle text-yellow-400 me-1"></i>Mahasiswa ini belum enroll mata kuliah';
                         }
                     })
                     .catch(error => {
                         console.error('Error:', error);
                         mataKuliahSelect.innerHTML = '<option value="">-- Error memuat data --</option>';
                         mataKuliahSelect.disabled = true;
-                        mataKuliahHelp.innerHTML = '<i class="bi bi-exclamation-triangle text-danger me-1"></i>Terjadi kesalahan';
+                        mataKuliahHelp.innerHTML = '<i class="bi bi-exclamation-triangle text-red-400 me-1"></i>Terjadi kesalahan';
                     });
             });
         });
     </script>
 </section>
-
 </html>

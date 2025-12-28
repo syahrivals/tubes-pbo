@@ -1,123 +1,132 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" th:replace="layout :: layout(~{::section})" lang="id">
 <section>
-    <!-- Welcome Header -->
-    <div class="welcome-section animate-fade-in mb-4">
-        <div class="row align-items-center">
-            <div class="col-lg-8">
-                <div class="d-flex align-items-center gap-3 mb-2">
-                    <div class="welcome-avatar" th:text="${nama != null ? nama.substring(0, 1).toUpperCase() : 'M'}">M
-                    </div>
-                    <div>
-                        <h2 class="welcome-title mb-0">
-                            Halo, <span class="text-gradient" th:text="${nama}">Mahasiswa</span>! 👋
-                        </h2>
-                        <p class="text-muted mb-0 small">
-                            <i class="bi bi-hash me-1"></i>NIM: <span th:text="${nim}">-</span>
-                            <span class="mx-2">•</span>
-                            <i class="bi bi-person me-1"></i>Username: <span th:text="${username}">-</span>
-                        </p>
+    <!-- User Header Section -->
+    <div class="user-header-section animate-fade-in mb-6">
+        <div class="header-container">
+            <!-- User Info -->
+            <div class="user-info-group">
+                <div class="welcome-avatar" th:text="${nama != null ? nama.substring(0, 1).toUpperCase() : 'M'}">M</div>
+                <div class="user-details">
+                    <h2 class="welcome-title">
+                        Halo, <span class="text-gradient" th:text="${nama}">Mahasiswa</span>! 👋
+                    </h2>
+                    <div class="user-meta">
+                        <span class="meta-item">
+                            <i class="bi bi-hash"></i>NIM: <span th:text="${nim}">-</span>
+                        </span>
+                        <span class="meta-item">
+                            <i class="bi bi-person"></i>Username: <span th:text="${username}">-</span>
+                        </span>
                     </div>
                 </div>
             </div>
-            <div class="col-lg-4 text-lg-end mt-3 mt-lg-0">
-                <div class="d-flex gap-2 justify-content-lg-end">
-                    <a class="btn btn-outline-primary btn-sm" href="/student/profile">
-                        <i class="bi bi-gear me-1"></i>Profile
-                    </a>
-                    <a class="btn btn-success btn-sm" href="/student/export-pdf">
-                        <i class="bi bi-file-earmark-pdf me-1"></i>Export PDF
-                    </a>
-                </div>
+            
+            <!-- Action Buttons -->
+            <div class="header-actions">
+                <a class="btn btn-outline-primary btn-sm" href="/student/profile">
+                    <i class="bi bi-gear me-1"></i>Profile
+                </a>
+                <a class="btn btn-success btn-sm" href="/student/export-pdf">
+                    <i class="bi bi-file-earmark-pdf me-1"></i>Export PDF
+                </a>
             </div>
         </div>
     </div>
 
-    <!-- Statistics Cards -->
-    <div class="row g-4 mb-4">
-        <div class="col-6 col-lg-3 animate-fade-in stagger-1">
-            <div class="card stat-card h-100">
-                <div class="card-body text-center py-4">
-                    <div class="stat-icon primary mx-auto">
+    <!-- Summary Statistics Section -->
+    <div class="stats-section animate-fade-in mb-6">
+        <div class="stats-grid">
+            <div class="stat-card animate-fade-in stagger-1">
+                <div class="stat-card-body">
+                    <div class="stat-icon primary">
                         <i class="bi bi-journal-bookmark-fill"></i>
                     </div>
-                    <h2 class="stat-number" th:text="${totalMataKuliah}">0</h2>
-                    <p class="stat-label mb-0">Mata Kuliah</p>
+                    <div class="stat-content">
+                        <p class="stat-label">Total Mata Kuliah</p>
+                        <h3 class="stat-value" th:text="${totalMataKuliah}">0</h3>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="col-6 col-lg-3 animate-fade-in stagger-2">
-            <div class="card h-100 gradient-card-primary">
-                <div class="card-body text-center py-4 text-white">
-                    <div class="stat-icon-light mx-auto">
+
+            <div class="stat-card gradient-primary animate-fade-in stagger-2">
+                <div class="stat-card-body">
+                    <div class="stat-icon-light">
                         <i class="bi bi-graph-up-arrow"></i>
                     </div>
-                    <h2 class="mb-0 fw-bold" style="font-size: 2.25rem;" th:text="${#numbers.formatDecimal(rata,1,2)}">
-                        0.00</h2>
-                    <p class="mb-0 small opacity-75">Rata-rata Keseluruhan</p>
+                    <div class="stat-content">
+                        <p class="stat-label">Rata-rata Keseluruhan</p>
+                        <h3 class="stat-value" th:text="${#numbers.formatDecimal(rata,1,2)}">0.00</h3>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="col-6 col-lg-3 animate-fade-in stagger-3">
-            <div class="card h-100 gradient-card-accent">
-                <div class="card-body text-center py-4 text-white">
-                    <div class="stat-icon-light mx-auto">
+
+            <div class="stat-card gradient-accent animate-fade-in stagger-3">
+                <div class="stat-card-body">
+                    <div class="stat-icon-light">
                         <i class="bi bi-arrow-up-circle-fill"></i>
                     </div>
-                    <h2 class="mb-0 fw-bold" style="font-size: 2.25rem;"
-                        th:text="${#numbers.formatDecimal(highest,1,2)}">0.00</h2>
-                    <p class="mb-0 small opacity-75">Nilai Tertinggi</p>
+                    <div class="stat-content">
+                        <p class="stat-label">Nilai Tertinggi</p>
+                        <h3 class="stat-value" th:text="${#numbers.formatDecimal(highest,1,2)}">0.00</h3>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="col-6 col-lg-3 animate-fade-in stagger-4">
-            <div class="card h-100 gradient-card-cyber">
-                <div class="card-body text-center py-4 text-white">
-                    <div class="stat-icon-light mx-auto">
+
+            <div class="stat-card gradient-cyber animate-fade-in stagger-4">
+                <div class="stat-card-body">
+                    <div class="stat-icon-light">
                         <i class="bi bi-arrow-down-circle-fill"></i>
                     </div>
-                    <h2 class="mb-0 fw-bold" style="font-size: 2.25rem;"
-                        th:text="${#numbers.formatDecimal(lowest,1,2)}">0.00</h2>
-                    <p class="mb-0 small opacity-75">Nilai Terendah</p>
+                    <div class="stat-content">
+                        <p class="stat-label">Nilai Terendah</p>
+                        <h3 class="stat-value" th:text="${#numbers.formatDecimal(lowest,1,2)}">0.00</h3>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Grade Distribution & Chart -->
-    <div class="row g-4 mb-4" th:if="${!#lists.isEmpty(nilaiList)}">
-        <div class="col-lg-6 animate-fade-in stagger-5">
-            <div class="card h-100">
-                <div class="card-body">
-                    <h5 class="card-title mb-4">
+    <!-- Grade Distribution & Overview Section -->
+    <div class="charts-section animate-fade-in mb-6" th:if="${!#lists.isEmpty(nilaiList)}">
+        <div class="charts-container">
+            <!-- Grade Distribution Card -->
+            <div class="chart-card">
+                <div class="chart-header">
+                    <h5 class="chart-title">
                         <i class="bi bi-pie-chart-fill text-primary me-2"></i>
                         Distribusi Grade
                     </h5>
+                </div>
+                <div class="chart-content">
                     <div class="chart-container" style="height: 240px;">
                         <canvas id="gradeChart"></canvas>
                     </div>
                 </div>
             </div>
-        </div>
-        <div class="col-lg-6 animate-fade-in">
-            <div class="card h-100">
-                <div class="card-body">
-                    <h5 class="card-title mb-4">
+
+            <!-- Grade Overview Card -->
+            <div class="chart-card">
+                <div class="chart-header">
+                    <h5 class="chart-title">
                         <i class="bi bi-bar-chart-fill text-success me-2"></i>
                         Grade Overview
                     </h5>
-                    <div class="grade-overview">
-                        <div class="grade-row" th:each="grade : ${'A,B,C,D,E'.split(',')}">
-                            <div class="grade-info">
+                </div>
+                <div class="chart-content">
+                    <div class="grade-overview-list">
+                        <div class="grade-overview-item" th:each="grade : ${'A,B,C,D,E'.split(',')}">
+                            <div class="grade-overview-left">
                                 <span class="grade-letter" th:classappend="${'grade-' + grade}"
                                     th:text="${grade}">A</span>
                                 <span class="grade-count"
-                                    th:text="${(gradeDistribution.get(grade) != null ? gradeDistribution.get(grade) : 0) + ' MK'}">0
-                                    MK</span>
+                                    th:text="${(gradeDistribution.get(grade) != null ? gradeDistribution.get(grade) : 0) + ' MK'}">0 MK</span>
                             </div>
-                            <div class="grade-bar">
-                                <div class="grade-bar-fill" th:classappend="${'fill-' + grade}"
-                                    th:style="${'width: ' + (gradeDistribution.get(grade) != null && totalMataKuliah > 0 ? (gradeDistribution.get(grade) * 100 / totalMataKuliah) : 0) + '%'}">
+                            <div class="grade-bar-container">
+                                <div class="grade-bar">
+                                    <div class="grade-bar-fill" th:classappend="${'fill-' + grade}"
+                                        th:style="${'width: ' + (gradeDistribution.get(grade) != null && totalMataKuliah > 0 ? (gradeDistribution.get(grade) * 100 / totalMataKuliah) : 0) + '%'}">
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -127,65 +136,64 @@
         </div>
     </div>
 
-    <!-- Grades List -->
-    <div class="card animate-fade-in">
-        <div class="card-body">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <div>
-                    <h5 class="card-title mb-1">
-                        <i class="bi bi-clipboard-data text-warning me-2"></i>
-                        Nilai Per Mata Kuliah
-                    </h5>
-                    <p class="text-muted small mb-0">Detail nilai Tugas, UTS, dan UAS Anda</p>
+    <!-- Nilai Per Mata Kuliah Section -->
+    <div class="grades-section animate-fade-in">
+        <div class="grades-header">
+            <div class="grades-title-group">
+                <h5 class="grades-title">
+                    <i class="bi bi-clipboard-data text-warning me-2"></i>
+                    Nilai Per Mata Kuliah
+                </h5>
+                <p class="grades-subtitle">Detail nilai Tugas, UTS, dan UAS Anda</p>
+            </div>
+            <a href="/student/export-pdf" class="btn btn-success btn-sm">
+                <i class="bi bi-download me-1"></i>Export Transkrip
+            </a>
+        </div>
+
+        <!-- Empty State -->
+        <div th:if="${#lists.isEmpty(nilaiList)}" class="empty-state">
+            <div class="empty-state-icon">📊</div>
+            <h6 class="empty-state-title">Belum Ada Nilai</h6>
+            <p class="empty-state-text">
+                Nilai Anda akan muncul di sini setelah dosen memasukkan data.
+            </p>
+            <a href="/student/courses" class="btn btn-primary btn-sm mt-3">
+                <i class="bi bi-journal-bookmark me-1"></i>Lihat Katalog MK
+            </a>
+        </div>
+
+        <!-- Grades Grid -->
+        <div class="grades-grid" th:unless="${#lists.isEmpty(nilaiList)}">
+            <div class="grade-card-v2" th:each="n : ${nilaiList}">
+                <!-- Card Header -->
+                <div class="grade-card-header-v2">
+                    <h6 class="subject-name" th:text="${n.mataKuliah}">Mata Kuliah</h6>
+                    <span class="grade-badge-lg" th:classappend="${'grade-' + n.grade}"
+                        th:text="${n.grade}">A</span>
                 </div>
-                <a href="/student/export-pdf" class="btn btn-success btn-sm">
-                    <i class="bi bi-download me-1"></i>Export Transkrip
-                </a>
-            </div>
 
-            <!-- Empty State -->
-            <div th:if="${#lists.isEmpty(nilaiList)}" class="empty-state">
-                <div class="empty-state-icon">📊</div>
-                <h6 class="empty-state-title">Belum Ada Nilai</h6>
-                <p class="empty-state-text">
-                    Nilai Anda akan muncul di sini setelah dosen memasukkan data.
-                </p>
-                <a href="/student/courses" class="btn btn-primary btn-sm mt-3">
-                    <i class="bi bi-journal-bookmark me-1"></i>Lihat Katalog MK
-                </a>
-            </div>
-
-            <!-- Grades Grid -->
-            <div class="row g-3" th:unless="${#lists.isEmpty(nilaiList)}">
-                <div class="col-md-6 col-lg-4" th:each="n : ${nilaiList}">
-                    <div class="grade-card-v2">
-                        <div class="grade-card-header-v2">
-                            <h6 class="subject-name mb-0" th:text="${n.mataKuliah}">Mata Kuliah</h6>
-                            <span class="grade-badge-lg" th:classappend="${'grade-' + n.grade}"
-                                th:text="${n.grade}">A</span>
-                        </div>
-
-                        <div class="scores-row">
-                            <div class="score-box">
-                                <span class="score-title">Tugas</span>
-                                <span class="score-num" th:text="${n.tugas}">85</span>
-                            </div>
-                            <div class="score-box">
-                                <span class="score-title">UTS</span>
-                                <span class="score-num" th:text="${n.uts}">80</span>
-                            </div>
-                            <div class="score-box">
-                                <span class="score-title">UAS</span>
-                                <span class="score-num" th:text="${n.uas}">90</span>
-                            </div>
-                        </div>
-
-                        <div class="average-box">
-                            <span class="avg-label">Rata-rata</span>
-                            <span class="avg-value"
-                                th:text="${#numbers.formatDecimal(n.hitungRataRata(),1,2)}">85.00</span>
-                        </div>
+                <!-- Scores Grid -->
+                <div class="scores-row">
+                    <div class="score-box">
+                        <span class="score-title">Tugas</span>
+                        <span class="score-num" th:text="${n.tugas}">85</span>
                     </div>
+                    <div class="score-box">
+                        <span class="score-title">UTS</span>
+                        <span class="score-num" th:text="${n.uts}">80</span>
+                    </div>
+                    <div class="score-box">
+                        <span class="score-title">UAS</span>
+                        <span class="score-num" th:text="${n.uas}">90</span>
+                    </div>
+                </div>
+
+                <!-- Average -->
+                <div class="average-box">
+                    <span class="avg-label">Rata-rata</span>
+                    <span class="avg-value"
+                        th:text="${#numbers.formatDecimal(n.hitungRataRata(),1,2)}">85.00</span>
                 </div>
             </div>
         </div>
@@ -193,79 +201,437 @@
 
     <!-- Custom Styles -->
     <style>
-        .welcome-section {
-            padding: 1.5rem;
+        /* ============================ */
+        /* LAYOUT & SPACING */
+        /* ============================ */
+        
+        .user-header-section {
+            padding: 1.75rem;
             background: var(--surface);
             border-radius: var(--radius-xl);
             border: 1px solid var(--glass-border);
         }
 
-        .welcome-avatar {
-            width: 56px;
-            height: 56px;
-            background: var(--gradient-primary);
-            border-radius: 16px;
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 2rem;
+        }
+
+        .user-info-group {
+            display: flex;
+            align-items: center;
+            gap: 1.25rem;
+            flex: 1;
+        }
+
+        .user-details {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .user-meta {
+            display: flex;
+            gap: 1.5rem;
+            font-size: 0.9rem;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-secondary);
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        /* ============================ */
+        /* STATS SECTION */
+        /* ============================ */
+
+        .stats-section {
+            padding: 0;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .stat-card {
+            background: var(--surface);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-lg);
+            transition: all 0.3s ease;
+            height: 100%;
+        }
+
+        .stat-card:hover {
+            border-color: var(--primary-500);
+            transform: translateY(-4px);
+            box-shadow: 0 12px 30px rgba(99, 102, 241, 0.15);
+        }
+
+        .stat-card-body {
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            gap: 1rem;
+        }
+
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            background: rgba(99, 102, 241, 0.15);
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: 800;
             font-size: 1.5rem;
-            color: white;
-            box-shadow: 0 8px 24px rgba(99, 102, 241, 0.3);
         }
 
-        .welcome-title {
-            font-family: var(--font-display);
-            font-weight: 800;
-            font-size: 1.5rem;
-            color: var(--text-primary);
+        .stat-icon.primary {
+            color: var(--primary-500);
         }
 
         .stat-icon-light {
             width: 50px;
             height: 50px;
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 14px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 1.5rem;
-            margin: 0 auto 0.75rem;
+            color: white;
         }
 
-        .gradient-card-primary {
-            background: var(--gradient-primary) !important;
-            border: none !important;
+        .stat-content {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
         }
 
-        .gradient-card-accent {
-            background: var(--gradient-accent) !important;
-            border: none !important;
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin: 0;
         }
 
-        .gradient-card-cyber {
-            background: linear-gradient(135deg, #00d2ff 0%, #3a7bd5 100%) !important;
-            border: none !important;
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin: 0;
         }
 
-        .grade-overview {
+        .stat-card.gradient-primary {
+            background: var(--gradient-primary);
+            border: none;
+            color: white;
+        }
+
+        .stat-card.gradient-primary .stat-label {
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .stat-card.gradient-primary .stat-value {
+            color: white;
+        }
+
+        .stat-card.gradient-accent {
+            background: var(--gradient-accent);
+            border: none;
+            color: white;
+        }
+
+        .stat-card.gradient-accent .stat-label {
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .stat-card.gradient-accent .stat-value {
+            color: white;
+        }
+
+        .stat-card.gradient-cyber {
+            background: linear-gradient(135deg, #00d2ff 0%, #3a7bd5 100%);
+            border: none;
+            color: white;
+        }
+
+        .stat-card.gradient-cyber .stat-label {
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .stat-card.gradient-cyber .stat-value {
+            color: white;
+        }
+
+        /* ============================ */
+        /* CHARTS SECTION */
+        /* ============================ */
+
+        .charts-section {
+            padding: 0;
+        }
+
+        .charts-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .chart-card {
+            background: var(--surface);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chart-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .chart-title {
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 0;
+        }
+
+        .chart-content {
+            padding: 1.25rem;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chart-container {
+            position: relative;
+            width: 100%;
+        }
+
+        /* ============================ */
+        /* GRADE OVERVIEW */
+        /* ============================ */
+
+        .grade-overview-list {
             display: flex;
             flex-direction: column;
             gap: 1rem;
         }
 
-        .grade-row {
-            display: flex;
-            align-items: center;
+        .grade-overview-item {
+            display: grid;
+            grid-template-columns: 100px 1fr;
             gap: 1rem;
+            align-items: center;
         }
 
-        .grade-info {
+        .grade-overview-left {
             display: flex;
             align-items: center;
             gap: 0.75rem;
-            min-width: 100px;
         }
+
+        .grade-bar-container {
+            min-width: 0;
+        }
+
+        /* ============================ */
+        /* GRADES SECTION */
+        /* ============================ */
+
+        .grades-section {
+            padding: 0;
+        }
+
+        .grades-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .grades-title-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .grades-title {
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 0;
+            font-size: 1.25rem;
+        }
+
+        .grades-subtitle {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin: 0;
+        }
+
+        .grades-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        /* ============================ */
+        /* GRADE CARDS */
+        /* ============================ */
+
+        .grade-card-v2 {
+            background: var(--surface);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-lg);
+            padding: 1.25rem;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            height: 100%;
+        }
+
+        .grade-card-v2:hover {
+            border-color: var(--primary-500);
+            transform: translateY(-4px);
+            box-shadow: 0 12px 30px rgba(99, 102, 241, 0.15);
+        }
+
+        .grade-card-header-v2 {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .subject-name {
+            font-weight: 700;
+            color: var(--text-primary);
+            font-size: 1rem;
+            flex: 1;
+            line-height: 1.4;
+        }
+
+        .grade-badge-lg {
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            font-weight: 800;
+            font-size: 1.1rem;
+            flex-shrink: 0;
+        }
+
+        .grade-badge-lg.grade-A {
+            background: linear-gradient(135deg, #11998e, #38ef7d);
+            color: white;
+        }
+
+        .grade-badge-lg.grade-B {
+            background: var(--gradient-primary);
+            color: white;
+        }
+
+        .grade-badge-lg.grade-C {
+            background: linear-gradient(135deg, #00d2ff, #3a7bd5);
+            color: white;
+        }
+
+        .grade-badge-lg.grade-D {
+            background: linear-gradient(135deg, #fa709a, #fee140);
+            color: #333;
+        }
+
+        .grade-badge-lg.grade-E {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white;
+        }
+
+        /* ============================ */
+        /* SCORES */
+        /* ============================ */
+
+        .scores-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.75rem;
+        }
+
+        .score-box {
+            text-align: center;
+            padding: 0.75rem;
+            background: rgba(99, 102, 241, 0.08);
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .score-title {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+
+        .score-num {
+            font-weight: 800;
+            font-size: 1.25rem;
+            color: var(--text-primary);
+        }
+
+        /* ============================ */
+        /* AVERAGE */
+        /* ============================ */
+
+        .average-box {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.875rem;
+            background: rgba(99, 102, 241, 0.15);
+            border-radius: 10px;
+            margin-top: auto;
+        }
+
+        .avg-label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .avg-value {
+            font-weight: 800;
+            font-size: 1.5rem;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* ============================ */
+        /* GRADE LETTER & BAR */
+        /* ============================ */
 
         .grade-letter {
             width: 32px;
@@ -306,6 +672,7 @@
         .grade-count {
             font-size: 0.85rem;
             color: var(--text-muted);
+            font-weight: 600;
         }
 
         .grade-bar {
@@ -342,130 +709,138 @@
             background: linear-gradient(90deg, #ef4444, #dc2626);
         }
 
-        .grade-card-v2 {
-            background: var(--surface);
-            border: 1px solid var(--glass-border);
-            border-radius: var(--radius-lg);
-            padding: 1.25rem;
-            height: 100%;
-            transition: all 0.3s ease;
-        }
+        /* ============================ */
+        /* UTILITIES & RESPONSIVE */
+        /* ============================ */
 
-        .grade-card-v2:hover {
-            border-color: var(--primary-500);
-            transform: translateY(-4px);
-            box-shadow: 0 12px 30px rgba(99, 102, 241, 0.15);
-        }
-
-        .grade-card-header-v2 {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 1.25rem;
-            padding-bottom: 1rem;
-            border-bottom: 1px solid var(--glass-border);
-        }
-
-        .subject-name {
-            font-weight: 700;
-            color: var(--text-primary);
-            font-size: 1rem;
-            flex: 1;
-            padding-right: 0.5rem;
-        }
-
-        .grade-badge-lg {
-            width: 44px;
-            height: 44px;
+        .welcome-avatar {
+            width: 56px;
+            height: 56px;
+            background: var(--gradient-primary);
+            border-radius: 16px;
             display: flex;
             align-items: center;
             justify-content: center;
-            border-radius: 12px;
             font-weight: 800;
-            font-size: 1.1rem;
+            font-size: 1.5rem;
+            color: white;
+            box-shadow: 0 8px 24px rgba(99, 102, 241, 0.3);
             flex-shrink: 0;
         }
 
-        .grade-badge-lg.grade-A {
-            background: linear-gradient(135deg, #11998e, #38ef7d);
-            color: white;
-        }
-
-        .grade-badge-lg.grade-B {
-            background: var(--gradient-primary);
-            color: white;
-        }
-
-        .grade-badge-lg.grade-C {
-            background: linear-gradient(135deg, #00d2ff, #3a7bd5);
-            color: white;
-        }
-
-        .grade-badge-lg.grade-D {
-            background: linear-gradient(135deg, #fa709a, #fee140);
-            color: #333;
-        }
-
-        .grade-badge-lg.grade-E {
-            background: linear-gradient(135deg, #ef4444, #dc2626);
-            color: white;
-        }
-
-        .scores-row {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 0.75rem;
-            margin-bottom: 1rem;
-        }
-
-        .score-box {
-            text-align: center;
-            padding: 0.75rem;
-            background: rgba(99, 102, 241, 0.08);
-            border-radius: 10px;
-        }
-
-        .score-title {
-            display: block;
-            font-size: 0.7rem;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 0.25rem;
-        }
-
-        .score-num {
-            display: block;
-            font-weight: 800;
-            font-size: 1.25rem;
-            color: var(--text-primary);
-        }
-
-        .average-box {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0.875rem;
-            background: rgba(99, 102, 241, 0.15);
-            border-radius: 10px;
-        }
-
-        .avg-label {
-            font-size: 0.85rem;
-            color: var(--text-secondary);
-            font-weight: 500;
-        }
-
-        .avg-value {
+        .welcome-title {
+            font-family: var(--font-display);
             font-weight: 800;
             font-size: 1.5rem;
+            color: var(--text-primary);
+            margin: 0;
+        }
+
+        .text-gradient {
             background: var(--gradient-primary);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
-        .chart-container {
-            position: relative;
+        /* Spacing utilities */
+        .mb-6 {
+            margin-bottom: 2rem;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 3rem 2rem;
+            background: rgba(99, 102, 241, 0.05);
+            border-radius: var(--radius-lg);
+            border: 2px dashed var(--glass-border);
+        }
+
+        .empty-state-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+
+        .empty-state-title {
+            font-weight: 700;
+            color: var(--text-primary);
+            margin: 0 0 0.5rem 0;
+        }
+
+        .empty-state-text {
+            color: var(--text-secondary);
+            margin: 0 0 1rem 0;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header-container {
+                flex-direction: column;
+                gap: 1.5rem;
+            }
+
+            .grades-header {
+                flex-direction: column;
+                gap: 1.5rem;
+            }
+
+            .header-actions {
+                width: 100%;
+            }
+
+            .header-actions .btn {
+                flex: 1;
+            }
+
+            .user-meta {
+                flex-direction: column;
+                gap: 0.75rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .charts-container {
+                grid-template-columns: 1fr;
+            }
+
+            .grades-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .grade-overview-item {
+                grid-template-columns: 1fr;
+                gap: 0.75rem;
+            }
+
+            .grade-overview-left {
+                justify-content: space-between;
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .user-header-section {
+                padding: 1.25rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stat-card-body {
+                padding: 1.25rem;
+            }
+
+            .header-actions {
+                flex-direction: column;
+            }
+
+            .user-meta {
+                flex-direction: column;
+            }
         }
     </style>
 

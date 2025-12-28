@@ -161,7 +161,7 @@ public class HomeController {
         System.out.println("Total mahasiswa dari service: " + mahasiswaList.size());
         mahasiswaList.forEach(m -> System.out
                 .println("NIM: " + m.getNim() + ", Nama: " + m.getNama() + ", Username: " + m.getUsername()));
-        model.addAttribute("mahasiswaList", mahasiswaList);
+        model.addAttribute("list", mahasiswaList);
         model.addAttribute("nilaiMap", gradebookService.getNilaiGroupedByMahasiswa());
         model.addAttribute("active", "mahasiswa");
         return "mahasiswa";

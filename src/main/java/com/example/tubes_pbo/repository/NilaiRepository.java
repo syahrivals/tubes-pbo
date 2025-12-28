@@ -99,4 +99,16 @@ public class NilaiRepository {
     public int deleteByNim(String nim) {
         return jdbcTemplate.update("DELETE FROM nilai WHERE nim = ?", nim);
     }
+
+    public int deleteByNimAndMataKuliah(String nim, String mataKuliah) {
+        return jdbcTemplate.update("DELETE FROM nilai WHERE nim = ? AND mata_kuliah = ?", nim, mataKuliah);
+    }
+
+    public int deleteByNimAndMataKuliahId(String nim, Long mataKuliahId) {
+        // Hapus nilai berdasarkan NIM dan mata kuliah ID (via nama atau kode)
+        String sql = "DELETE FROM nilai WHERE nim = ? AND (" +
+                    "mata_kuliah IN (SELECT nama FROM mata_kuliah WHERE id = ?) OR " +
+                    "mata_kuliah IN (SELECT kode FROM mata_kuliah WHERE id = ?))";
+        return jdbcTemplate.update(sql, nim, mataKuliahId, mataKuliahId);
+    }
 }

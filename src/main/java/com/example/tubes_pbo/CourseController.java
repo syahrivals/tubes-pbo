@@ -158,6 +158,18 @@ public class CourseController {
                 redirectAttributes.addFlashAttribute("error", "Mahasiswa sudah terdaftar di mata kuliah ini!");
                 return "redirect:/enrollments";
             }
+            // Jika DROPPED atau REJECTED, re-enroll dengan UPDATE status
+            try {
+                enrollmentRepository.updateStatus(existingEnrollment.get().getId(), "ENROLLED");
+                mataKuliahRepository.findById(courseId).ifPresent(mk -> {
+                    notifikasiService.notifyEnrollment(nim, mk.getNama());
+                });
+                redirectAttributes.addFlashAttribute("success", "Enrollment berhasil ditambahkan ulang!");
+                return "redirect:/enrollments";
+            } catch (Exception e) {
+                redirectAttributes.addFlashAttribute("error", "Gagal menambah enrollment: " + e.getMessage());
+                return "redirect:/enrollments";
+            }
         }
         
         try {

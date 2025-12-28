@@ -101,6 +101,33 @@ public class HomeController {
         }
     }
 
+    @GetMapping("/cleanup-nilai")
+    @ResponseBody
+    public String cleanupNilai() {
+        try {
+            // Hapus nilai "PBO" dari database
+            int deletedPBO = jdbcTemplate.update("DELETE FROM nilai WHERE mata_kuliah = 'PBO'");
+            
+            return "Cleanup selesai! Nilai PBO dihapus: " + deletedPBO + " record";
+        } catch (Exception e) {
+            return "Error cleanup: " + e.getMessage();
+        }
+    }
+
+    @GetMapping("/cleanup-nilai-all")
+    @ResponseBody
+    public String cleanupNilaiAll() {
+        try {
+            // Hapus semua nilai yang tidak ada di daftar mata kuliah resmi
+            int deletedPBO = jdbcTemplate.update("DELETE FROM nilai WHERE mata_kuliah = 'PBO'");
+            int deletedSD = jdbcTemplate.update("DELETE FROM nilai WHERE mata_kuliah = 'Struktur Data'");
+            
+            return "Cleanup selesai! Dihapus: PBO=" + deletedPBO + ", Struktur Data=" + deletedSD;
+        } catch (Exception e) {
+            return "Error cleanup: " + e.getMessage();
+        }
+    }
+
     @GetMapping("/")
     public String index(Model model, HttpSession session) {
         if (!isDosen(session))

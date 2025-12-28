@@ -21,6 +21,7 @@ import com.example.tubes_pbo.model.MataKuliah;
 import com.example.tubes_pbo.model.Nilai;
 import com.example.tubes_pbo.repository.EnrollmentRepository;
 import com.example.tubes_pbo.repository.MataKuliahRepository;
+import com.example.tubes_pbo.repository.NilaiRepository;
 import com.example.tubes_pbo.repository.NotifikasiRepository;
 import com.example.tubes_pbo.service.GradebookService;
 import com.example.tubes_pbo.service.NotifikasiService;
@@ -37,29 +38,62 @@ public class StudentController {
     private final EnrollmentRepository enrollmentRepository;
     private final NotifikasiRepository notifikasiRepository;
     private final NotifikasiService notifikasiService;
+    private final NilaiRepository nilaiRepository;
 
     public StudentController(GradebookService gradebookService, 
                             PdfExportService pdfExportService,
                             MataKuliahRepository mataKuliahRepository,
                             EnrollmentRepository enrollmentRepository,
                             NotifikasiRepository notifikasiRepository,
-                            NotifikasiService notifikasiService) {
+                            NotifikasiService notifikasiService,
+                            NilaiRepository nilaiRepository) {
         this.gradebookService = gradebookService;
         this.pdfExportService = pdfExportService;
         this.mataKuliahRepository = mataKuliahRepository;
         this.enrollmentRepository = enrollmentRepository;
         this.notifikasiRepository = notifikasiRepository;
         this.notifikasiService = notifikasiService;
+        this.nilaiRepository = nilaiRepository;
     }
 
     @GetMapping("/student")
     public String studentDashboard(Model model, HttpSession session) {
         if (!isMahasiswa(session)) return "redirect:/login";
         String nim = (String) session.getAttribute("refId");
-        List<Nilai> nilai = gradebookService.getNilai(nim);
+        
+        // Get active enrollments only
+        List<Enrollment> enrollments = enrollmentRepository.findByNim(nim);
+        List<Enrollment> activeEnrollments = enrollments.stream()
+            .filter(e -> "ENROLLED".equals(e.getStatus()) || "APPROVED".equals(e.getStatus()))
+            .collect(Collectors.toList());
+        
+        List<Nilai> nilai;
+        
+        // Jika tidak ada enrollment aktif, tampilkan daftar kosong
+        if (activeEnrollments.isEmpty()) {
+            nilai = List.of(); // Empty list
+        } else {
+            // Get enrolled course names and codes
+            List<String> enrolledCourseNames = activeEnrollments.stream()
+                .map(Enrollment::getNamaMataKuliah)
+                .filter(name -> name != null)
+                .collect(Collectors.toList());
+            List<String> enrolledCourseCodes = activeEnrollments.stream()
+                .map(Enrollment::getKodeMataKuliah)
+                .filter(code -> code != null)
+                .collect(Collectors.toList());
+            
+            // Get all nilai and filter only for enrolled courses
+            List<Nilai> allNilai = gradebookService.getNilai(nim);
+            nilai = allNilai.stream()
+                .filter(n -> enrolledCourseNames.contains(n.getMataKuliah()) || 
+                            enrolledCourseCodes.contains(n.getMataKuliah()))
+                .collect(Collectors.toList());
+        }
+        
         double rata = nilai.stream().mapToDouble(Nilai::hitungRataRata).average().orElse(0);
         
-        // Calculate statistics
+        // Calculate statistics from filtered nilai
         Map<String, Long> gradeDistribution = nilai.stream()
             .collect(Collectors.groupingBy(Nilai::getGrade, Collectors.counting()));
         
@@ -74,7 +108,7 @@ public class StudentController {
         model.addAttribute("username", session.getAttribute("username"));
         model.addAttribute("nilaiList", nilai);
         model.addAttribute("rata", rata);
-        model.addAttribute("totalMataKuliah", nilai.size());
+        model.addAttribute("totalMataKuliah", activeEnrollments.size());
         model.addAttribute("gradeDistribution", gradeDistribution);
         model.addAttribute("highest", highest);
         model.addAttribute("lowest", lowest);
@@ -250,7 +284,7 @@ public class StudentController {
         
         String nim = (String) session.getAttribute("refId");
         
-        // Check if already enrolled (hanya cek yang aktif, bukan DROPPED)
+        // Check if already enrolled
         var existingEnrollment = enrollmentRepository.findByNimAndMataKuliahId(nim, courseId);
         if (existingEnrollment.isPresent()) {
             String status = existingEnrollment.get().getStatus();
@@ -258,14 +292,25 @@ public class StudentController {
                 redirectAttributes.addFlashAttribute("error", "Anda sudah terdaftar di mata kuliah ini!");
                 return "redirect:/student/courses";
             }
+            // Jika DROPPED, re-enroll dengan UPDATE status
+            try {
+                enrollmentRepository.updateStatus(existingEnrollment.get().getId(), "ENROLLED");
+                mataKuliahRepository.findById(courseId).ifPresent(mk -> {
+                    notifikasiService.notifyEnrollment(nim, mk.getNama());
+                });
+                redirectAttributes.addFlashAttribute("success", "Berhasil terdaftar ulang di mata kuliah!");
+                return "redirect:/student/enrollments";
+            } catch (Exception e) {
+                redirectAttributes.addFlashAttribute("error", "Gagal mendaftar ulang: " + e.getMessage());
+                return "redirect:/student/courses";
+            }
         }
         
         try {
-            // Enroll langsung tanpa perlu approval dosen
+            // Enroll baru
             Enrollment enrollment = new Enrollment(nim, courseId, "ENROLLED");
             enrollmentRepository.insert(enrollment);
             mataKuliahRepository.findById(courseId).ifPresent(mk -> {
-                // Notify mahasiswa bahwa enrollment berhasil
                 notifikasiService.notifyEnrollment(nim, mk.getNama());
             });
             redirectAttributes.addFlashAttribute("success", "Berhasil terdaftar di mata kuliah!");
@@ -284,7 +329,7 @@ public class StudentController {
         
         String nim = (String) session.getAttribute("refId");
         
-        // Check if already enrolled (hanya cek yang aktif, bukan DROPPED)
+        // Check if already enrolled
         var existingEnrollment = enrollmentRepository.findByNimAndMataKuliahId(nim, id);
         if (existingEnrollment.isPresent()) {
             String status = existingEnrollment.get().getStatus();
@@ -292,14 +337,25 @@ public class StudentController {
                 redirectAttributes.addFlashAttribute("error", "Anda sudah terdaftar di mata kuliah ini!");
                 return "redirect:/student/courses";
             }
+            // Jika DROPPED, re-enroll dengan UPDATE status
+            try {
+                enrollmentRepository.updateStatus(existingEnrollment.get().getId(), "ENROLLED");
+                mataKuliahRepository.findById(id).ifPresent(mk -> {
+                    notifikasiService.notifyEnrollment(nim, mk.getNama());
+                });
+                redirectAttributes.addFlashAttribute("success", "Berhasil terdaftar ulang di mata kuliah!");
+                return "redirect:/student/enrollments";
+            } catch (Exception e) {
+                redirectAttributes.addFlashAttribute("error", "Gagal mendaftar ulang: " + e.getMessage());
+                return "redirect:/student/courses";
+            }
         }
         
         try {
-            // Enroll langsung tanpa perlu approval dosen
+            // Enroll baru
             Enrollment enrollment = new Enrollment(nim, id, "ENROLLED");
             enrollmentRepository.insert(enrollment);
             mataKuliahRepository.findById(id).ifPresent(mk -> {
-                // Notify mahasiswa bahwa enrollment berhasil
                 notifikasiService.notifyEnrollment(nim, mk.getNama());
             });
             redirectAttributes.addFlashAttribute("success", "Berhasil terdaftar di mata kuliah!");
@@ -339,9 +395,34 @@ public class StudentController {
                             RedirectAttributes redirectAttributes) {
         if (!isMahasiswa(session)) return "redirect:/login";
         
+        String nim = (String) session.getAttribute("refId");
+        
         try {
-            enrollmentRepository.updateStatus(id, "DROPPED");
-            redirectAttributes.addFlashAttribute("success", "Mata kuliah berhasil di-drop!");
+            // Get enrollment details first
+            var enrollmentOpt = enrollmentRepository.findById(id);
+            if (enrollmentOpt.isPresent()) {
+                Enrollment enrollment = enrollmentOpt.get();
+                Long mataKuliahId = enrollment.getMataKuliahId();
+                String namaMataKuliah = enrollment.getNamaMataKuliah();
+                String kodeMataKuliah = enrollment.getKodeMataKuliah();
+                
+                // Hapus nilai mahasiswa untuk mata kuliah ini menggunakan mata_kuliah_id
+                int deleted = nilaiRepository.deleteByNimAndMataKuliahId(nim, mataKuliahId);
+                
+                // Fallback: coba hapus dengan nama dan kode juga
+                if (namaMataKuliah != null && !namaMataKuliah.isEmpty()) {
+                    deleted += nilaiRepository.deleteByNimAndMataKuliah(nim, namaMataKuliah);
+                }
+                if (kodeMataKuliah != null && !kodeMataKuliah.isEmpty()) {
+                    deleted += nilaiRepository.deleteByNimAndMataKuliah(nim, kodeMataKuliah);
+                }
+                
+                // Update status enrollment ke DROPPED
+                enrollmentRepository.updateStatus(id, "DROPPED");
+                redirectAttributes.addFlashAttribute("success", "Mata kuliah berhasil di-drop! " + (deleted > 0 ? "(" + deleted + " nilai dihapus)" : ""));
+            } else {
+                redirectAttributes.addFlashAttribute("error", "Enrollment tidak ditemukan!");
+            }
         } catch (Exception e) {
             redirectAttributes.addFlashAttribute("error", "Gagal drop mata kuliah: " + e.getMessage());
         }

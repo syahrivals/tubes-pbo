@@ -30,6 +30,7 @@ import com.example.tubes_pbo.repository.SemesterRepository;
 import com.example.tubes_pbo.service.GradebookService;
 import com.example.tubes_pbo.service.LogService;
 import com.example.tubes_pbo.service.NotifikasiService;
+import com.example.tubes_pbo.service.PdfExportService;
 import com.example.tubes_pbo.service.ValidationService;
 
 import jakarta.servlet.http.HttpSession;
@@ -45,6 +46,7 @@ public class HomeController {
     private final ValidationService validationService;
     private final LogService logService;
     private final NotifikasiService notifikasiService;
+    private final PdfExportService pdfExportService;
     private final JdbcTemplate jdbcTemplate;
 
     public HomeController(GradebookService gradebookService,
@@ -55,6 +57,7 @@ public class HomeController {
             ValidationService validationService,
             LogService logService,
             NotifikasiService notifikasiService,
+            PdfExportService pdfExportService,
             JdbcTemplate jdbcTemplate) {
         this.gradebookService = gradebookService;
         this.mataKuliahRepository = mataKuliahRepository;
@@ -64,6 +67,7 @@ public class HomeController {
         this.validationService = validationService;
         this.logService = logService;
         this.notifikasiService = notifikasiService;
+        this.pdfExportService = pdfExportService;
         this.jdbcTemplate = jdbcTemplate;
     }
 
@@ -419,14 +423,26 @@ public class HomeController {
     }
 
     @GetMapping("/report/{nim}")
-    public ResponseEntity<FileSystemResource> downloadReport(@PathVariable String nim, HttpSession session) {
+    public ResponseEntity<byte[]> downloadReport(@PathVariable String nim, HttpSession session) {
         if (!isDosen(session))
             return ResponseEntity.status(302).header(HttpHeaders.LOCATION, "/login").build();
-        File file = gradebookService.generateReportForMahasiswa(nim);
+        
+        var mahasiswa = gradebookService.findMahasiswa(nim).orElse(null);
+        if (mahasiswa == null) {
+            return ResponseEntity.notFound().build();
+        }
+        
+        List<Nilai> nilaiList = gradebookService.getNilai(nim);
+        byte[] pdfBytes = pdfExportService.generateReportPdf(mahasiswa, nilaiList);
+        
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_PDF);
+        headers.setContentDispositionFormData("attachment", "report-" + nim + ".pdf");
+        headers.setContentLength(pdfBytes.length);
+        
         return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=report-" + nim + ".txt")
-                .contentType(MediaType.TEXT_PLAIN)
-                .body(new FileSystemResource(file));
+                .headers(headers)
+                .body(pdfBytes);
     }
 
     private boolean isDosen(HttpSession session) {

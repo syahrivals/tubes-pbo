@@ -151,5 +151,98 @@ public class PdfExportService {
             default -> new BaseColor(220, 53, 69);    // Red
         };
     }
+
+    /**
+     * Generate report PDF untuk dosen - summary nilai per mahasiswa
+     */
+    public byte[] generateReportPdf(Mahasiswa mahasiswa, List<Nilai> nilaiList) {
+        try {
+            Document document = new Document(PageSize.A4);
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            PdfWriter.getInstance(document, baos);
+
+            document.open();
+
+            // Add Header
+            Font headerFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 18, BaseColor.DARK_GRAY);
+            Paragraph header = new Paragraph("LAPORAN NILAI MAHASISWA", headerFont);
+            header.setAlignment(Element.ALIGN_CENTER);
+            header.setSpacingAfter(20);
+            document.add(header);
+
+            // Add Student Info
+            Font labelFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 11);
+            Font valueFont = FontFactory.getFont(FontFactory.HELVETICA, 11);
+
+            PdfPTable infoTable = new PdfPTable(2);
+            infoTable.setWidthPercentage(100);
+            infoTable.setSpacingAfter(20);
+            infoTable.setWidths(new float[]{1, 3});
+
+            addInfoRow(infoTable, "NIM", mahasiswa.getNim(), labelFont, valueFont);
+            addInfoRow(infoTable, "Nama", mahasiswa.getNama(), labelFont, valueFont);
+            addInfoRow(infoTable, "Jumlah Mata Kuliah", String.valueOf(nilaiList.size()), labelFont, valueFont);
+            
+            double rata = nilaiList.isEmpty() ? 0 : nilaiList.stream()
+                .mapToDouble(Nilai::hitungRataRata)
+                .average()
+                .orElse(0);
+            addInfoRow(infoTable, "Rata-rata Nilai", String.format("%.2f", rata), labelFont, valueFont);
+            addInfoRow(infoTable, "Tanggal Laporan", LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd MMMM yyyy HH:mm")), labelFont, valueFont);
+
+            document.add(infoTable);
+
+            // Add Grades Table
+            if (!nilaiList.isEmpty()) {
+                PdfPTable table = new PdfPTable(6);
+                table.setWidthPercentage(100);
+                table.setSpacingBefore(10);
+                table.setWidths(new float[]{1, 3, 1.5f, 1.5f, 1.5f, 1.5f});
+
+                // Table Header
+                Font tableHeaderFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 10, BaseColor.WHITE);
+                addTableHeader(table, "No", tableHeaderFont);
+                addTableHeader(table, "Mata Kuliah", tableHeaderFont);
+                addTableHeader(table, "Tugas", tableHeaderFont);
+                addTableHeader(table, "UTS", tableHeaderFont);
+                addTableHeader(table, "UAS", tableHeaderFont);
+                addTableHeader(table, "Grade", tableHeaderFont);
+
+                // Table Content
+                Font tableCellFont = FontFactory.getFont(FontFactory.HELVETICA, 9);
+                int no = 1;
+
+                for (Nilai nilai : nilaiList) {
+                    addTableCell(table, String.valueOf(no++), tableCellFont, Element.ALIGN_CENTER);
+                    addTableCell(table, nilai.getMataKuliah(), tableCellFont, Element.ALIGN_LEFT);
+                    addTableCell(table, String.format("%.1f", nilai.getTugas()), tableCellFont, Element.ALIGN_CENTER);
+                    addTableCell(table, String.format("%.1f", nilai.getUts()), tableCellFont, Element.ALIGN_CENTER);
+                    addTableCell(table, String.format("%.1f", nilai.getUas()), tableCellFont, Element.ALIGN_CENTER);
+                    
+                    PdfPCell gradeCell = new PdfPCell(new Phrase(nilai.getGrade(), tableCellFont));
+                    gradeCell.setHorizontalAlignment(Element.ALIGN_CENTER);
+                    gradeCell.setPadding(5);
+                    gradeCell.setBackgroundColor(getGradeColor(nilai.getGrade()));
+                    table.addCell(gradeCell);
+                }
+
+                document.add(table);
+            }
+
+            // Add Footer
+            Paragraph footer = new Paragraph("\nDokumen ini dicetak secara otomatis oleh sistem pada " +
+                LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd MMMM yyyy HH:mm:ss")), 
+                FontFactory.getFont(FontFactory.HELVETICA_OBLIQUE, 8, BaseColor.GRAY));
+            footer.setAlignment(Element.ALIGN_CENTER);
+            footer.setSpacingBefore(30);
+            document.add(footer);
+
+            document.close();
+            return baos.toByteArray();
+
+        } catch (Exception e) {
+            throw new RuntimeException("Error generating PDF: " + e.getMessage(), e);
+        }
+    }
 }
 

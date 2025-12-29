@@ -23,4 +23,3 @@ public class ReportService implements ReportServiceInterface {
         }
     }
 }
-

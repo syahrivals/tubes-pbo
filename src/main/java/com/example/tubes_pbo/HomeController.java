@@ -1,12 +1,10 @@
 package com.example.tubes_pbo;
 
-import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +18,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.example.tubes_pbo.model.ActivityLog;
 import com.example.tubes_pbo.model.Enrollment;
 import com.example.tubes_pbo.model.Nilai;
 import com.example.tubes_pbo.repository.EnrollmentRepository;
@@ -349,21 +346,6 @@ public class HomeController {
             redirectAttributes.addFlashAttribute("error", "Gagal menghapus nilai: " + e.getMessage());
         }
         return "redirect:/nilai";
-    }
-
-    @GetMapping("/logs")
-    public String logsPage(Model model, HttpSession session) {
-        if (!isDosen(session))
-            return "redirect:/login";
-        try {
-            List<ActivityLog> logs = logService.findAll(100);
-            model.addAttribute("logs", logs);
-        } catch (Exception e) {
-            model.addAttribute("logs", java.util.Collections.emptyList());
-            model.addAttribute("error", "Gagal memuat logs: " + e.getMessage());
-        }
-        model.addAttribute("active", "logs");
-        return "logs";
     }
 
     @GetMapping("/api/enrollments/{nim}")

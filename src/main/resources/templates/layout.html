@@ -44,7 +44,7 @@
     </script>
     
     <!-- Custom CSS -->
-    <link rel="stylesheet" th:href="@{/css/main.css}">
+    <link rel="stylesheet" th:href="@{/main.css}">
 </head>
 
 <body class="dark bg-slate-900 text-slate-50">
@@ -112,14 +112,6 @@
                                 Nilai
                             </a>
                         </li>
-                        <li th:if="${session.userRole}=='DOSEN'">
-                            <a th:class="${active}=='logs' ? 'text-primary-400 font-semibold' : 'text-slate-300 hover:text-white'"
-                               class="transition-colors duration-200"
-                               href="/logs">
-                                Logs
-                            </a>
-                        </li>
-
                         <!-- Mahasiswa Menu -->
                         <li th:if="${session.userRole}=='MAHASISWA'">
                             <a th:class="${active}=='student' ? 'text-primary-400 font-semibold' : 'text-slate-300 hover:text-white'"

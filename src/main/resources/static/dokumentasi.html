@@ -663,6 +663,7 @@
 <!-- Navigation -->
 <nav class="nav">
     <a href="#spesifikasi">📋 Spesifikasi</a>
+    <a href="#struktur-file">📁 File</a>
     <a href="#crud">🔄 CRUD</a>
     <a href="#inheritance">🧬 Inheritance</a>
     <a href="#role-access">🔐 Role Access</a>
@@ -751,6 +752,781 @@
                     <td>Generate transkrip PDF</td>
                 </tr>
             </table>
+        </div>
+    </section>
+
+    <!-- STRUKTUR FILE -->
+    <section id="struktur-file" class="section">
+        <h2>📁 Struktur File & Penjelasan Detail</h2>
+        
+        <p>Berikut adalah penjelasan detail setiap file penting dalam project ini:</p>
+        
+        <!-- CONTROLLERS -->
+        <h3>🎮 Controllers</h3>
+        <div class="info-box blue">
+            <strong>Lokasi:</strong> <code>src/main/java/com/example/tubes_pbo/</code><br>
+            Controller bertanggung jawab menerima HTTP request dan mengembalikan response (view atau redirect).
+        </div>
+        
+        <h4>1. AuthController.java</h4>
+        <div class="file-path">📁 src/main/java/com/example/tubes_pbo/AuthController.java</div>
+        <div class="code-block">
+<span class="comment">/**
+ * AuthController - Menangani autentikasi user (login & logout)
+ * 
+ * Endpoint:
+ * - GET  /login  : Menampilkan halaman login
+ * - POST /login  : Proses login dengan validasi username & password
+ * - GET  /logout : Logout dan invalidate session
+ */</span>
+<span class="annotation">@Controller</span>
+<span class="keyword">public class</span> <span class="type">AuthController</span> {
+
+    <span class="keyword">private final</span> <span class="type">AuthService</span> authService;    <span class="comment">// Service untuk autentikasi</span>
+    <span class="keyword">private final</span> <span class="type">LogService</span> logService;      <span class="comment">// Service untuk logging aktivitas</span>
+
+    <span class="comment">// Constructor Injection - Spring akan inject dependencies secara otomatis</span>
+    <span class="keyword">public</span> <span class="type">AuthController</span>(<span class="type">AuthService</span> authService, <span class="type">LogService</span> logService) {
+        <span class="keyword">this</span>.authService = authService;
+        <span class="keyword">this</span>.logService = logService;
+    }
+
+    <span class="annotation">@PostMapping("/login")</span>
+    <span class="keyword">public</span> <span class="type">String</span> <span class="keyword">doLogin</span>(<span class="annotation">@RequestParam</span> <span class="type">String</span> username,
+                          <span class="annotation">@RequestParam</span> <span class="type">String</span> password,
+                          <span class="type">HttpSession</span> session) {
+        
+        <span class="comment">// Panggil AuthService untuk verifikasi</span>
+        <span class="keyword">return</span> authService.login(username, password)
+            .map(user -> {
+                <span class="comment">// Login berhasil - simpan info ke session</span>
+                session.setAttribute(<span class="string">"userRole"</span>, user.role());
+                session.setAttribute(<span class="string">"username"</span>, user.username());
+                session.setAttribute(<span class="string">"displayName"</span>, user.displayName());
+                session.setAttribute(<span class="string">"refId"</span>, user.refId());
+                
+                <span class="comment">// Redirect berdasarkan role</span>
+                <span class="keyword">if</span> (<span class="string">"DOSEN"</span>.equals(user.role())) {
+                    <span class="keyword">return</span> <span class="string">"redirect:/"</span>;        <span class="comment">// Dashboard Dosen</span>
+                }
+                <span class="keyword">return</span> <span class="string">"redirect:/student"</span>;   <span class="comment">// Dashboard Mahasiswa</span>
+            })
+            .orElseGet(() -> {
+                <span class="comment">// Login gagal</span>
+                <span class="keyword">return</span> <span class="string">"login"</span>;
+            });
+    }
+}
+        </div>
+        
+        <h4>2. HomeController.java</h4>
+        <div class="file-path">📁 src/main/java/com/example/tubes_pbo/HomeController.java</div>
+        <div class="code-block">
+<span class="comment">/**
+ * HomeController - Controller utama untuk fitur Dosen
+ * 
+ * Endpoint:
+ * - GET  /              : Dashboard dosen dengan statistik
+ * - GET  /mahasiswa     : List semua mahasiswa
+ * - POST /mahasiswa/{nim}/delete : Hapus mahasiswa
+ * - GET  /nilai         : Halaman manajemen nilai
+ * - POST /nilai         : Tambah nilai baru
+ * - GET  /nilai/{id}/edit : Form edit nilai
+ * - POST /nilai/{id}/edit : Update nilai
+ * - POST /nilai/{id}/delete : Hapus nilai
+ * - GET  /notifications : Halaman notifikasi dosen
+ */</span>
+<span class="annotation">@Controller</span>
+<span class="keyword">public class</span> <span class="type">HomeController</span> {
+
+    <span class="comment">// Dependency Injection via Constructor</span>
+    <span class="keyword">private final</span> <span class="type">GradebookService</span> gradebookService;
+    <span class="keyword">private final</span> <span class="type">MataKuliahRepository</span> mataKuliahRepository;
+    <span class="keyword">private final</span> <span class="type">EnrollmentRepository</span> enrollmentRepository;
+    <span class="keyword">private final</span> <span class="type">ValidationService</span> validationService;
+    <span class="keyword">private final</span> <span class="type">LogService</span> logService;
+    <span class="comment">// ... dependencies lainnya</span>
+
+    <span class="annotation">@GetMapping("/")</span>
+    <span class="keyword">public</span> <span class="type">String</span> <span class="keyword">index</span>(<span class="type">Model</span> model, <span class="type">HttpSession</span> session) {
+        <span class="comment">// Cek apakah user adalah dosen</span>
+        <span class="keyword">if</span> (!isDosen(session))
+            <span class="keyword">return</span> <span class="string">"redirect:/login"</span>;
+
+        <span class="comment">// Ambil data untuk dashboard</span>
+        <span class="keyword">var</span> mahasiswaList = gradebookService.getMahasiswa();
+        <span class="keyword">var</span> nilaiMap = gradebookService.getNilaiGroupedByMahasiswa();
+
+        <span class="comment">// Kirim data ke view</span>
+        model.addAttribute(<span class="string">"mahasiswaList"</span>, mahasiswaList);
+        model.addAttribute(<span class="string">"totalMahasiswa"</span>, mahasiswaList.size());
+        model.addAttribute(<span class="string">"totalNilai"</span>, gradebookService.countNilai());
+        
+        <span class="keyword">return</span> <span class="string">"index"</span>;  <span class="comment">// Render templates/index.html</span>
+    }
+
+    <span class="comment">// Helper method untuk cek role Dosen</span>
+    <span class="keyword">private boolean</span> <span class="keyword">isDosen</span>(<span class="type">HttpSession</span> session) {
+        <span class="type">Object</span> role = session.getAttribute(<span class="string">"userRole"</span>);
+        <span class="keyword">return</span> role != <span class="keyword">null</span> && <span class="string">"DOSEN"</span>.equals(role.toString());
+    }
+}
+        </div>
+        
+        <h4>3. StudentController.java</h4>
+        <div class="file-path">📁 src/main/java/com/example/tubes_pbo/StudentController.java</div>
+        <div class="code-block">
+<span class="comment">/**
+ * StudentController - Controller untuk semua fitur Mahasiswa
+ * 
+ * Endpoint:
+ * - GET  /student                    : Dashboard mahasiswa
+ * - GET  /student/profile            : Halaman profil
+ * - POST /student/change-password    : Ubah password
+ * - GET  /student/courses            : Browse katalog mata kuliah
+ * - POST /student/enroll             : Enroll mata kuliah
+ * - GET  /student/enrollments        : List mata kuliah yang diambil
+ * - POST /student/enrollments/{id}/drop : Drop mata kuliah
+ * - GET  /student/export-pdf         : Export transkrip PDF
+ * - GET  /student/notifications      : Notifikasi mahasiswa
+ */</span>
+<span class="annotation">@Controller</span>
+<span class="keyword">public class</span> <span class="type">StudentController</span> {
+
+    <span class="keyword">private final</span> <span class="type">GradebookService</span> gradebookService;
+    <span class="keyword">private final</span> <span class="type">PdfExportService</span> pdfExportService;
+    <span class="keyword">private final</span> <span class="type">EnrollmentRepository</span> enrollmentRepository;
+    <span class="keyword">private final</span> <span class="type">NilaiRepository</span> nilaiRepository;
+
+    <span class="annotation">@GetMapping("/student")</span>
+    <span class="keyword">public</span> <span class="type">String</span> <span class="keyword">studentDashboard</span>(<span class="type">Model</span> model, <span class="type">HttpSession</span> session) {
+        <span class="keyword">if</span> (!isMahasiswa(session)) <span class="keyword">return</span> <span class="string">"redirect:/login"</span>;
+        
+        <span class="type">String</span> nim = (<span class="type">String</span>) session.getAttribute(<span class="string">"refId"</span>);
+        
+        <span class="comment">// Ambil enrollment aktif (ENROLLED atau APPROVED)</span>
+        <span class="type">List</span>&lt;<span class="type">Enrollment</span>&gt; activeEnrollments = enrollmentRepository.findByNim(nim)
+            .stream()
+            .filter(e -> <span class="string">"ENROLLED"</span>.equals(e.getStatus()))
+            .collect(<span class="type">Collectors</span>.toList());
+        
+        <span class="comment">// Ambil nilai dan hitung statistik</span>
+        <span class="type">List</span>&lt;<span class="type">Nilai</span>&gt; nilai = gradebookService.getNilai(nim);
+        <span class="type">double</span> rata = nilai.stream()
+            .mapToDouble(<span class="type">Nilai</span>::hitungRataRata)
+            .average().orElse(0);
+
+        model.addAttribute(<span class="string">"nilaiList"</span>, nilai);
+        model.addAttribute(<span class="string">"rata"</span>, rata);
+        model.addAttribute(<span class="string">"totalMataKuliah"</span>, activeEnrollments.size());
+        
+        <span class="keyword">return</span> <span class="string">"student"</span>;
+    }
+
+    <span class="annotation">@PostMapping("/student/enrollments/{id}/drop")</span>
+    <span class="keyword">public</span> <span class="type">String</span> <span class="keyword">dropCourse</span>(<span class="annotation">@PathVariable</span> <span class="type">Long</span> id, <span class="type">HttpSession</span> session) {
+        <span class="comment">// 1. Ambil detail enrollment</span>
+        <span class="keyword">var</span> enrollment = enrollmentRepository.findById(id);
+        
+        <span class="comment">// 2. Hapus nilai terkait mata kuliah ini</span>
+        nilaiRepository.deleteByNimAndMataKuliahId(nim, enrollment.getMataKuliahId());
+        
+        <span class="comment">// 3. Update status enrollment ke DROPPED</span>
+        enrollmentRepository.updateStatus(id, <span class="string">"DROPPED"</span>);
+        
+        <span class="keyword">return</span> <span class="string">"redirect:/student/enrollments"</span>;
+    }
+}
+        </div>
+        
+        <h4>4. CourseController.java</h4>
+        <div class="file-path">📁 src/main/java/com/example/tubes_pbo/CourseController.java</div>
+        <div class="code-block">
+<span class="comment">/**
+ * CourseController - Manajemen Mata Kuliah & Enrollment oleh Dosen
+ * 
+ * Endpoint:
+ * - GET  /courses              : List mata kuliah dosen
+ * - POST /courses              : Tambah mata kuliah baru
+ * - POST /courses/{id}/delete  : Hapus mata kuliah
+ * - GET  /enrollments          : Halaman manajemen enrollment
+ * - POST /enrollments          : Tambah enrollment manual
+ * - POST /enrollments/{id}/delete : Hapus enrollment
+ * - POST /enrollments/{id}/accept : Terima enrollment
+ * - POST /enrollments/{id}/reject : Tolak enrollment
+ */</span>
+<span class="annotation">@Controller</span>
+<span class="keyword">public class</span> <span class="type">CourseController</span> {
+
+    <span class="keyword">private final</span> <span class="type">MataKuliahRepository</span> mataKuliahRepository;
+    <span class="keyword">private final</span> <span class="type">EnrollmentRepository</span> enrollmentRepository;
+
+    <span class="annotation">@PostMapping("/courses")</span>
+    <span class="keyword">public</span> <span class="type">String</span> <span class="keyword">addCourse</span>(<span class="annotation">@RequestParam</span> <span class="type">String</span> kode,
+                            <span class="annotation">@RequestParam</span> <span class="type">String</span> nama,
+                            <span class="annotation">@RequestParam</span> <span class="type">int</span> sks,
+                            <span class="type">HttpSession</span> session) {
+        
+        <span class="comment">// Validasi input</span>
+        <span class="keyword">if</span> (kode == <span class="keyword">null</span> || kode.trim().isEmpty()) {
+            <span class="keyword">return</span> <span class="string">"redirect:/courses"</span>;
+        }
+        
+        <span class="comment">// Cek duplikat kode</span>
+        <span class="keyword">if</span> (mataKuliahRepository.findByKode(kode).isPresent()) {
+            <span class="keyword">return</span> <span class="string">"redirect:/courses"</span>;
+        }
+        
+        <span class="comment">// Simpan mata kuliah baru</span>
+        <span class="type">String</span> kodeDosen = (<span class="type">String</span>) session.getAttribute(<span class="string">"refId"</span>);
+        <span class="type">MataKuliah</span> mk = <span class="keyword">new</span> <span class="type">MataKuliah</span>(kode, nama, sks, kodeDosen);
+        mataKuliahRepository.insert(mk);
+        
+        <span class="keyword">return</span> <span class="string">"redirect:/courses"</span>;
+    }
+}
+        </div>
+        
+        <h4>5. RegisterController.java</h4>
+        <div class="file-path">📁 src/main/java/com/example/tubes_pbo/RegisterController.java</div>
+        <div class="code-block">
+<span class="comment">/**
+ * RegisterController - Registrasi Mahasiswa Baru
+ * 
+ * Endpoint:
+ * - GET  /register : Form registrasi
+ * - POST /register : Proses registrasi dengan validasi lengkap
+ */</span>
+<span class="annotation">@Controller</span>
+<span class="keyword">public class</span> <span class="type">RegisterController</span> {
+
+    <span class="keyword">private final</span> <span class="type">MahasiswaRepository</span> mahasiswaRepository;
+    <span class="keyword">private final</span> <span class="type">PasswordService</span> passwordService;
+    <span class="keyword">private final</span> <span class="type">ValidationService</span> validationService;
+
+    <span class="annotation">@PostMapping("/register")</span>
+    <span class="keyword">public</span> <span class="type">String</span> <span class="keyword">doRegister</span>(<span class="annotation">@RequestParam</span> <span class="type">String</span> nim,
+                              <span class="annotation">@RequestParam</span> <span class="type">String</span> nama,
+                              <span class="annotation">@RequestParam</span> <span class="type">String</span> username,
+                              <span class="annotation">@RequestParam</span> <span class="type">String</span> password,
+                              <span class="type">Model</span> model) {
+        
+        <span class="comment">// Validasi NIM</span>
+        <span class="keyword">var</span> nimValidation = validationService.validateNim(nim);
+        <span class="keyword">if</span> (!nimValidation.isValid()) {
+            model.addAttribute(<span class="string">"error"</span>, nimValidation.errorMessage());
+            <span class="keyword">return</span> <span class="string">"register"</span>;
+        }
+        
+        <span class="comment">// Cek NIM sudah terdaftar</span>
+        <span class="keyword">if</span> (mahasiswaRepository.findByNim(nim).isPresent()) {
+            model.addAttribute(<span class="string">"error"</span>, <span class="string">"NIM sudah terdaftar!"</span>);
+            <span class="keyword">return</span> <span class="string">"register"</span>;
+        }
+        
+        <span class="comment">// Hash password dengan BCrypt</span>
+        <span class="type">String</span> hashedPassword = passwordService.hashPassword(password);
+        
+        <span class="comment">// Simpan mahasiswa baru</span>
+        <span class="type">Mahasiswa</span> m = <span class="keyword">new</span> <span class="type">Mahasiswa</span>(nim, nama, username, hashedPassword);
+        mahasiswaRepository.insert(m);
+        
+        <span class="keyword">return</span> <span class="string">"redirect:/login"</span>;
+    }
+}
+        </div>
+        
+        <!-- MODELS -->
+        <h3>📦 Models (Entity Classes)</h3>
+        <div class="info-box green">
+            <strong>Lokasi:</strong> <code>src/main/java/com/example/tubes_pbo/model/</code><br>
+            Model merepresentasikan struktur data dan business logic.
+        </div>
+        
+        <h4>1. Akun.java (Abstract Class - Parent)</h4>
+        <div class="file-path">📁 src/main/java/com/example/tubes_pbo/model/Akun.java</div>
+        <div class="code-block">
+<span class="comment">/**
+ * Akun - Abstract class sebagai parent untuk Mahasiswa dan Dosen
+ * 
+ * Konsep OOP:
+ * - ABSTRACTION: Class tidak bisa di-instantiate langsung
+ * - ENCAPSULATION: Field protected, akses via getter/setter
+ * - INHERITANCE: Menjadi parent class untuk Mahasiswa & Dosen
+ */</span>
+<span class="keyword">public abstract class</span> <span class="type">Akun</span> {
+    <span class="keyword">protected</span> <span class="type">String</span> username;  <span class="comment">// Protected: accessible by child classes</span>
+    <span class="keyword">protected</span> <span class="type">String</span> password;
+
+    <span class="comment">// Default constructor</span>
+    <span class="keyword">protected</span> <span class="type">Akun</span>() {
+    }
+
+    <span class="comment">// Parameterized constructor</span>
+    <span class="keyword">protected</span> <span class="type">Akun</span>(<span class="type">String</span> username, <span class="type">String</span> password) {
+        <span class="keyword">this</span>.username = username;
+        <span class="keyword">this</span>.password = password;
+    }
+
+    <span class="comment">// Method untuk login - dapat digunakan oleh child classes</span>
+    <span class="keyword">public boolean</span> <span class="keyword">login</span>(<span class="type">String</span> username, <span class="type">String</span> password) {
+        <span class="keyword">return this</span>.username != <span class="keyword">null</span>
+                && <span class="keyword">this</span>.username.equals(username)
+                && <span class="keyword">this</span>.password != <span class="keyword">null</span>
+                && <span class="keyword">this</span>.password.equals(password);
+    }
+
+    <span class="comment">// Getter & Setter</span>
+    <span class="keyword">public</span> <span class="type">String</span> getUsername() { <span class="keyword">return</span> username; }
+    <span class="keyword">public void</span> setUsername(<span class="type">String</span> username) { <span class="keyword">this</span>.username = username; }
+    <span class="keyword">public</span> <span class="type">String</span> getPassword() { <span class="keyword">return</span> password; }
+    <span class="keyword">public void</span> setPassword(<span class="type">String</span> password) { <span class="keyword">this</span>.password = password; }
+}
+        </div>
+        
+        <h4>2. Mahasiswa.java (Child Class)</h4>
+        <div class="file-path">📁 src/main/java/com/example/tubes_pbo/model/Mahasiswa.java</div>
+        <div class="code-block">
+<span class="comment">/**
+ * Mahasiswa - Entity class yang extends Akun
+ * 
+ * Konsep OOP:
+ * - INHERITANCE: extends Akun, mewarisi username & password
+ * - super(): Memanggil constructor parent class
+ */</span>
+<span class="keyword">public class</span> <span class="type">Mahasiswa</span> <span class="keyword">extends</span> <span class="type">Akun</span> {
+    <span class="keyword">private</span> <span class="type">String</span> nim;   <span class="comment">// Nomor Induk Mahasiswa</span>
+    <span class="keyword">private</span> <span class="type">String</span> nama;  <span class="comment">// Nama lengkap</span>
+
+    <span class="keyword">public</span> <span class="type">Mahasiswa</span>() {
+    }
+
+    <span class="keyword">public</span> <span class="type">Mahasiswa</span>(<span class="type">String</span> nim, <span class="type">String</span> nama, <span class="type">String</span> username, <span class="type">String</span> password) {
+        <span class="keyword">super</span>(username, password);  <span class="comment">// Panggil constructor Akun</span>
+        <span class="keyword">this</span>.nim = nim;
+        <span class="keyword">this</span>.nama = nama;
+    }
+
+    <span class="comment">// Getter & Setter untuk field tambahan</span>
+    <span class="keyword">public</span> <span class="type">String</span> getNim() { <span class="keyword">return</span> nim; }
+    <span class="keyword">public void</span> setNim(<span class="type">String</span> nim) { <span class="keyword">this</span>.nim = nim; }
+    <span class="keyword">public</span> <span class="type">String</span> getNama() { <span class="keyword">return</span> nama; }
+    <span class="keyword">public void</span> setNama(<span class="type">String</span> nama) { <span class="keyword">this</span>.nama = nama; }
+}
+        </div>
+        
+        <h4>3. Nilai.java (dengan Business Logic)</h4>
+        <div class="file-path">📁 src/main/java/com/example/tubes_pbo/model/Nilai.java</div>
+        <div class="code-block">
+<span class="comment">/**
+ * Nilai - Entity untuk menyimpan nilai mahasiswa
+ * 
+ * Berisi business logic untuk:
+ * - Menghitung rata-rata nilai
+ * - Konversi nilai ke grade (A-E)
+ */</span>
+<span class="keyword">public class</span> <span class="type">Nilai</span> {
+    <span class="keyword">private</span> <span class="type">Long</span> id;
+    <span class="keyword">private</span> <span class="type">String</span> nim;
+    <span class="keyword">private</span> <span class="type">String</span> mataKuliah;
+    <span class="keyword">private double</span> tugas;  <span class="comment">// Nilai tugas (0-100)</span>
+    <span class="keyword">private double</span> uts;    <span class="comment">// Nilai UTS (0-100)</span>
+    <span class="keyword">private double</span> uas;    <span class="comment">// Nilai UAS (0-100)</span>
+
+    <span class="keyword">public</span> <span class="type">Nilai</span>(<span class="type">String</span> mataKuliah, <span class="type">double</span> tugas, <span class="type">double</span> uts, <span class="type">double</span> uas) {
+        <span class="keyword">this</span>.mataKuliah = mataKuliah;
+        <span class="keyword">this</span>.tugas = tugas;
+        <span class="keyword">this</span>.uts = uts;
+        <span class="keyword">this</span>.uas = uas;
+    }
+
+    <span class="comment">/**
+     * Business Logic: Hitung rata-rata dari 3 komponen nilai
+     * Formula: (tugas + uts + uas) / 3
+     */</span>
+    <span class="keyword">public double</span> <span class="keyword">hitungRataRata</span>() {
+        <span class="keyword">return</span> (tugas + uts + uas) / 3.0;
+    }
+
+    <span class="comment">/**
+     * Business Logic: Konversi nilai ke grade
+     * A >= 85, B >= 75, C >= 65, D >= 55, E < 55
+     */</span>
+    <span class="keyword">public</span> <span class="type">String</span> <span class="keyword">getGrade</span>() {
+        <span class="type">double</span> rata = hitungRataRata();
+        <span class="keyword">if</span> (rata >= 85) <span class="keyword">return</span> <span class="string">"A"</span>;
+        <span class="keyword">if</span> (rata >= 75) <span class="keyword">return</span> <span class="string">"B"</span>;
+        <span class="keyword">if</span> (rata >= 65) <span class="keyword">return</span> <span class="string">"C"</span>;
+        <span class="keyword">if</span> (rata >= 55) <span class="keyword">return</span> <span class="string">"D"</span>;
+        <span class="keyword">return</span> <span class="string">"E"</span>;
+    }
+
+    <span class="comment">// Getter & Setter...</span>
+}
+        </div>
+        
+        <h4>4. Enrollment.java</h4>
+        <div class="file-path">📁 src/main/java/com/example/tubes_pbo/model/Enrollment.java</div>
+        <div class="code-block">
+<span class="comment">/**
+ * Enrollment - Entity untuk pendaftaran mata kuliah
+ * 
+ * Status enrollment:
+ * - ENROLLED  : Mahasiswa terdaftar aktif
+ * - APPROVED  : Enrollment disetujui dosen
+ * - DROPPED   : Mahasiswa drop mata kuliah
+ * - REJECTED  : Enrollment ditolak dosen
+ */</span>
+<span class="keyword">public class</span> <span class="type">Enrollment</span> {
+    <span class="keyword">private</span> <span class="type">Long</span> id;
+    <span class="keyword">private</span> <span class="type">String</span> nim;           <span class="comment">// Foreign key ke Mahasiswa</span>
+    <span class="keyword">private</span> <span class="type">Long</span> mataKuliahId;    <span class="comment">// Foreign key ke MataKuliah</span>
+    <span class="keyword">private</span> <span class="type">String</span> status;        <span class="comment">// Status enrollment</span>
+    <span class="keyword">private</span> <span class="type">LocalDateTime</span> enrolledAt;
+    
+    <span class="comment">// Fields untuk display (dari JOIN)</span>
+    <span class="keyword">private</span> <span class="type">String</span> namaMahasiswa;
+    <span class="keyword">private</span> <span class="type">String</span> namaMataKuliah;
+    <span class="keyword">private</span> <span class="type">String</span> kodeMataKuliah;
+    <span class="keyword">private int</span> sks;
+
+    <span class="keyword">public</span> <span class="type">Enrollment</span>(<span class="type">String</span> nim, <span class="type">Long</span> mataKuliahId, <span class="type">String</span> status) {
+        <span class="keyword">this</span>.nim = nim;
+        <span class="keyword">this</span>.mataKuliahId = mataKuliahId;
+        <span class="keyword">this</span>.status = status;
+        <span class="keyword">this</span>.enrolledAt = <span class="type">LocalDateTime</span>.now();
+    }
+}
+        </div>
+        
+        <!-- REPOSITORIES -->
+        <h3>🗄️ Repositories (Data Access Layer)</h3>
+        <div class="info-box yellow">
+            <strong>Lokasi:</strong> <code>src/main/java/com/example/tubes_pbo/repository/</code><br>
+            Repository bertanggung jawab untuk operasi database (CRUD).
+        </div>
+        
+        <h4>NilaiRepository.java</h4>
+        <div class="file-path">📁 src/main/java/com/example/tubes_pbo/repository/NilaiRepository.java</div>
+        <div class="code-block">
+<span class="comment">/**
+ * NilaiRepository - Data Access Object untuk entity Nilai
+ * 
+ * Menggunakan JdbcTemplate untuk query database.
+ * Semua operasi CRUD untuk tabel `nilai`.
+ */</span>
+<span class="annotation">@Repository</span>
+<span class="keyword">public class</span> <span class="type">NilaiRepository</span> {
+
+    <span class="keyword">private final</span> <span class="type">JdbcTemplate</span> jdbcTemplate;
+
+    <span class="comment">// RowMapper: Konversi ResultSet ke Object Nilai</span>
+    <span class="keyword">private final</span> <span class="type">RowMapper</span>&lt;<span class="type">Nilai</span>&gt; mapper = (rs, i) -> {
+        <span class="type">Nilai</span> n = <span class="keyword">new</span> <span class="type">Nilai</span>(
+            rs.getString(<span class="string">"mata_kuliah"</span>),
+            rs.getDouble(<span class="string">"tugas"</span>),
+            rs.getDouble(<span class="string">"uts"</span>),
+            rs.getDouble(<span class="string">"uas"</span>));
+        n.setId(rs.getLong(<span class="string">"id"</span>));
+        n.setNim(rs.getString(<span class="string">"nim"</span>));
+        <span class="keyword">return</span> n;
+    };
+
+    <span class="comment">// READ: Ambil semua nilai berdasarkan NIM</span>
+    <span class="keyword">public</span> <span class="type">List</span>&lt;<span class="type">Nilai</span>&gt; <span class="keyword">findByNim</span>(<span class="type">String</span> nim) {
+        <span class="keyword">return</span> jdbcTemplate.query(
+            <span class="string">"SELECT * FROM nilai WHERE nim = ? ORDER BY id"</span>,
+            mapper, nim);
+    }
+
+    <span class="comment">// CREATE: Insert nilai baru</span>
+    <span class="keyword">public</span> <span class="type">Nilai</span> <span class="keyword">insert</span>(<span class="type">String</span> nim, <span class="type">Nilai</span> nilai) {
+        <span class="type">KeyHolder</span> kh = <span class="keyword">new</span> <span class="type">GeneratedKeyHolder</span>();
+        jdbcTemplate.update(con -> {
+            <span class="type">PreparedStatement</span> ps = con.prepareStatement(
+                <span class="string">"INSERT INTO nilai(nim, mata_kuliah, tugas, uts, uas) VALUES(?,?,?,?,?)"</span>,
+                <span class="type">Statement</span>.RETURN_GENERATED_KEYS);
+            ps.setString(1, nim);
+            ps.setString(2, nilai.getMataKuliah());
+            ps.setDouble(3, nilai.getTugas());
+            ps.setDouble(4, nilai.getUts());
+            ps.setDouble(5, nilai.getUas());
+            <span class="keyword">return</span> ps;
+        }, kh);
+        nilai.setId(kh.getKey().longValue());
+        <span class="keyword">return</span> nilai;
+    }
+
+    <span class="comment">// UPDATE: Update nilai berdasarkan ID</span>
+    <span class="keyword">public boolean</span> <span class="keyword">update</span>(<span class="type">long</span> id, <span class="type">Nilai</span> nilai) {
+        <span class="type">int</span> rows = jdbcTemplate.update(
+            <span class="string">"UPDATE nilai SET mata_kuliah=?, tugas=?, uts=?, uas=? WHERE id=?"</span>,
+            nilai.getMataKuliah(), nilai.getTugas(), nilai.getUts(), nilai.getUas(), id);
+        <span class="keyword">return</span> rows > 0;
+    }
+
+    <span class="comment">// DELETE: Hapus nilai berdasarkan ID</span>
+    <span class="keyword">public boolean</span> <span class="keyword">deleteById</span>(<span class="type">long</span> id) {
+        <span class="keyword">return</span> jdbcTemplate.update(<span class="string">"DELETE FROM nilai WHERE id = ?"</span>, id) > 0;
+    }
+}
+        </div>
+        
+        <!-- SERVICES -->
+        <h3>⚙️ Services (Business Logic Layer)</h3>
+        <div class="info-box blue">
+            <strong>Lokasi:</strong> <code>src/main/java/com/example/tubes_pbo/service/</code><br>
+            Service berisi business logic dan menghubungkan Controller dengan Repository.
+        </div>
+        
+        <h4>1. AuthService.java</h4>
+        <div class="file-path">📁 src/main/java/com/example/tubes_pbo/service/AuthService.java</div>
+        <div class="code-block">
+<span class="comment">/**
+ * AuthService - Service untuk autentikasi user
+ * 
+ * Fitur:
+ * - Login Dosen dan Mahasiswa
+ * - Verifikasi password (BCrypt atau plain text)
+ * - Return AuthUser record dengan info user
+ */</span>
+<span class="annotation">@Service</span>
+<span class="keyword">public class</span> <span class="type">AuthService</span> {
+
+    <span class="keyword">private final</span> <span class="type">DosenRepository</span> dosenRepository;
+    <span class="keyword">private final</span> <span class="type">MahasiswaRepository</span> mahasiswaRepository;
+    <span class="keyword">private final</span> <span class="type">PasswordService</span> passwordService;
+
+    <span class="keyword">public</span> <span class="type">Optional</span>&lt;<span class="type">AuthUser</span>&gt; <span class="keyword">login</span>(<span class="type">String</span> username, <span class="type">String</span> password) {
+        <span class="comment">// 1. Coba cari di tabel Dosen</span>
+        <span class="type">Optional</span>&lt;<span class="type">AuthUser</span>&gt; dosen = dosenRepository.findByUsername(username)
+            .map(d -> {
+                <span class="comment">// Cek format password (BCrypt atau plain)</span>
+                <span class="type">boolean</span> isValid = <span class="keyword">false</span>;
+                <span class="keyword">if</span> (d.getPassword().startsWith(<span class="string">"$2a$"</span>)) {
+                    <span class="comment">// BCrypt verification</span>
+                    isValid = passwordService.verifyPassword(password, d.getPassword());
+                } <span class="keyword">else</span> {
+                    <span class="comment">// Plain text (backward compatibility)</span>
+                    isValid = d.getPassword().equals(password);
+                }
+                
+                <span class="keyword">if</span> (isValid) {
+                    <span class="keyword">return new</span> <span class="type">AuthUser</span>(<span class="string">"DOSEN"</span>, d.getUsername(), d.getNama(), d.getKodeDosen());
+                }
+                <span class="keyword">return null</span>;
+            })
+            .filter(user -> user != <span class="keyword">null</span>);
+                
+        <span class="keyword">if</span> (dosen.isPresent()) <span class="keyword">return</span> dosen;
+        
+        <span class="comment">// 2. Jika bukan dosen, cari di Mahasiswa</span>
+        <span class="keyword">return</span> mahasiswaRepository.findByUsername(username)
+            .map(m -> {
+                <span class="comment">// ... logika sama seperti dosen</span>
+                <span class="keyword">return new</span> <span class="type">AuthUser</span>(<span class="string">"MAHASISWA"</span>, m.getUsername(), m.getNama(), m.getNim());
+            });
+    }
+
+    <span class="comment">// Record class untuk menyimpan data user yang login</span>
+    <span class="keyword">public record</span> <span class="type">AuthUser</span>(<span class="type">String</span> role, <span class="type">String</span> username, <span class="type">String</span> displayName, <span class="type">String</span> refId) {
+    }
+}
+        </div>
+        
+        <h4>2. ValidationService.java</h4>
+        <div class="file-path">📁 src/main/java/com/example/tubes_pbo/service/ValidationService.java</div>
+        <div class="code-block">
+<span class="comment">/**
+ * ValidationService - Service untuk validasi input
+ * 
+ * Memisahkan logika validasi dari controller untuk:
+ * - Single Responsibility Principle
+ * - Reusable di berbagai tempat
+ * - Mudah di-test
+ */</span>
+<span class="annotation">@Service</span>
+<span class="keyword">public class</span> <span class="type">ValidationService</span> {
+
+    <span class="comment">// Validasi nilai (Tugas, UTS, UAS)</span>
+    <span class="keyword">public</span> <span class="type">ValidationResult</span> <span class="keyword">validateNilai</span>(<span class="type">double</span> tugas, <span class="type">double</span> uts, <span class="type">double</span> uas) {
+        <span class="type">StringBuilder</span> errors = <span class="keyword">new</span> <span class="type">StringBuilder</span>();
+        
+        <span class="keyword">if</span> (tugas < 0 || tugas > 100) {
+            errors.append(<span class="string">"Nilai Tugas harus antara 0-100. "</span>);
+        }
+        <span class="keyword">if</span> (uts < 0 || uts > 100) {
+            errors.append(<span class="string">"Nilai UTS harus antara 0-100. "</span>);
+        }
+        <span class="keyword">if</span> (uas < 0 || uas > 100) {
+            errors.append(<span class="string">"Nilai UAS harus antara 0-100. "</span>);
+        }
+        
+        <span class="type">boolean</span> isValid = errors.length() == 0;
+        <span class="keyword">return new</span> <span class="type">ValidationResult</span>(isValid, errors.toString().trim());
+    }
+
+    <span class="comment">// Validasi NIM</span>
+    <span class="keyword">public</span> <span class="type">ValidationResult</span> <span class="keyword">validateNim</span>(<span class="type">String</span> nim) {
+        <span class="keyword">if</span> (nim == <span class="keyword">null</span> || nim.trim().isEmpty()) {
+            <span class="keyword">return new</span> <span class="type">ValidationResult</span>(<span class="keyword">false</span>, <span class="string">"NIM tidak boleh kosong"</span>);
+        }
+        <span class="keyword">if</span> (!nim.matches(<span class="string">"^[0-9]{6,10}$"</span>)) {
+            <span class="keyword">return new</span> <span class="type">ValidationResult</span>(<span class="keyword">false</span>, <span class="string">"NIM harus 6-10 digit angka"</span>);
+        }
+        <span class="keyword">return new</span> <span class="type">ValidationResult</span>(<span class="keyword">true</span>, <span class="string">""</span>);
+    }
+
+    <span class="comment">// Record untuk hasil validasi</span>
+    <span class="keyword">public record</span> <span class="type">ValidationResult</span>(<span class="type">boolean</span> isValid, <span class="type">String</span> errorMessage) {
+    }
+}
+        </div>
+        
+        <h4>3. PasswordService.java</h4>
+        <div class="file-path">📁 src/main/java/com/example/tubes_pbo/service/PasswordService.java</div>
+        <div class="code-block">
+<span class="comment">/**
+ * PasswordService - Service untuk enkripsi password
+ * 
+ * Menggunakan BCrypt untuk:
+ * - Hash password saat registrasi/ubah password
+ * - Verifikasi password saat login
+ */</span>
+<span class="annotation">@Service</span>
+<span class="keyword">public class</span> <span class="type">PasswordService</span> {
+
+    <span class="keyword">private final</span> <span class="type">BCryptPasswordEncoder</span> encoder = <span class="keyword">new</span> <span class="type">BCryptPasswordEncoder</span>();
+
+    <span class="comment">// Hash password dengan BCrypt</span>
+    <span class="keyword">public</span> <span class="type">String</span> <span class="keyword">hashPassword</span>(<span class="type">String</span> plainPassword) {
+        <span class="keyword">return</span> encoder.encode(plainPassword);
+    }
+
+    <span class="comment">// Verifikasi password</span>
+    <span class="keyword">public boolean</span> <span class="keyword">verifyPassword</span>(<span class="type">String</span> plainPassword, <span class="type">String</span> hashedPassword) {
+        <span class="keyword">return</span> encoder.matches(plainPassword, hashedPassword);
+    }
+}
+        </div>
+        
+        <!-- INTERFACE -->
+        <h3>🔌 Interface</h3>
+        <div class="info-box green">
+            <strong>Lokasi:</strong> <code>src/main/java/com/example/tubes_pbo/report/</code><br>
+            Interface mendefinisikan kontrak yang harus diimplementasikan.
+        </div>
+        
+        <h4>ReportServiceInterface.java</h4>
+        <div class="file-path">📁 src/main/java/com/example/tubes_pbo/report/ReportServiceInterface.java</div>
+        <div class="code-block">
+<span class="comment">/**
+ * ReportServiceInterface - Interface untuk generate report
+ * 
+ * Konsep OOP:
+ * - ABSTRACTION: Hanya mendefinisikan "apa" bukan "bagaimana"
+ * - POLYMORPHISM: Bisa punya multiple implementation
+ */</span>
+<span class="keyword">public interface</span> <span class="type">ReportServiceInterface</span> {
+    <span class="comment">/**
+     * Generate report dari data yang diberikan
+     * @param data Map berisi key-value untuk report
+     * @return File hasil generate
+     */</span>
+    <span class="type">File</span> <span class="keyword">generateReport</span>(<span class="type">Map</span>&lt;<span class="type">String</span>, <span class="type">String</span>&gt; data);
+}
+        </div>
+        
+        <h4>ReportService.java (Implementation)</h4>
+        <div class="file-path">📁 src/main/java/com/example/tubes_pbo/report/ReportService.java</div>
+        <div class="code-block">
+<span class="comment">/**
+ * ReportService - Implementasi dari ReportServiceInterface
+ * 
+ * Generate report dalam format text file.
+ */</span>
+<span class="annotation">@Service</span>
+<span class="keyword">public class</span> <span class="type">ReportService</span> <span class="keyword">implements</span> <span class="type">ReportServiceInterface</span> {
+
+    <span class="annotation">@Override</span>
+    <span class="keyword">public</span> <span class="type">File</span> <span class="keyword">generateReport</span>(<span class="type">Map</span>&lt;<span class="type">String</span>, <span class="type">String</span>&gt; data) {
+        <span class="keyword">try</span> {
+            <span class="comment">// Buat file temporary</span>
+            <span class="type">File</span> tmp = <span class="type">File</span>.createTempFile(<span class="string">"report-"</span>, <span class="string">".txt"</span>);
+            
+            <span class="comment">// Build content</span>
+            <span class="type">StringBuilder</span> builder = <span class="keyword">new</span> <span class="type">StringBuilder</span>();
+            data.forEach((k, v) -> 
+                builder.append(k).append(<span class="string">": "</span>).append(v).append(<span class="type">System</span>.lineSeparator())
+            );
+            
+            <span class="comment">// Tulis ke file</span>
+            <span class="type">Files</span>.writeString(tmp.toPath(), builder.toString());
+            <span class="keyword">return</span> tmp;
+        } <span class="keyword">catch</span> (<span class="type">IOException</span> e) {
+            <span class="keyword">throw new</span> <span class="type">IllegalStateException</span>(<span class="string">"Failed to generate report"</span>, e);
+        }
+    }
+}
+        </div>
+        
+        <!-- DATABASE -->
+        <h3>🗃️ Database Migration</h3>
+        <div class="info-box yellow">
+            <strong>Lokasi:</strong> <code>src/main/resources/db/migration/</code><br>
+            Flyway migration untuk version control database schema.
+        </div>
+        
+        <h4>V1__create_tables.sql</h4>
+        <div class="file-path">📁 src/main/resources/db/migration/V1__create_tables.sql</div>
+        <div class="code-block">
+<span class="comment">-- Tabel Mahasiswa</span>
+<span class="keyword">CREATE TABLE</span> mahasiswa (
+    nim <span class="type">VARCHAR</span>(20) <span class="keyword">PRIMARY KEY</span>,
+    nama <span class="type">VARCHAR</span>(255) <span class="keyword">NOT NULL</span>,
+    username <span class="type">VARCHAR</span>(50) <span class="keyword">UNIQUE NOT NULL</span>,
+    password <span class="type">VARCHAR</span>(255) <span class="keyword">NOT NULL</span>
+);
+
+<span class="comment">-- Tabel Nilai</span>
+<span class="keyword">CREATE TABLE</span> nilai (
+    id <span class="type">BIGINT</span> <span class="keyword">AUTO_INCREMENT PRIMARY KEY</span>,
+    nim <span class="type">VARCHAR</span>(20) <span class="keyword">NOT NULL</span>,
+    mata_kuliah <span class="type">VARCHAR</span>(100) <span class="keyword">NOT NULL</span>,
+    tugas <span class="type">DOUBLE</span> <span class="keyword">NOT NULL</span>,
+    uts <span class="type">DOUBLE</span> <span class="keyword">NOT NULL</span>,
+    uas <span class="type">DOUBLE</span> <span class="keyword">NOT NULL</span>,
+    <span class="keyword">FOREIGN KEY</span> (nim) <span class="keyword">REFERENCES</span> mahasiswa(nim)
+);
+
+<span class="comment">-- Tabel Dosen</span>
+<span class="keyword">CREATE TABLE</span> dosen (
+    kode_dosen <span class="type">VARCHAR</span>(20) <span class="keyword">PRIMARY KEY</span>,
+    nama <span class="type">VARCHAR</span>(255) <span class="keyword">NOT NULL</span>,
+    username <span class="type">VARCHAR</span>(50) <span class="keyword">UNIQUE NOT NULL</span>,
+    password <span class="type">VARCHAR</span>(255) <span class="keyword">NOT NULL</span>
+);
+
+<span class="comment">-- Tabel Mata Kuliah</span>
+<span class="keyword">CREATE TABLE</span> mata_kuliah (
+    id <span class="type">BIGINT</span> <span class="keyword">AUTO_INCREMENT PRIMARY KEY</span>,
+    kode <span class="type">VARCHAR</span>(20) <span class="keyword">UNIQUE NOT NULL</span>,
+    nama <span class="type">VARCHAR</span>(255) <span class="keyword">NOT NULL</span>,
+    sks <span class="type">INT</span> <span class="keyword">NOT NULL</span>,
+    kode_dosen <span class="type">VARCHAR</span>(20),
+    <span class="keyword">FOREIGN KEY</span> (kode_dosen) <span class="keyword">REFERENCES</span> dosen(kode_dosen)
+);
+
+<span class="comment">-- Tabel Enrollment</span>
+<span class="keyword">CREATE TABLE</span> enrollment (
+    id <span class="type">BIGINT</span> <span class="keyword">AUTO_INCREMENT PRIMARY KEY</span>,
+    nim <span class="type">VARCHAR</span>(20) <span class="keyword">NOT NULL</span>,
+    mata_kuliah_id <span class="type">BIGINT</span> <span class="keyword">NOT NULL</span>,
+    status <span class="type">VARCHAR</span>(20) <span class="keyword">DEFAULT</span> <span class="string">'ENROLLED'</span>,
+    enrolled_at <span class="type">DATETIME</span> <span class="keyword">DEFAULT CURRENT_TIMESTAMP</span>,
+    <span class="keyword">FOREIGN KEY</span> (nim) <span class="keyword">REFERENCES</span> mahasiswa(nim),
+    <span class="keyword">FOREIGN KEY</span> (mata_kuliah_id) <span class="keyword">REFERENCES</span> mata_kuliah(id)
+);
         </div>
     </section>
 

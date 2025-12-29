@@ -1,0 +1,1619 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#2563eb">
+    <meta name="format-detection" content="telephone=no">
+    <title>Dokumentasi - Sistem Akademik PBO</title>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --secondary: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --code-bg: #1e293b;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        html {
+            scroll-behavior: smooth;
+            -webkit-text-size-adjust: 100%;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            overflow-x: hidden;
+        }
+        
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 3rem 2rem;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1rem;
+        }
+        
+        /* Navigation */
+        .nav {
+            background: var(--card-bg);
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            justify-content: center;
+        }
+        
+        .nav a {
+            color: var(--text);
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.2s;
+            font-size: 0.9rem;
+        }
+        
+        .nav a:hover {
+            background: var(--primary);
+            color: white;
+        }
+        
+        /* Container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        /* Sections */
+        .section {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+        }
+        
+        .section h2 {
+            color: var(--primary);
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 3px solid var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .section h3 {
+            color: var(--text);
+            font-size: 1.3rem;
+            margin: 1.5rem 0 1rem;
+        }
+        
+        .section h4 {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            margin: 1rem 0 0.5rem;
+        }
+        
+        /* Code blocks */
+        .code-block {
+            background: var(--code-bg);
+            color: #e2e8f0;
+            padding: 1.5rem;
+            border-radius: 12px;
+            overflow-x: auto;
+            margin: 1rem 0;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+        
+        .code-block .comment {
+            color: #6b7280;
+        }
+        
+        .code-block .keyword {
+            color: #c084fc;
+        }
+        
+        .code-block .string {
+            color: #34d399;
+        }
+        
+        .code-block .type {
+            color: #60a5fa;
+        }
+        
+        .code-block .annotation {
+            color: #fbbf24;
+        }
+        
+        /* File path badge */
+        .file-path {
+            display: inline-block;
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: white;
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            margin-bottom: 0.5rem;
+            font-family: monospace;
+        }
+        
+        /* Info boxes */
+        .info-box {
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            margin: 1rem 0;
+        }
+        
+        .info-box.blue {
+            background: #dbeafe;
+            border-left: 4px solid var(--primary);
+        }
+        
+        .info-box.green {
+            background: #d1fae5;
+            border-left: 4px solid var(--secondary);
+        }
+        
+        .info-box.yellow {
+            background: #fef3c7;
+            border-left: 4px solid var(--warning);
+        }
+        
+        .info-box.red {
+            background: #fee2e2;
+            border-left: 4px solid var(--danger);
+        }
+        
+        /* Tables */
+        .table-wrapper {
+            overflow-x: auto;
+            margin: 1rem 0;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.95rem;
+        }
+        
+        th, td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+        
+        th {
+            background: var(--primary);
+            color: white;
+            font-weight: 600;
+        }
+        
+        tr:hover {
+            background: #f1f5f9;
+        }
+        
+        /* Feature cards */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin: 1.5rem 0;
+        }
+        
+        .feature-card {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        .feature-card h4 {
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+        
+        .feature-card p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+        
+        /* Badges */
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .badge-blue { background: #dbeafe; color: #1d4ed8; }
+        .badge-green { background: #d1fae5; color: #059669; }
+        .badge-yellow { background: #fef3c7; color: #d97706; }
+        .badge-red { background: #fee2e2; color: #dc2626; }
+        .badge-purple { background: #ede9fe; color: #7c3aed; }
+        
+        /* Diagram */
+        .diagram {
+            background: #f1f5f9;
+            border: 2px dashed var(--border);
+            padding: 2rem;
+            border-radius: 12px;
+            text-align: center;
+            margin: 1.5rem 0;
+        }
+        
+        .diagram-box {
+            display: inline-block;
+            background: var(--card-bg);
+            padding: 1rem 2rem;
+            border-radius: 8px;
+            margin: 0.5rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            font-weight: 600;
+        }
+        
+        .diagram-box.primary { border: 3px solid var(--primary); }
+        .diagram-box.secondary { border: 3px solid var(--secondary); }
+        .diagram-box.warning { border: 3px solid var(--warning); }
+        
+        .diagram-arrow {
+            font-size: 2rem;
+            color: var(--text-muted);
+            margin: 0 1rem;
+        }
+        
+        /* List styles */
+        ul, ol {
+            padding-left: 1.5rem;
+            margin: 0.5rem 0;
+        }
+        
+        li {
+            margin: 0.3rem 0;
+        }
+        
+        /* Responsive - Tablet */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .section {
+                padding: 1.5rem;
+            }
+            
+            .nav {
+                padding: 0.5rem 1rem;
+            }
+            
+            .nav a {
+                font-size: 0.8rem;
+                padding: 0.4rem 0.8rem;
+            }
+            
+            .diagram-box {
+                padding: 0.8rem 1.2rem;
+                font-size: 0.9rem;
+            }
+        }
+        
+        /* Responsive - iPhone 12-16 (390px - 430px) */
+        @media (max-width: 480px) {
+            /* Header */
+            .header {
+                padding: 1.5rem 1rem;
+            }
+            
+            .header h1 {
+                font-size: 1.4rem;
+                line-height: 1.3;
+            }
+            
+            .header p {
+                font-size: 0.9rem;
+            }
+            
+            /* Navigation - Horizontal scroll */
+            .nav {
+                padding: 0.5rem;
+                gap: 0.3rem;
+                overflow-x: auto;
+                justify-content: flex-start;
+                flex-wrap: nowrap;
+                -webkit-overflow-scrolling: touch;
+                scrollbar-width: none;
+            }
+            
+            .nav::-webkit-scrollbar {
+                display: none;
+            }
+            
+            .nav a {
+                font-size: 0.7rem;
+                padding: 0.4rem 0.6rem;
+                white-space: nowrap;
+                flex-shrink: 0;
+            }
+            
+            /* Container */
+            .container {
+                padding: 0.75rem;
+            }
+            
+            /* Sections */
+            .section {
+                padding: 1rem;
+                border-radius: 12px;
+                margin-bottom: 1rem;
+            }
+            
+            .section h2 {
+                font-size: 1.2rem;
+                margin-bottom: 1rem;
+                flex-wrap: wrap;
+            }
+            
+            .section h3 {
+                font-size: 1.1rem;
+                margin: 1rem 0 0.75rem;
+            }
+            
+            .section h4 {
+                font-size: 0.95rem;
+                margin: 0.75rem 0 0.4rem;
+            }
+            
+            /* Code blocks */
+            .code-block {
+                padding: 0.75rem;
+                font-size: 0.65rem;
+                border-radius: 8px;
+                margin: 0.75rem 0;
+                line-height: 1.4;
+            }
+            
+            /* File path badge */
+            .file-path {
+                font-size: 0.65rem;
+                padding: 0.3rem 0.6rem;
+                word-break: break-all;
+                display: block;
+                text-align: center;
+            }
+            
+            /* Info boxes */
+            .info-box {
+                padding: 0.75rem 1rem;
+                font-size: 0.85rem;
+                border-radius: 8px;
+            }
+            
+            .info-box code {
+                font-size: 0.75rem;
+            }
+            
+            /* Tables */
+            .table-wrapper {
+                margin: 0.75rem -1rem;
+                padding: 0 1rem;
+            }
+            
+            table {
+                font-size: 0.75rem;
+                min-width: 500px;
+            }
+            
+            th, td {
+                padding: 0.5rem 0.4rem;
+            }
+            
+            /* Feature grid */
+            .feature-grid {
+                grid-template-columns: 1fr;
+                gap: 0.75rem;
+                margin: 1rem 0;
+            }
+            
+            .feature-card {
+                padding: 1rem;
+            }
+            
+            .feature-card h4 {
+                font-size: 0.95rem;
+            }
+            
+            .feature-card p {
+                font-size: 0.8rem;
+            }
+            
+            .feature-card ul {
+                font-size: 0.8rem;
+            }
+            
+            /* Badges */
+            .badge {
+                font-size: 0.65rem;
+                padding: 0.2rem 0.5rem;
+            }
+            
+            /* Diagram */
+            .diagram {
+                padding: 1rem 0.5rem;
+                overflow-x: auto;
+            }
+            
+            .diagram-box {
+                display: block;
+                margin: 0.5rem auto;
+                padding: 0.6rem 1rem;
+                font-size: 0.8rem;
+                max-width: 200px;
+            }
+            
+            .diagram-arrow {
+                font-size: 1.2rem;
+                margin: 0.3rem 0;
+                display: block;
+            }
+            
+            /* List styles */
+            ul, ol {
+                padding-left: 1.2rem;
+                font-size: 0.85rem;
+            }
+            
+            li {
+                margin: 0.2rem 0;
+            }
+            
+            /* Footer */
+            footer {
+                padding: 1.5rem 1rem !important;
+                font-size: 0.85rem;
+            }
+        }
+        
+        /* Extra small devices (iPhone SE, older models) */
+        @media (max-width: 375px) {
+            .header h1 {
+                font-size: 1.2rem;
+            }
+            
+            .nav a {
+                font-size: 0.65rem;
+                padding: 0.35rem 0.5rem;
+            }
+            
+            .section h2 {
+                font-size: 1.1rem;
+            }
+            
+            .code-block {
+                font-size: 0.6rem;
+                padding: 0.5rem;
+            }
+            
+            .diagram-box {
+                font-size: 0.7rem;
+                padding: 0.5rem 0.8rem;
+            }
+            
+            table {
+                font-size: 0.7rem;
+            }
+        }
+        
+        /* Landscape mode for phones */
+        @media (max-height: 500px) and (orientation: landscape) {
+            .header {
+                padding: 1rem;
+            }
+            
+            .header h1 {
+                font-size: 1.3rem;
+            }
+            
+            .nav {
+                position: relative;
+            }
+            
+            .section {
+                padding: 1rem;
+            }
+        }
+        
+        /* Touch-friendly improvements */
+        @media (hover: none) and (pointer: coarse) {
+            .nav a {
+                min-height: 44px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            
+            .feature-card:hover {
+                transform: none;
+            }
+            
+            .feature-card:active {
+                transform: scale(0.98);
+            }
+        }
+        
+        /* Safe area for notched phones (iPhone X and later) */
+        @supports (padding: max(0px)) {
+            .header {
+                padding-top: max(1.5rem, env(safe-area-inset-top));
+                padding-left: max(1rem, env(safe-area-inset-left));
+                padding-right: max(1rem, env(safe-area-inset-right));
+            }
+            
+            .nav {
+                padding-left: max(0.5rem, env(safe-area-inset-left));
+                padding-right: max(0.5rem, env(safe-area-inset-right));
+            }
+            
+            .container {
+                padding-left: max(0.75rem, env(safe-area-inset-left));
+                padding-right: max(0.75rem, env(safe-area-inset-right));
+            }
+            
+            footer {
+                padding-bottom: max(1.5rem, env(safe-area-inset-bottom)) !important;
+            }
+        }
+        
+        /* Dark mode support for iOS */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg: #0f172a;
+                --card-bg: #1e293b;
+                --text: #e2e8f0;
+                --text-muted: #94a3b8;
+                --border: #334155;
+            }
+            
+            .info-box.blue {
+                background: #1e3a5f;
+            }
+            
+            .info-box.green {
+                background: #14532d;
+            }
+            
+            .info-box.yellow {
+                background: #422006;
+            }
+            
+            .info-box.red {
+                background: #450a0a;
+            }
+            
+            .feature-card {
+                background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+            }
+            
+            tr:hover {
+                background: #334155;
+            }
+            
+            .diagram {
+                background: #1e293b;
+                border-color: #475569;
+            }
+            
+            .diagram-box {
+                background: #0f172a;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+    <h1>📚 Dokumentasi Sistem Akademik</h1>
+    <p>Tugas Besar Pemrograman Berorientasi Objek</p>
+</div>
+
+<!-- Navigation -->
+<nav class="nav">
+    <a href="#spesifikasi">📋 Spesifikasi</a>
+    <a href="#crud">🔄 CRUD</a>
+    <a href="#inheritance">🧬 Inheritance</a>
+    <a href="#role-access">🔐 Role Access</a>
+    <a href="#exception">⚠️ Exception</a>
+    <a href="#mvc">🏗️ MVC</a>
+    <a href="#interface">🔌 Interface</a>
+</nav>
+
+<div class="container">
+
+    <!-- 1. SPESIFIKASI -->
+    <section id="spesifikasi" class="section">
+        <h2>📋 Spesifikasi Aplikasi</h2>
+        
+        <div class="info-box blue">
+            <strong>Nama Aplikasi:</strong> Sistem Akademik (Gradebook Management System)<br>
+            <strong>Framework:</strong> Spring Boot 3.x dengan Thymeleaf<br>
+            <strong>Database:</strong> MySQL dengan Flyway Migration<br>
+            <strong>Build Tool:</strong> Maven
+        </div>
+        
+        <h3>Fitur Utama</h3>
+        <div class="feature-grid">
+            <div class="feature-card">
+                <h4>👨‍🏫 Portal Dosen</h4>
+                <p>Dashboard, manajemen mahasiswa, input nilai, kelola mata kuliah, dan enrollment mahasiswa</p>
+            </div>
+            <div class="feature-card">
+                <h4>👨‍🎓 Portal Mahasiswa</h4>
+                <p>Lihat nilai, enroll mata kuliah, kelola profile, notifikasi, dan export transkrip PDF</p>
+            </div>
+            <div class="feature-card">
+                <h4>📊 Sistem Nilai</h4>
+                <p>Input Tugas, UTS, UAS dengan perhitungan rata-rata dan grade otomatis (A-E)</p>
+            </div>
+            <div class="feature-card">
+                <h4>🔔 Notifikasi</h4>
+                <p>Sistem notifikasi real-time untuk enrollment dan update nilai</p>
+            </div>
+            <div class="feature-card">
+                <h4>📝 Activity Log</h4>
+                <p>Pencatatan semua aktivitas sistem (login, logout, CRUD operations)</p>
+            </div>
+            <div class="feature-card">
+                <h4>🔒 Keamanan</h4>
+                <p>Authentication dengan BCrypt password hashing dan session management</p>
+            </div>
+        </div>
+        
+        <h3>Teknologi yang Digunakan</h3>
+        <div class="table-wrapper">
+            <table>
+                <tr>
+                    <th>Komponen</th>
+                    <th>Teknologi</th>
+                    <th>Keterangan</th>
+                </tr>
+                <tr>
+                    <td>Backend</td>
+                    <td>Spring Boot 3.x</td>
+                    <td>Framework Java untuk web application</td>
+                </tr>
+                <tr>
+                    <td>Template Engine</td>
+                    <td>Thymeleaf</td>
+                    <td>Server-side rendering untuk HTML</td>
+                </tr>
+                <tr>
+                    <td>Database</td>
+                    <td>MySQL</td>
+                    <td>Relational database management</td>
+                </tr>
+                <tr>
+                    <td>Migration</td>
+                    <td>Flyway</td>
+                    <td>Database version control</td>
+                </tr>
+                <tr>
+                    <td>Security</td>
+                    <td>BCrypt</td>
+                    <td>Password hashing algorithm</td>
+                </tr>
+                <tr>
+                    <td>PDF Export</td>
+                    <td>iText/OpenPDF</td>
+                    <td>Generate transkrip PDF</td>
+                </tr>
+            </table>
+        </div>
+    </section>
+
+    <!-- 2. CRUD -->
+    <section id="crud" class="section">
+        <h2>🔄 Operasi CRUD</h2>
+        
+        <p>Aplikasi ini mengimplementasikan operasi <strong>Create, Read, Update, Delete</strong> pada berbagai entitas:</p>
+        
+        <h3>📌 CRUD Nilai</h3>
+        
+        <h4>CREATE - Tambah Nilai</h4>
+        <div class="file-path">📁 HomeController.java (line 236-271)</div>
+        <div class="code-block">
+<span class="annotation">@PostMapping("/nilai")</span>
+<span class="keyword">public</span> <span class="type">String</span> <span class="keyword">addNilai</span>(<span class="annotation">@RequestParam</span> <span class="type">String</span> nim,
+        <span class="annotation">@RequestParam</span> <span class="type">String</span> mataKuliah,
+        <span class="annotation">@RequestParam</span> <span class="type">double</span> tugas,
+        <span class="annotation">@RequestParam</span> <span class="type">double</span> uts,
+        <span class="annotation">@RequestParam</span> <span class="type">double</span> uas,
+        <span class="type">HttpSession</span> session,
+        <span class="type">RedirectAttributes</span> redirectAttributes) {
+    
+    <span class="comment">// Validasi nilai</span>
+    <span class="keyword">var</span> validation = validationService.validateNilai(tugas, uts, uas);
+    <span class="keyword">if</span> (!validation.isValid()) {
+        redirectAttributes.addFlashAttribute(<span class="string">"error"</span>, validation.errorMessage());
+        <span class="keyword">return</span> <span class="string">"redirect:/nilai"</span>;
+    }
+    
+    <span class="keyword">try</span> {
+        gradebookService.addNilai(nim, <span class="keyword">new</span> <span class="type">Nilai</span>(mataKuliah, tugas, uts, uas));
+        notifikasiService.notifyNilaiBaru(nim, mataKuliah);
+        redirectAttributes.addFlashAttribute(<span class="string">"success"</span>, <span class="string">"Nilai berhasil ditambahkan!"</span>);
+    } <span class="keyword">catch</span> (<span class="type">Exception</span> e) {
+        redirectAttributes.addFlashAttribute(<span class="string">"error"</span>, <span class="string">"Gagal: "</span> + e.getMessage());
+    }
+    <span class="keyword">return</span> <span class="string">"redirect:/nilai"</span>;
+}
+        </div>
+        
+        <h4>READ - Baca Nilai</h4>
+        <div class="file-path">📁 NilaiRepository.java (line 35-40)</div>
+        <div class="code-block">
+<span class="keyword">public</span> <span class="type">List</span>&lt;<span class="type">Nilai</span>&gt; <span class="keyword">findByNim</span>(<span class="type">String</span> nim) {
+    <span class="keyword">return</span> jdbcTemplate.query(
+            <span class="string">"SELECT id, nim, mata_kuliah, tugas, uts, uas FROM nilai WHERE nim = ? ORDER BY id"</span>,
+            mapper,
+            nim);
+}
+        </div>
+        
+        <h4>UPDATE - Update Nilai</h4>
+        <div class="file-path">📁 NilaiRepository.java (line 71-80)</div>
+        <div class="code-block">
+<span class="keyword">public</span> <span class="type">boolean</span> <span class="keyword">update</span>(<span class="type">long</span> id, <span class="type">Nilai</span> nilai) {
+    <span class="type">int</span> rows = jdbcTemplate.update(
+            <span class="string">"UPDATE nilai SET mata_kuliah = ?, tugas = ?, uts = ?, uas = ? WHERE id = ?"</span>,
+            nilai.getMataKuliah(),
+            nilai.getTugas(),
+            nilai.getUts(),
+            nilai.getUas(),
+            id);
+    <span class="keyword">return</span> rows > 0;
+}
+        </div>
+        
+        <h4>DELETE - Hapus Nilai</h4>
+        <div class="file-path">📁 NilaiRepository.java (line 82-84)</div>
+        <div class="code-block">
+<span class="keyword">public</span> <span class="type">boolean</span> <span class="keyword">deleteById</span>(<span class="type">long</span> id) {
+    <span class="keyword">return</span> jdbcTemplate.update(<span class="string">"DELETE FROM nilai WHERE id = ?"</span>, id) > 0;
+}
+        </div>
+        
+        <h3>📌 CRUD Mahasiswa</h3>
+        <div class="info-box green">
+            <strong>Lokasi File:</strong>
+            <ul>
+                <li><code>RegisterController.java</code> - Create (Registrasi)</li>
+                <li><code>MahasiswaRepository.java</code> - Read, Update, Delete</li>
+                <li><code>HomeController.java</code> - Delete endpoint</li>
+            </ul>
+        </div>
+        
+        <h3>📌 CRUD Mata Kuliah</h3>
+        <div class="file-path">📁 CourseController.java</div>
+        <div class="code-block">
+<span class="comment">// CREATE - Tambah Mata Kuliah (line 49-90)</span>
+<span class="annotation">@PostMapping("/courses")</span>
+<span class="keyword">public</span> <span class="type">String</span> <span class="keyword">addCourse</span>(<span class="annotation">@RequestParam</span> <span class="type">String</span> kode,
+                        <span class="annotation">@RequestParam</span> <span class="type">String</span> nama,
+                        <span class="annotation">@RequestParam</span> <span class="type">int</span> sks, ...) {
+    <span class="type">MataKuliah</span> mk = <span class="keyword">new</span> <span class="type">MataKuliah</span>(kode.trim(), nama.trim(), sks, kodeDosen);
+    mataKuliahRepository.insert(mk);
+    ...
+}
+
+<span class="comment">// DELETE - Hapus Mata Kuliah (line 92-114)</span>
+<span class="annotation">@PostMapping("/courses/{id}/delete")</span>
+<span class="keyword">public</span> <span class="type">String</span> <span class="keyword">deleteCourse</span>(<span class="annotation">@PathVariable</span> <span class="type">Long</span> id, ...) {
+    mataKuliahRepository.deleteById(id);
+    ...
+}
+        </div>
+        
+        <h3>📌 CRUD Enrollment</h3>
+        <div class="file-path">📁 StudentController.java & CourseController.java</div>
+        <div class="code-block">
+<span class="comment">// CREATE - Enroll Mata Kuliah (StudentController line 279-322)</span>
+<span class="annotation">@PostMapping("/student/enroll")</span>
+<span class="keyword">public</span> <span class="type">String</span> <span class="keyword">enrollCourse</span>(<span class="annotation">@RequestParam</span> <span class="type">Long</span> courseId, ...) {
+    <span class="type">Enrollment</span> enrollment = <span class="keyword">new</span> <span class="type">Enrollment</span>(nim, courseId, <span class="string">"ENROLLED"</span>);
+    enrollmentRepository.insert(enrollment);
+    ...
+}
+
+<span class="comment">// UPDATE - Drop Course (StudentController line 392-431)</span>
+<span class="annotation">@PostMapping("/student/enrollments/{id}/drop")</span>
+<span class="keyword">public</span> <span class="type">String</span> <span class="keyword">dropCourse</span>(<span class="annotation">@PathVariable</span> <span class="type">Long</span> id, ...) {
+    enrollmentRepository.updateStatus(id, <span class="string">"DROPPED"</span>);
+    <span class="comment">// Also delete associated grades</span>
+    nilaiRepository.deleteByNimAndMataKuliahId(nim, mataKuliahId);
+    ...
+}
+        </div>
+    </section>
+
+    <!-- 3. INHERITANCE -->
+    <section id="inheritance" class="section">
+        <h2>🧬 Inheritance (Pewarisan)</h2>
+        
+        <p>Aplikasi ini menggunakan konsep <strong>inheritance</strong> pada model user. Class <code>Akun</code> adalah class abstract yang menjadi parent dari <code>Mahasiswa</code> dan <code>Dosen</code>.</p>
+        
+        <div class="diagram">
+            <div class="diagram-box primary">
+                <span class="badge badge-purple">Abstract</span><br>
+                <strong>Akun</strong><br>
+                <small>username, password</small>
+            </div>
+            <br><br>
+            <span class="diagram-arrow">↙</span>
+            <span style="margin: 0 2rem;">extends</span>
+            <span class="diagram-arrow">↘</span>
+            <br><br>
+            <div class="diagram-box secondary">
+                <strong>Mahasiswa</strong><br>
+                <small>nim, nama</small>
+            </div>
+            <span style="margin: 0 2rem;"></span>
+            <div class="diagram-box warning">
+                <strong>Dosen</strong><br>
+                <small>kodeDosen, nama</small>
+            </div>
+        </div>
+        
+        <h3>Parent Class: Akun (Abstract)</h3>
+        <div class="file-path">📁 model/Akun.java</div>
+        <div class="code-block">
+<span class="keyword">package</span> com.example.tubes_pbo.model;
+
+<span class="keyword">public abstract class</span> <span class="type">Akun</span> {
+    <span class="keyword">protected</span> <span class="type">String</span> username;
+    <span class="keyword">protected</span> <span class="type">String</span> password;
+
+    <span class="keyword">protected</span> <span class="type">Akun</span>() {
+    }
+
+    <span class="keyword">protected</span> <span class="type">Akun</span>(<span class="type">String</span> username, <span class="type">String</span> password) {
+        <span class="keyword">this</span>.username = username;
+        <span class="keyword">this</span>.password = password;
+    }
+
+    <span class="comment">// Method login yang bisa digunakan oleh child classes</span>
+    <span class="keyword">public boolean</span> <span class="keyword">login</span>(<span class="type">String</span> username, <span class="type">String</span> password) {
+        <span class="keyword">return this</span>.username != <span class="keyword">null</span>
+                && <span class="keyword">this</span>.username.equals(username)
+                && <span class="keyword">this</span>.password != <span class="keyword">null</span>
+                && <span class="keyword">this</span>.password.equals(password);
+    }
+
+    <span class="keyword">public void</span> <span class="keyword">logout</span>() {
+        <span class="comment">// placeholder for session handling</span>
+    }
+
+    <span class="comment">// Getters and Setters...</span>
+}
+        </div>
+        
+        <h3>Child Class: Mahasiswa</h3>
+        <div class="file-path">📁 model/Mahasiswa.java</div>
+        <div class="code-block">
+<span class="keyword">package</span> com.example.tubes_pbo.model;
+
+<span class="keyword">public class</span> <span class="type">Mahasiswa</span> <span class="keyword">extends</span> <span class="type">Akun</span> {
+    <span class="keyword">private</span> <span class="type">String</span> nim;
+    <span class="keyword">private</span> <span class="type">String</span> nama;
+
+    <span class="keyword">public</span> <span class="type">Mahasiswa</span>() {
+    }
+
+    <span class="keyword">public</span> <span class="type">Mahasiswa</span>(<span class="type">String</span> nim, <span class="type">String</span> nama, <span class="type">String</span> username, <span class="type">String</span> password) {
+        <span class="keyword">super</span>(username, password); <span class="comment">// Memanggil constructor parent</span>
+        <span class="keyword">this</span>.nim = nim;
+        <span class="keyword">this</span>.nama = nama;
+    }
+
+    <span class="comment">// Getters and Setters untuk nim dan nama...</span>
+}
+        </div>
+        
+        <h3>Child Class: Dosen</h3>
+        <div class="file-path">📁 model/Dosen.java</div>
+        <div class="code-block">
+<span class="keyword">package</span> com.example.tubes_pbo.model;
+
+<span class="keyword">public class</span> <span class="type">Dosen</span> <span class="keyword">extends</span> <span class="type">Akun</span> {
+    <span class="keyword">private</span> <span class="type">String</span> kodeDosen;
+    <span class="keyword">private</span> <span class="type">String</span> nama;
+
+    <span class="keyword">public</span> <span class="type">Dosen</span>() {
+    }
+
+    <span class="keyword">public</span> <span class="type">Dosen</span>(<span class="type">String</span> kodeDosen, <span class="type">String</span> nama, <span class="type">String</span> username, <span class="type">String</span> password) {
+        <span class="keyword">super</span>(username, password); <span class="comment">// Memanggil constructor parent</span>
+        <span class="keyword">this</span>.kodeDosen = kodeDosen;
+        <span class="keyword">this</span>.nama = nama;
+    }
+
+    <span class="comment">// Getters and Setters untuk kodeDosen dan nama...</span>
+}
+        </div>
+        
+        <div class="info-box blue">
+            <strong>💡 Manfaat Inheritance:</strong>
+            <ul>
+                <li>Menghindari duplikasi kode (username & password ada di parent)</li>
+                <li>Mahasiswa dan Dosen dapat menggunakan method <code>login()</code> dari Akun</li>
+                <li>Mudah untuk menambahkan tipe user baru dengan extend Akun</li>
+                <li>Konsistensi struktur data antar tipe user</li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- 4. ROLE ACCESS -->
+    <section id="role-access" class="section">
+        <h2>🔐 Role-Based Access Control</h2>
+        
+        <p>Sistem ini membedakan akses berdasarkan 2 role utama: <span class="badge badge-blue">DOSEN</span> dan <span class="badge badge-green">MAHASISWA</span></p>
+        
+        <h3>Mekanisme Role Access</h3>
+        
+        <div class="feature-grid">
+            <div class="feature-card">
+                <h4>👨‍🏫 Akses Dosen</h4>
+                <ul>
+                    <li>Dashboard utama (<code>/</code>)</li>
+                    <li>Manajemen Mahasiswa (<code>/mahasiswa</code>)</li>
+                    <li>Input & Edit Nilai (<code>/nilai</code>)</li>
+                    <li>Kelola Mata Kuliah (<code>/courses</code>)</li>
+                    <li>Kelola Enrollment (<code>/enrollments</code>)</li>
+                    <li>Activity Logs (<code>/logs</code>)</li>
+                    <li>Notifikasi Dosen (<code>/notifications</code>)</li>
+                </ul>
+            </div>
+            <div class="feature-card">
+                <h4>👨‍🎓 Akses Mahasiswa</h4>
+                <ul>
+                    <li>Dashboard Student (<code>/student</code>)</li>
+                    <li>Lihat & Edit Profile (<code>/student/profile</code>)</li>
+                    <li>Browse Courses (<code>/student/courses</code>)</li>
+                    <li>My Enrollments (<code>/student/enrollments</code>)</li>
+                    <li>Notifikasi (<code>/student/notifications</code>)</li>
+                    <li>Export PDF (<code>/student/export-pdf</code>)</li>
+                </ul>
+            </div>
+        </div>
+        
+        <h3>Implementasi Role Check</h3>
+        
+        <h4>1. Helper Method untuk Cek Role</h4>
+        <div class="file-path">📁 HomeController.java (line 432-435)</div>
+        <div class="code-block">
+<span class="keyword">private boolean</span> <span class="keyword">isDosen</span>(<span class="type">HttpSession</span> session) {
+    <span class="type">Object</span> role = session.getAttribute(<span class="string">"userRole"</span>);
+    <span class="keyword">return</span> role != <span class="keyword">null</span> && <span class="string">"DOSEN"</span>.equals(role.toString());
+}
+        </div>
+        
+        <div class="file-path">📁 StudentController.java (line 433-436)</div>
+        <div class="code-block">
+<span class="keyword">private boolean</span> <span class="keyword">isMahasiswa</span>(<span class="type">HttpSession</span> session) {
+    <span class="type">Object</span> role = session.getAttribute(<span class="string">"userRole"</span>);
+    <span class="keyword">return</span> role != <span class="keyword">null</span> && <span class="string">"MAHASISWA"</span>.equals(role.toString());
+}
+        </div>
+        
+        <h4>2. Penggunaan di Controller Method</h4>
+        <div class="file-path">📁 HomeController.java</div>
+        <div class="code-block">
+<span class="annotation">@GetMapping("/mahasiswa")</span>
+<span class="keyword">public</span> <span class="type">String</span> <span class="keyword">mahasiswa</span>(<span class="type">Model</span> model, <span class="type">HttpSession</span> session) {
+    <span class="comment">// Check role - redirect jika bukan dosen</span>
+    <span class="keyword">if</span> (!isDosen(session))
+        <span class="keyword">return</span> <span class="string">"redirect:/login"</span>;
+    
+    <span class="comment">// Lanjutkan proses jika authorized</span>
+    <span class="keyword">var</span> mahasiswaList = gradebookService.getMahasiswa();
+    model.addAttribute(<span class="string">"list"</span>, mahasiswaList);
+    <span class="keyword">return</span> <span class="string">"mahasiswa"</span>;
+}
+        </div>
+        
+        <div class="file-path">📁 StudentController.java</div>
+        <div class="code-block">
+<span class="annotation">@GetMapping("/student")</span>
+<span class="keyword">public</span> <span class="type">String</span> <span class="keyword">studentDashboard</span>(<span class="type">Model</span> model, <span class="type">HttpSession</span> session) {
+    <span class="comment">// Check role - redirect jika bukan mahasiswa</span>
+    <span class="keyword">if</span> (!isMahasiswa(session)) 
+        <span class="keyword">return</span> <span class="string">"redirect:/login"</span>;
+    
+    <span class="type">String</span> nim = (<span class="type">String</span>) session.getAttribute(<span class="string">"refId"</span>);
+    <span class="comment">// Lanjutkan proses...</span>
+}
+        </div>
+        
+        <h4>3. Session Setup saat Login</h4>
+        <div class="file-path">📁 AuthController.java (line 48-68)</div>
+        <div class="code-block">
+<span class="keyword">return</span> authService.login(username.trim(), password)
+    .map(user -> {
+        <span class="comment">// Set session attributes</span>
+        session.setAttribute(<span class="string">"userRole"</span>, user.role());      <span class="comment">// "DOSEN" atau "MAHASISWA"</span>
+        session.setAttribute(<span class="string">"username"</span>, user.username());
+        session.setAttribute(<span class="string">"displayName"</span>, user.displayName());
+        session.setAttribute(<span class="string">"refId"</span>, user.refId());        <span class="comment">// NIM atau Kode Dosen</span>
+        
+        <span class="comment">// Redirect berdasarkan role</span>
+        <span class="keyword">if</span> (<span class="string">"DOSEN"</span>.equals(user.role())) {
+            <span class="keyword">return</span> <span class="string">"redirect:/"</span>;       <span class="comment">// Dashboard Dosen</span>
+        }
+        <span class="keyword">return</span> <span class="string">"redirect:/student"</span>;    <span class="comment">// Dashboard Mahasiswa</span>
+    })
+        </div>
+        
+        <div class="info-box yellow">
+            <strong>⚠️ Penting:</strong> Setiap endpoint yang memerlukan autentikasi HARUS melakukan pengecekan role di awal method. Jika tidak sesuai, langsung redirect ke halaman login.
+        </div>
+    </section>
+
+    <!-- 5. EXCEPTION HANDLING -->
+    <section id="exception" class="section">
+        <h2>⚠️ Exception Handling</h2>
+        
+        <p>Aplikasi ini mengimplementasikan exception handling untuk menangani error secara graceful dan memberikan feedback yang jelas kepada user.</p>
+        
+        <h3>1. Try-Catch di Controller</h3>
+        <div class="file-path">📁 HomeController.java (line 261-270)</div>
+        <div class="code-block">
+<span class="annotation">@PostMapping("/nilai")</span>
+<span class="keyword">public</span> <span class="type">String</span> <span class="keyword">addNilai</span>(...) {
+    <span class="comment">// Validasi terlebih dahulu</span>
+    <span class="keyword">var</span> validation = validationService.validateNilai(tugas, uts, uas);
+    <span class="keyword">if</span> (!validation.isValid()) {
+        redirectAttributes.addFlashAttribute(<span class="string">"error"</span>, validation.errorMessage());
+        <span class="keyword">return</span> <span class="string">"redirect:/nilai"</span>;
+    }
+    
+    <span class="keyword">try</span> {
+        gradebookService.addNilai(nim, <span class="keyword">new</span> <span class="type">Nilai</span>(mataKuliah, tugas, uts, uas));
+        redirectAttributes.addFlashAttribute(<span class="string">"success"</span>, <span class="string">"Nilai berhasil ditambahkan!"</span>);
+    } <span class="keyword">catch</span> (<span class="type">Exception</span> e) {
+        redirectAttributes.addFlashAttribute(<span class="string">"error"</span>, <span class="string">"Gagal menambah nilai: "</span> + e.getMessage());
+    }
+    <span class="keyword">return</span> <span class="string">"redirect:/nilai"</span>;
+}
+        </div>
+        
+        <h3>2. Validation dengan Custom Error Messages</h3>
+        <div class="file-path">📁 service/ValidationService.java</div>
+        <div class="code-block">
+<span class="annotation">@Service</span>
+<span class="keyword">public class</span> <span class="type">ValidationService</span> {
+
+    <span class="keyword">public</span> <span class="type">ValidationResult</span> <span class="keyword">validateNilai</span>(<span class="type">double</span> tugas, <span class="type">double</span> uts, <span class="type">double</span> uas) {
+        <span class="type">StringBuilder</span> errors = <span class="keyword">new</span> <span class="type">StringBuilder</span>();
+        
+        <span class="keyword">if</span> (tugas < 0 || tugas > 100) {
+            errors.append(<span class="string">"Nilai Tugas harus antara 0-100. "</span>);
+        }
+        <span class="keyword">if</span> (uts < 0 || uts > 100) {
+            errors.append(<span class="string">"Nilai UTS harus antara 0-100. "</span>);
+        }
+        <span class="keyword">if</span> (uas < 0 || uas > 100) {
+            errors.append(<span class="string">"Nilai UAS harus antara 0-100. "</span>);
+        }
+        
+        <span class="keyword">if</span> (<span class="type">Double</span>.isNaN(tugas) || <span class="type">Double</span>.isInfinite(tugas)) {
+            errors.append(<span class="string">"Nilai Tugas tidak valid. "</span>);
+        }
+        <span class="comment">// ... validasi lainnya</span>
+        
+        <span class="type">boolean</span> isValid = errors.length() == 0;
+        <span class="keyword">return new</span> <span class="type">ValidationResult</span>(isValid, errors.toString().trim());
+    }
+
+    <span class="comment">// Record untuk mengembalikan hasil validasi</span>
+    <span class="keyword">public record</span> <span class="type">ValidationResult</span>(<span class="type">boolean</span> isValid, <span class="type">String</span> errorMessage) {
+    }
+}
+        </div>
+        
+        <h3>3. Exception di Report Service</h3>
+        <div class="file-path">📁 report/ReportService.java</div>
+        <div class="code-block">
+<span class="annotation">@Service</span>
+<span class="keyword">public class</span> <span class="type">ReportService</span> <span class="keyword">implements</span> <span class="type">ReportServiceInterface</span> {
+
+    <span class="annotation">@Override</span>
+    <span class="keyword">public</span> <span class="type">File</span> <span class="keyword">generateReport</span>(<span class="type">Map</span>&lt;<span class="type">String</span>, <span class="type">String</span>&gt; data) {
+        <span class="keyword">try</span> {
+            <span class="type">File</span> tmp = <span class="type">File</span>.createTempFile(<span class="string">"report-"</span>, <span class="string">".txt"</span>);
+            <span class="type">StringBuilder</span> builder = <span class="keyword">new</span> <span class="type">StringBuilder</span>();
+            data.forEach((k, v) -> builder.append(k).append(<span class="string">": "</span>).append(v).append(<span class="type">System</span>.lineSeparator()));
+            <span class="type">Files</span>.writeString(tmp.toPath(), builder.toString());
+            <span class="keyword">return</span> tmp;
+        } <span class="keyword">catch</span> (<span class="type">IOException</span> e) {
+            <span class="comment">// Throw runtime exception dengan pesan jelas</span>
+            <span class="keyword">throw new</span> <span class="type">IllegalStateException</span>(<span class="string">"Failed to generate report"</span>, e);
+        }
+    }
+}
+        </div>
+        
+        <h3>4. Login Exception Handling</h3>
+        <div class="file-path">📁 AuthController.java (line 48-80)</div>
+        <div class="code-block">
+<span class="annotation">@PostMapping("/login")</span>
+<span class="keyword">public</span> <span class="type">String</span> <span class="keyword">doLogin</span>(...) {
+    <span class="comment">// Validasi input kosong</span>
+    <span class="keyword">if</span> (username == <span class="keyword">null</span> || username.trim().isEmpty()) {
+        model.addAttribute(<span class="string">"error"</span>, <span class="string">"Username tidak boleh kosong!"</span>);
+        <span class="keyword">return</span> <span class="string">"login"</span>;
+    }
+    
+    <span class="keyword">try</span> {
+        <span class="keyword">return</span> authService.login(username.trim(), password)
+            .map(user -> {
+                <span class="comment">// Success - setup session</span>
+                ...
+            })
+            .orElseGet(() -> {
+                <span class="comment">// Login failed - user not found</span>
+                model.addAttribute(<span class="string">"error"</span>, <span class="string">"Username atau password salah!"</span>);
+                <span class="keyword">return</span> <span class="string">"login"</span>;
+            });
+    } <span class="keyword">catch</span> (<span class="type">Exception</span> e) {
+        <span class="comment">// System error</span>
+        e.printStackTrace();
+        model.addAttribute(<span class="string">"error"</span>, <span class="string">"Terjadi kesalahan sistem. Silakan coba lagi."</span>);
+        <span class="keyword">return</span> <span class="string">"login"</span>;
+    }
+}
+        </div>
+        
+        <div class="info-box red">
+            <strong>🛡️ Best Practices Exception Handling:</strong>
+            <ul>
+                <li>Selalu gunakan try-catch untuk operasi database dan I/O</li>
+                <li>Berikan pesan error yang user-friendly</li>
+                <li>Log error untuk debugging (<code>e.printStackTrace()</code>)</li>
+                <li>Gunakan Flash Attributes untuk pesan error di redirect</li>
+                <li>Validasi input sebelum proses untuk mencegah exception</li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- 6. MVC -->
+    <section id="mvc" class="section">
+        <h2>🏗️ Arsitektur MVC</h2>
+        
+        <p>Aplikasi ini menggunakan pola arsitektur <strong>Model-View-Controller</strong> yang memisahkan logika aplikasi menjadi 3 komponen utama.</p>
+        
+        <div class="diagram">
+            <div class="diagram-box primary">
+                <strong>View</strong><br>
+                <small>Thymeleaf Templates</small>
+            </div>
+            <span class="diagram-arrow">←→</span>
+            <div class="diagram-box secondary">
+                <strong>Controller</strong><br>
+                <small>Spring MVC Controllers</small>
+            </div>
+            <span class="diagram-arrow">←→</span>
+            <div class="diagram-box warning">
+                <strong>Model</strong><br>
+                <small>Entity + Repository + Service</small>
+            </div>
+        </div>
+        
+        <h3>📦 MODEL</h3>
+        <div class="info-box green">
+            <strong>Lokasi:</strong> <code>src/main/java/com/example/tubes_pbo/model/</code>
+        </div>
+        <p>Berisi entity class yang merepresentasikan data:</p>
+        
+        <div class="table-wrapper">
+            <table>
+                <tr>
+                    <th>Class</th>
+                    <th>Deskripsi</th>
+                    <th>Fields Utama</th>
+                </tr>
+                <tr>
+                    <td><code>Akun.java</code></td>
+                    <td>Abstract class untuk user</td>
+                    <td>username, password</td>
+                </tr>
+                <tr>
+                    <td><code>Mahasiswa.java</code></td>
+                    <td>Entity mahasiswa (extends Akun)</td>
+                    <td>nim, nama</td>
+                </tr>
+                <tr>
+                    <td><code>Dosen.java</code></td>
+                    <td>Entity dosen (extends Akun)</td>
+                    <td>kodeDosen, nama</td>
+                </tr>
+                <tr>
+                    <td><code>Nilai.java</code></td>
+                    <td>Entity nilai mahasiswa</td>
+                    <td>nim, mataKuliah, tugas, uts, uas</td>
+                </tr>
+                <tr>
+                    <td><code>MataKuliah.java</code></td>
+                    <td>Entity mata kuliah</td>
+                    <td>kode, nama, sks, kodeDosen</td>
+                </tr>
+                <tr>
+                    <td><code>Enrollment.java</code></td>
+                    <td>Entity enrollment</td>
+                    <td>nim, mataKuliahId, status</td>
+                </tr>
+                <tr>
+                    <td><code>Notifikasi.java</code></td>
+                    <td>Entity notifikasi</td>
+                    <td>nim, pesan, dibaca, createdAt</td>
+                </tr>
+                <tr>
+                    <td><code>ActivityLog.java</code></td>
+                    <td>Entity log aktivitas</td>
+                    <td>userRole, username, action, description</td>
+                </tr>
+            </table>
+        </div>
+        
+        <h4>Model: Nilai.java (dengan business logic)</h4>
+        <div class="file-path">📁 model/Nilai.java</div>
+        <div class="code-block">
+<span class="keyword">public class</span> <span class="type">Nilai</span> {
+    <span class="keyword">private</span> <span class="type">Long</span> id;
+    <span class="keyword">private</span> <span class="type">String</span> nim;
+    <span class="keyword">private</span> <span class="type">String</span> mataKuliah;
+    <span class="keyword">private double</span> tugas;
+    <span class="keyword">private double</span> uts;
+    <span class="keyword">private double</span> uas;
+
+    <span class="comment">// Business Logic: Hitung rata-rata</span>
+    <span class="keyword">public double</span> <span class="keyword">hitungRataRata</span>() {
+        <span class="keyword">return</span> (tugas + uts + uas) / 3.0;
+    }
+
+    <span class="comment">// Business Logic: Konversi ke Grade</span>
+    <span class="keyword">public</span> <span class="type">String</span> <span class="keyword">getGrade</span>() {
+        <span class="type">double</span> rata = hitungRataRata();
+        <span class="keyword">if</span> (rata >= 85) <span class="keyword">return</span> <span class="string">"A"</span>;
+        <span class="keyword">if</span> (rata >= 75) <span class="keyword">return</span> <span class="string">"B"</span>;
+        <span class="keyword">if</span> (rata >= 65) <span class="keyword">return</span> <span class="string">"C"</span>;
+        <span class="keyword">if</span> (rata >= 55) <span class="keyword">return</span> <span class="string">"D"</span>;
+        <span class="keyword">return</span> <span class="string">"E"</span>;
+    }
+}
+        </div>
+        
+        <h3>🎮 CONTROLLER</h3>
+        <div class="info-box blue">
+            <strong>Lokasi:</strong> <code>src/main/java/com/example/tubes_pbo/</code>
+        </div>
+        <p>Menangani HTTP request dan response:</p>
+        
+        <div class="table-wrapper">
+            <table>
+                <tr>
+                    <th>Controller</th>
+                    <th>URL Pattern</th>
+                    <th>Fungsi</th>
+                </tr>
+                <tr>
+                    <td><code>AuthController.java</code></td>
+                    <td>/login, /logout</td>
+                    <td>Autentikasi user</td>
+                </tr>
+                <tr>
+                    <td><code>RegisterController.java</code></td>
+                    <td>/register</td>
+                    <td>Registrasi mahasiswa baru</td>
+                </tr>
+                <tr>
+                    <td><code>HomeController.java</code></td>
+                    <td>/, /mahasiswa, /nilai, /logs</td>
+                    <td>Dashboard & manajemen dosen</td>
+                </tr>
+                <tr>
+                    <td><code>StudentController.java</code></td>
+                    <td>/student/*</td>
+                    <td>Semua fitur mahasiswa</td>
+                </tr>
+                <tr>
+                    <td><code>CourseController.java</code></td>
+                    <td>/courses, /enrollments</td>
+                    <td>Manajemen mata kuliah & enrollment</td>
+                </tr>
+            </table>
+        </div>
+        
+        <h4>Contoh Controller dengan Model dan View</h4>
+        <div class="file-path">📁 StudentController.java (line 59-118)</div>
+        <div class="code-block">
+<span class="annotation">@GetMapping("/student")</span>
+<span class="keyword">public</span> <span class="type">String</span> <span class="keyword">studentDashboard</span>(<span class="type">Model</span> model, <span class="type">HttpSession</span> session) {
+    <span class="keyword">if</span> (!isMahasiswa(session)) <span class="keyword">return</span> <span class="string">"redirect:/login"</span>;
+    
+    <span class="type">String</span> nim = (<span class="type">String</span>) session.getAttribute(<span class="string">"refId"</span>);
+    
+    <span class="comment">// Get data from Repository/Service (Model layer)</span>
+    <span class="type">List</span>&lt;<span class="type">Enrollment</span>&gt; enrollments = enrollmentRepository.findByNim(nim);
+    <span class="type">List</span>&lt;<span class="type">Nilai</span>&gt; nilai = gradebookService.getNilai(nim);
+    
+    <span class="comment">// Process data</span>
+    <span class="type">double</span> rata = nilai.stream().mapToDouble(<span class="type">Nilai</span>::hitungRataRata).average().orElse(0);
+    
+    <span class="comment">// Pass data to View via Model</span>
+    model.addAttribute(<span class="string">"nama"</span>, session.getAttribute(<span class="string">"displayName"</span>));
+    model.addAttribute(<span class="string">"nim"</span>, nim);
+    model.addAttribute(<span class="string">"nilaiList"</span>, nilai);
+    model.addAttribute(<span class="string">"rata"</span>, rata);
+    model.addAttribute(<span class="string">"totalMataKuliah"</span>, activeEnrollments.size());
+    
+    <span class="comment">// Return View name</span>
+    <span class="keyword">return</span> <span class="string">"student"</span>; <span class="comment">// → templates/student.html</span>
+}
+        </div>
+        
+        <h3>👁️ VIEW</h3>
+        <div class="info-box yellow">
+            <strong>Lokasi:</strong> <code>src/main/resources/templates/</code>
+        </div>
+        <p>Thymeleaf templates untuk rendering HTML:</p>
+        
+        <div class="table-wrapper">
+            <table>
+                <tr>
+                    <th>Template</th>
+                    <th>Deskripsi</th>
+                </tr>
+                <tr>
+                    <td><code>layout.html</code></td>
+                    <td>Base layout dengan header, nav, footer</td>
+                </tr>
+                <tr>
+                    <td><code>login.html</code></td>
+                    <td>Halaman login</td>
+                </tr>
+                <tr>
+                    <td><code>register.html</code></td>
+                    <td>Form registrasi mahasiswa</td>
+                </tr>
+                <tr>
+                    <td><code>index.html</code></td>
+                    <td>Dashboard dosen</td>
+                </tr>
+                <tr>
+                    <td><code>student.html</code></td>
+                    <td>Dashboard mahasiswa</td>
+                </tr>
+                <tr>
+                    <td><code>mahasiswa.html</code></td>
+                    <td>List mahasiswa (dosen)</td>
+                </tr>
+                <tr>
+                    <td><code>nilai.html</code></td>
+                    <td>Manajemen nilai (dosen)</td>
+                </tr>
+                <tr>
+                    <td><code>courses.html</code></td>
+                    <td>Manajemen mata kuliah (dosen)</td>
+                </tr>
+                <tr>
+                    <td><code>student-browse-courses.html</code></td>
+                    <td>Browse & enroll courses (mahasiswa)</td>
+                </tr>
+                <tr>
+                    <td><code>student-enrollments.html</code></td>
+                    <td>Enrolled courses (mahasiswa)</td>
+                </tr>
+            </table>
+        </div>
+        
+        <h4>Contoh View dengan Thymeleaf</h4>
+        <div class="file-path">📁 templates/student.html (snippet)</div>
+        <div class="code-block">
+<span class="comment">&lt;!-- Menampilkan data dari Model --&gt;</span>
+&lt;<span class="keyword">h1</span>&gt;Selamat Datang, &lt;<span class="keyword">span</span> <span class="type">th:text</span>=<span class="string">"${nama}"</span>&gt;Nama&lt;/<span class="keyword">span</span>&gt;!&lt;/<span class="keyword">h1</span>&gt;
+
+<span class="comment">&lt;!-- Loop untuk menampilkan list --&gt;</span>
+&lt;<span class="keyword">div</span> <span class="type">th:each</span>=<span class="string">"nilai : ${nilaiList}"</span>&gt;
+    &lt;<span class="keyword">p</span>&gt;Mata Kuliah: &lt;<span class="keyword">span</span> <span class="type">th:text</span>=<span class="string">"${nilai.mataKuliah}"</span>&gt;&lt;/<span class="keyword">span</span>&gt;&lt;/<span class="keyword">p</span>&gt;
+    &lt;<span class="keyword">p</span>&gt;Grade: &lt;<span class="keyword">span</span> <span class="type">th:text</span>=<span class="string">"${nilai.grade}"</span>&gt;&lt;/<span class="keyword">span</span>&gt;&lt;/<span class="keyword">p</span>&gt;
+&lt;/<span class="keyword">div</span>&gt;
+
+<span class="comment">&lt;!-- Conditional rendering --&gt;</span>
+&lt;<span class="keyword">div</span> <span class="type">th:if</span>=<span class="string">"${#lists.isEmpty(nilaiList)}"</span>&gt;
+    Belum ada nilai.
+&lt;/<span class="keyword">div</span>&gt;
+        </div>
+    </section>
+
+    <!-- 7. INTERFACE -->
+    <section id="interface" class="section">
+        <h2>🔌 Interface</h2>
+        
+        <p>Aplikasi ini menggunakan <strong>Interface</strong> untuk mendefinisikan kontrak method yang harus diimplementasikan oleh class tertentu. Ini mendukung prinsip <em>abstraction</em> dan <em>loose coupling</em>.</p>
+        
+        <div class="diagram">
+            <div class="diagram-box primary">
+                <span class="badge badge-purple">Interface</span><br>
+                <strong>ReportServiceInterface</strong><br>
+                <small>generateReport()</small>
+            </div>
+            <br><br>
+            <span class="diagram-arrow">↓</span>
+            <span style="margin: 0 1rem;">implements</span>
+            <br><br>
+            <div class="diagram-box secondary">
+                <span class="badge badge-green">Class</span><br>
+                <strong>ReportService</strong><br>
+                <small>@Service</small>
+            </div>
+        </div>
+        
+        <h3>Interface Definition</h3>
+        <div class="file-path">📁 report/ReportServiceInterface.java</div>
+        <div class="code-block">
+<span class="keyword">package</span> com.example.tubes_pbo.report;
+
+<span class="keyword">import</span> java.io.File;
+<span class="keyword">import</span> java.util.Map;
+
+<span class="keyword">public interface</span> <span class="type">ReportServiceInterface</span> {
+    <span class="comment">/**
+     * Generate a report file from the given data
+     * @param data Map of key-value pairs to include in report
+     * @return File object containing the generated report
+     */</span>
+    <span class="type">File</span> <span class="keyword">generateReport</span>(<span class="type">Map</span>&lt;<span class="type">String</span>, <span class="type">String</span>&gt; data);
+}
+        </div>
+        
+        <h3>Interface Implementation</h3>
+        <div class="file-path">📁 report/ReportService.java</div>
+        <div class="code-block">
+<span class="keyword">package</span> com.example.tubes_pbo.report;
+
+<span class="keyword">import</span> org.springframework.stereotype.Service;
+<span class="keyword">import</span> java.io.File;
+<span class="keyword">import</span> java.io.IOException;
+<span class="keyword">import</span> java.nio.file.Files;
+<span class="keyword">import</span> java.util.Map;
+
+<span class="annotation">@Service</span>
+<span class="keyword">public class</span> <span class="type">ReportService</span> <span class="keyword">implements</span> <span class="type">ReportServiceInterface</span> {
+
+    <span class="annotation">@Override</span>
+    <span class="keyword">public</span> <span class="type">File</span> <span class="keyword">generateReport</span>(<span class="type">Map</span>&lt;<span class="type">String</span>, <span class="type">String</span>&gt; data) {
+        <span class="keyword">try</span> {
+            <span class="comment">// Buat file temporary</span>
+            <span class="type">File</span> tmp = <span class="type">File</span>.createTempFile(<span class="string">"report-"</span>, <span class="string">".txt"</span>);
+            
+            <span class="comment">// Build content dari data map</span>
+            <span class="type">StringBuilder</span> builder = <span class="keyword">new</span> <span class="type">StringBuilder</span>();
+            data.forEach((k, v) -> 
+                builder.append(k).append(<span class="string">": "</span>).append(v).append(<span class="type">System</span>.lineSeparator())
+            );
+            
+            <span class="comment">// Tulis ke file</span>
+            <span class="type">Files</span>.writeString(tmp.toPath(), builder.toString());
+            <span class="keyword">return</span> tmp;
+        } <span class="keyword">catch</span> (<span class="type">IOException</span> e) {
+            <span class="keyword">throw new</span> <span class="type">IllegalStateException</span>(<span class="string">"Failed to generate report"</span>, e);
+        }
+    }
+}
+        </div>
+        
+        <h3>Penggunaan Interface di Service Layer</h3>
+        <div class="file-path">📁 service/GradebookService.java (snippet)</div>
+        <div class="code-block">
+<span class="annotation">@Service</span>
+<span class="keyword">public class</span> <span class="type">GradebookService</span> {
+
+    <span class="keyword">private final</span> <span class="type">ReportServiceInterface</span> reportService; <span class="comment">// Inject via interface</span>
+
+    <span class="keyword">public</span> <span class="type">GradebookService</span>(..., <span class="type">ReportServiceInterface</span> reportService) {
+        <span class="keyword">this</span>.reportService = reportService;
+    }
+
+    <span class="keyword">public</span> <span class="type">File</span> <span class="keyword">generateReportForMahasiswa</span>(<span class="type">String</span> nim) {
+        <span class="type">Map</span>&lt;<span class="type">String</span>, <span class="type">String</span>&gt; data = <span class="keyword">new</span> <span class="type">HashMap</span>&lt;&gt;();
+        data.put(<span class="string">"NIM"</span>, nim);
+        data.put(<span class="string">"Nama"</span>, getMahasiswaNama(nim));
+        <span class="comment">// ... add more data</span>
+        
+        <span class="comment">// Panggil method dari interface</span>
+        <span class="keyword">return</span> reportService.generateReport(data);
+    }
+}
+        </div>
+        
+        <div class="info-box blue">
+            <strong>💡 Manfaat Menggunakan Interface:</strong>
+            <ul>
+                <li><strong>Abstraction:</strong> Menyembunyikan detail implementasi, hanya expose method yang diperlukan</li>
+                <li><strong>Loose Coupling:</strong> GradebookService tidak tergantung pada implementasi spesifik ReportService</li>
+                <li><strong>Testability:</strong> Mudah membuat mock implementation untuk unit testing</li>
+                <li><strong>Flexibility:</strong> Bisa mengganti implementasi (misal: PDF report) tanpa mengubah kode yang menggunakannya</li>
+                <li><strong>Dependency Injection:</strong> Spring dapat inject implementasi yang sesuai secara otomatis</li>
+            </ul>
+        </div>
+        
+        <h3>Contoh: Menambah Implementasi Baru</h3>
+        <div class="code-block">
+<span class="comment">// Implementasi alternatif untuk generate PDF report</span>
+<span class="annotation">@Service</span>
+<span class="annotation">@Primary</span> <span class="comment">// Jadikan implementasi default</span>
+<span class="keyword">public class</span> <span class="type">PdfReportService</span> <span class="keyword">implements</span> <span class="type">ReportServiceInterface</span> {
+
+    <span class="annotation">@Override</span>
+    <span class="keyword">public</span> <span class="type">File</span> <span class="keyword">generateReport</span>(<span class="type">Map</span>&lt;<span class="type">String</span>, <span class="type">String</span>&gt; data) {
+        <span class="comment">// Implementasi berbeda untuk PDF</span>
+        <span class="comment">// ... generate PDF file</span>
+    }
+}
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer style="text-align: center; padding: 2rem; color: var(--text-muted);">
+        <p>📚 Dokumentasi Sistem Akademik - Tugas Besar PBO</p>
+        <p>Spring Boot + Thymeleaf + MySQL</p>
+    </footer>
+
+</div>
+
+</body>
+</html>
+

@@ -104,9 +104,13 @@
                         <i class="bi bi-lock absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400"></i>
                         <input type="password" 
                                name="oldPassword" 
-                               class="w-full bg-slate-700/50 border-2 border-slate-600 text-slate-50 rounded-xl px-4 py-3 pl-11 focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all"
+                               id="oldPassword"
+                               class="w-full bg-slate-700/50 border-2 border-slate-600 text-slate-50 rounded-xl px-4 py-3 pl-11 pr-12 focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all"
                                placeholder="Masukkan password saat ini"
                                required>
+                        <button type="button" class="toggle-password absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-slate-200 transition-colors">
+                            <i class="bi bi-eye"></i>
+                        </button>
                     </div>
                 </div>
 
@@ -120,10 +124,13 @@
                             <input type="password" 
                                    name="newPassword" 
                                    id="newPassword"
-                                   class="w-full bg-slate-700/50 border-2 border-slate-600 text-slate-50 rounded-xl px-4 py-3 pl-11 focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all"
+                                   class="w-full bg-slate-700/50 border-2 border-slate-600 text-slate-50 rounded-xl px-4 py-3 pl-11 pr-12 focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all"
                                    placeholder="Password baru"
                                    minlength="4"
                                    required>
+                            <button type="button" class="toggle-password absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-slate-200 transition-colors">
+                                <i class="bi bi-eye"></i>
+                            </button>
                         </div>
                     </div>
                     <div>
@@ -135,10 +142,13 @@
                             <input type="password" 
                                    name="confirmPassword" 
                                    id="confirmPassword"
-                                   class="w-full bg-slate-700/50 border-2 border-slate-600 text-slate-50 rounded-xl px-4 py-3 pl-11 focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all"
+                                   class="w-full bg-slate-700/50 border-2 border-slate-600 text-slate-50 rounded-xl px-4 py-3 pl-11 pr-12 focus:outline-none focus:border-primary-500 focus:ring-2 focus:ring-primary-500/20 transition-all"
                                    placeholder="Ulangi password baru"
                                    minlength="4"
                                    required>
+                            <button type="button" class="toggle-password absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-slate-200 transition-colors">
+                                <i class="bi bi-eye"></i>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -151,6 +161,12 @@
                     </button>
                 </div>
             </form>
+
+            <!-- Password Match Indicator -->
+            <div id="passwordMatchIndicator" class="hidden mt-2 flex items-center gap-2 text-sm">
+                <i id="matchIcon" class="bi"></i>
+                <span id="matchText"></span>
+            </div>
 
             <!-- Password Tips -->
             <div class="mt-6 bg-slate-700/30 border border-slate-600 rounded-xl p-5">
@@ -177,7 +193,159 @@
                     </li>
                 </ul>
             </div>
+
+            <!-- Password Strength Indicator -->
+            <div class="mt-4">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-sm text-slate-400">Kekuatan Password:</span>
+                    <span id="strengthText" class="text-sm font-semibold text-slate-400">-</span>
+                </div>
+                <div class="w-full bg-slate-700 rounded-full h-2">
+                    <div id="strengthBar" class="h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
+                </div>
+            </div>
         </div>
     </div>
+
+    <!-- JavaScript for Password Validation -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const newPasswordInput = document.getElementById('newPassword');
+            const confirmPasswordInput = document.getElementById('confirmPassword');
+            const matchIndicator = document.getElementById('passwordMatchIndicator');
+            const matchIcon = document.getElementById('matchIcon');
+            const matchText = document.getElementById('matchText');
+            const strengthBar = document.getElementById('strengthBar');
+            const strengthText = document.getElementById('strengthText');
+            const form = document.querySelector('form[action="/student/change-password"]');
+            
+            // Password strength checker
+            function checkStrength(password) {
+                let strength = 0;
+                let feedback = [];
+                
+                if (password.length >= 4) strength += 1;
+                if (password.length >= 8) strength += 1;
+                if (/[a-z]/.test(password)) strength += 1;
+                if (/[A-Z]/.test(password)) strength += 1;
+                if (/[0-9]/.test(password)) strength += 1;
+                if (/[^a-zA-Z0-9]/.test(password)) strength += 1;
+                
+                return strength;
+            }
+            
+            function updateStrengthIndicator(password) {
+                const strength = checkStrength(password);
+                let width, color, text;
+                
+                if (password.length === 0) {
+                    width = '0%';
+                    color = 'bg-slate-600';
+                    text = '-';
+                } else if (strength <= 2) {
+                    width = '25%';
+                    color = 'bg-red-500';
+                    text = 'Lemah';
+                } else if (strength <= 3) {
+                    width = '50%';
+                    color = 'bg-yellow-500';
+                    text = 'Sedang';
+                } else if (strength <= 4) {
+                    width = '75%';
+                    color = 'bg-blue-500';
+                    text = 'Kuat';
+                } else {
+                    width = '100%';
+                    color = 'bg-emerald-500';
+                    text = 'Sangat Kuat';
+                }
+                
+                strengthBar.style.width = width;
+                strengthBar.className = 'h-2 rounded-full transition-all duration-300 ' + color;
+                strengthText.textContent = text;
+                strengthText.className = 'text-sm font-semibold ' + color.replace('bg-', 'text-');
+            }
+            
+            // Check password match
+            function checkPasswordMatch() {
+                const newPass = newPasswordInput.value;
+                const confirmPass = confirmPasswordInput.value;
+                
+                if (confirmPass.length === 0) {
+                    matchIndicator.classList.add('hidden');
+                    return;
+                }
+                
+                matchIndicator.classList.remove('hidden');
+                
+                if (newPass === confirmPass) {
+                    matchIndicator.className = 'mt-2 flex items-center gap-2 text-sm text-emerald-400';
+                    matchIcon.className = 'bi bi-check-circle-fill';
+                    matchText.textContent = 'Password cocok!';
+                } else {
+                    matchIndicator.className = 'mt-2 flex items-center gap-2 text-sm text-red-400';
+                    matchIcon.className = 'bi bi-x-circle-fill';
+                    matchText.textContent = 'Password tidak cocok!';
+                }
+            }
+            
+            // Event listeners
+            newPasswordInput.addEventListener('input', function() {
+                updateStrengthIndicator(this.value);
+                checkPasswordMatch();
+            });
+            
+            confirmPasswordInput.addEventListener('input', checkPasswordMatch);
+            
+            // Form validation before submit
+            form.addEventListener('submit', function(e) {
+                const newPass = newPasswordInput.value;
+                const confirmPass = confirmPasswordInput.value;
+                const oldPass = document.querySelector('input[name="oldPassword"]').value;
+                
+                if (oldPass.length === 0) {
+                    e.preventDefault();
+                    alert('Password lama tidak boleh kosong!');
+                    return;
+                }
+                
+                if (newPass.length < 4) {
+                    e.preventDefault();
+                    alert('Password baru minimal 4 karakter!');
+                    return;
+                }
+                
+                if (newPass !== confirmPass) {
+                    e.preventDefault();
+                    alert('Password baru dan konfirmasi tidak cocok!');
+                    return;
+                }
+                
+                if (newPass === oldPass) {
+                    e.preventDefault();
+                    alert('Password baru tidak boleh sama dengan password lama!');
+                    return;
+                }
+            });
+            
+            // Toggle password visibility
+            document.querySelectorAll('.toggle-password').forEach(function(btn) {
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const container = this.parentElement;
+                    const input = container.querySelector('input[type="password"], input[type="text"]');
+                    const icon = this.querySelector('i');
+                    
+                    if (input.type === 'password') {
+                        input.type = 'text';
+                        icon.className = 'bi bi-eye-slash';
+                    } else {
+                        input.type = 'password';
+                        icon.className = 'bi bi-eye';
+                    }
+                });
+            });
+        });
+    </script>
 </section>
 </html>

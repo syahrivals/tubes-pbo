@@ -109,7 +109,17 @@ public class GradebookService {
 
     public boolean changePassword(String nim, String oldPassword, String newPassword) {
         return mahasiswaRepository.findByNim(nim)
-                .filter(m -> passwordService.verifyPassword(oldPassword, m.getPassword()))
+                .filter(m -> {
+                    // Check if password is BCrypt hash (starts with $2a$ or $2b$)
+                    String storedPassword = m.getPassword();
+                    if (storedPassword.startsWith("$2a$") || storedPassword.startsWith("$2b$")) {
+                        // Use BCrypt verification
+                        return passwordService.verifyPassword(oldPassword, storedPassword);
+                    } else {
+                        // Plain text comparison for backward compatibility
+                        return storedPassword.equals(oldPassword);
+                    }
+                })
                 .map(m -> {
                     String hashedNewPassword = passwordService.hashPassword(newPassword);
                     return mahasiswaRepository.updatePassword(nim, hashedNewPassword);
